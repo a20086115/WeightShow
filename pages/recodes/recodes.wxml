@@ -1,3 +1,5 @@
+
+<button bindtap='addDay'>新增</button>
 <i-sticky scrollTop="{{scrollTop}}">
   <i-sticky-item i-class="i-sticky-demo-title" wx:for="{{obj}}" wx:for-index="month"  wx:for-item="value" >
       <view slot="title" data-month="{{month}}" bindtap="clickMonth">
@@ -14,14 +16,14 @@
 </i-sticky>
 
 <i-modal title="请录入信息" visible="{{ visible }}" bind:ok="handleOk" bind:cancel="handleClose">
-  <view class="section">
-    <picker mode="date" value="{{date}}"  bindchange="bindDateChange">
-      <view class="picker">
+  <view class="section h-80" >
+    <picker style='width:50%;float:left' mode="date" value="{{date}}"  bindchange="bindDateChange">
+      <view  class="picker h-80" style="line-height:80rpx">
        {{date}}
       </view>
     </picker>
-    <view>
-      <input type='digit' bindinput="bindKeyInput" value="{{weight}}"  placeholder="请输入体重"></input>
+    <view class="h-80" style='width:50%;display:inline-block;line-height:80rpx'>
+      <input class="h-80"  type='digit' bindinput="bindKeyInput" value="{{weight}}"  placeholder="请输入体重(Kg)"></input>
     </view>
   </view>
 </i-modal>

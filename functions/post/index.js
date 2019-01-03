@@ -6,10 +6,8 @@ const db = cloud.database()
 // 云函数入口函数
 exports.main = async (event, context) => {
   try {
-    return await db.collection('datas').doc(event.userInfo.openId).set({
-      data: {
-        contents: event.datas
-      }
+    return await db.collection('datas').add({
+      data: event.data
     })
   } catch (e) {
     console.error(e)
