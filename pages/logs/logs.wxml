@@ -1,6 +1,31 @@
-<!--logs.wxml-->
-<view class="container log-list">
-  <block wx:for="{{logs}}" wx:for-item="log">
-    <text class="log-item">{{index + 1}}. {{log}}</text>
-  </block>
-</view>
+<i-sticky scrollTop="{{scrollTop}}">
+  <i-sticky-item i-class="i-sticky-demo-title" wx:for="{{obj}}" wx:for-index="month"  wx:for-item="value" >
+      <view slot="title" data-month="{{month}}" bindtap="clickMonth">
+          月份：{{month}}
+      </view>
+      <view slot="content"  wx-if="{{curMonth==month}}">
+          <view class="i-sticky-demo-item" data-day="{{month + '-' + day}}" data-weight="{{weight}}" bindtap="clickDay" wx:for="{{value}}" class="centent"   wx:for-index="day"  wx:for-item="weight" wx-if="{{weight}}">
+            <view class="content_left">{{month + "-" + day}} </view>
+            <view class="content_Right ">{{weight}}Kg</view>
+            <i-icon v-if="{{showDelete}}" data-day="{{month + '-' + day}}" data-weight="{{weight}}" bindtap='deleteDay' type="delete" size="28" color="#80848f" />
+          </view>
+      </view>
+  </i-sticky-item>
+</i-sticky>
+
+<i-modal title="请录入信息" visible="{{ visible }}" bind:ok="handleOk" bind:cancel="handleClose">
+  <view class="section">
+    <picker mode="date" value="{{date}}"  bindchange="bindDateChange">
+      <view class="picker">
+       {{date}}
+      </view>
+    </picker>
+    <view>
+      <input type='digit' bindinput="bindKeyInput" value="{{weight}}"  placeholder="请输入体重"></input>
+    </view>
+  </view>
+</i-modal>
+<i-modal title="确定删除该日期信息？" visible="{{ visible2 }}" bind:ok="handleOkDelete" bind:cancel="handleCloseDelete">
+  <view>{{date}}  </view>
+  <view> {{weight}}Kg</view>
+</i-modal>

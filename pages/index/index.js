@@ -1,54 +1,166 @@
 //index.js
 //获取应用实例
 const app = getApp()
+var wxCharts = require('../../utils/wxcharts.js');
+
+const date = new Date()
+const year = date.getFullYear();
+var month = date.getMonth() + 1;
+var day = date.getDate();
+month = month<10 ? "0" + month : month;
+day = day<10 ? "0" + day : day;
+var dateStr = year + "-" + month + "-" + day
 
 Page({
   data: {
-    motto: 'Hello World',
-    userInfo: {},
-    hasUserInfo: false,
-    canIUse: wx.canIUse('button.open-type.getUserInfo')
+    dataInfo: [
+      {
+        id: 1,
+        subNum: "C1609050001",
+        percentage: 30,
+        grade: "SPCC",
+        spec: "2.5*1200*C",
+        weight: 500
+      },
+      {
+        id: 2,
+        subNum: "A1609050001",
+        percentage: 80,
+        grade: "SPCC",
+        spec: "3.5*1200*C",
+        weight: 100
+      }
+    ],
+    date: dateStr,
   },
-  //事件处理函数
-  bindViewTap: function() {
-    wx.navigateTo({
-      url: '../logs/logs'
+  bindDateChange: function (e) {
+    console.log('picker发送选择改变，携带值为', e.detail.value)
+    this.setData({
+      date: e.detail.value
     })
   },
   onLoad: function () {
-    if (app.globalData.userInfo) {
-      this.setData({
-        userInfo: app.globalData.userInfo,
-        hasUserInfo: true
-      })
-    } else if (this.data.canIUse){
-      // 由于 getUserInfo 是网络请求，可能会在 Page.onLoad 之后才返回
-      // 所以此处加入 callback 以防止这种情况
-      app.userInfoReadyCallback = res => {
-        this.setData({
-          userInfo: res.userInfo,
-          hasUserInfo: true
-        })
-      }
-    } else {
-      // 在没有 open-type=getUserInfo 版本的兼容处理
-      wx.getUserInfo({
-        success: res => {
-          app.globalData.userInfo = res.userInfo
-          this.setData({
-            userInfo: res.userInfo,
-            hasUserInfo: true
-          })
+    for (var i in this.data.dataInfo) {
+      var item = this.data.dataInfo[i];
+      let ring = {
+        canvasId: "ringGraph", // 与canvas-id一致
+        type: "ring",
+        series: [
+          {
+            name: "已完成",
+            data: item.percentage,
+            color: '#ff6600'
+          },
+          {
+            name: "未完成",
+            data: 100 - item.percentage,
+            color: '#eeeeee'
+          }
+        ],
+        width: 100,
+        height: 100,
+        dataLabel: false,
+        legend: false,
+        title: { // 显示百分比
+          name: item.percentage + '%',
+          color: '#333333',
+          fontSize: 14
+        },
+        extra: {
+          pie: {
+            offsetAngle: -90
+          },
+          ringWidth: 6,
         }
-      })
+      };
+      new wxCharts(ring);
     }
   },
-  getUserInfo: function(e) {
-    console.log(e)
-    app.globalData.userInfo = e.detail.userInfo
-    this.setData({
-      userInfo: e.detail.userInfo,
-      hasUserInfo: true
-    })
+  click () {
+    console.log("!")
+    wx.cloud.callFunction({
+      // 云函数名称
+      name: 'add',
+      // 传给云函数的参数
+      data: {
+        contents: {
+          "2018-10":{
+            "01": "70",
+            "02": "60"
+          }
+        }
+      },
+    }).then(res => {
+        console.log(res.result) // 3
+    }).catch(console.error)
+    this.ringShow()
+  },
+  ringShow: function () {
+    for (var i in this.data.dataInfo) {
+      var item = this.data.dataInfo[i];
+      let ring = {
+        canvasId: "ringGraph", // 与canvas-id一致
+        type: "ring",
+        series: [
+          {
+            name: "已完成",
+            data: item.percentage,
+            color: '#ff6600'
+          },
+          {
+            name: "未完成",
+            data: 100 - item.percentage,
+            color: '#eeeeee'
+          }
+        ],
+        width: 100,
+        height: 100,
+        dataLabel: false,
+        legend: false,
+        title: { // 显示百分比
+          name: item.percentage + '%',
+          color: '#333333',
+          fontSize: 14
+        },
+        extra: {
+          pie: {
+            offsetAngle: -90
+          },
+          ringWidth: 6,
+        }
+      };
+      new wxCharts(ring);
+    }
+  },
+  lineShow: function(){
+    var random1 = Math.floor(Math.random() * (500 - 50 + 1) + 50),
+      random2 = Math.floor(Math.random() * (800 - 100 + 1) + 100),
+      random3 = Math.floor(Math.random() * (1000 - 200 + 1) + 200),
+      random4 = Math.floor(Math.random() * (300 - 10 + 1) + 10),
+      random5 = Math.floor(Math.random() * (600 - 300 + 1) + 300)
+
+      let line = {
+        canvasId: 'lineGraph', // canvas-id
+        type: 'line', // 图表类型，可选值为pie, line, column, area, ring
+        categories: ['201708', '201709', '201710', '201711', '201712'],
+        series: [{ // 数据列表
+          name: ' ',
+          data: [random1, random2, random3, random4, random5]
+        }],
+        yAxis: {
+          min: 300 // Y轴起始值
+        },
+        width: 310,
+        height: 200,
+        dataLabel: true, // 是否在图表中显示数据内容值
+        legend: false, // 是否显示图表下方各类别的标识
+        extra: {
+          lineStyle: 'curve' // (仅对line, area图表有效) 可选值：curve曲线，straight直线 (默认)
+        }
+      }
+    new wxCharts(line);
+  },
+  add: function(){
+    
   }
 })

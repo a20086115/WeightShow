@@ -12,7 +12,7 @@
 	},
 	"compileType": "miniprogram",
 	"libVersion": "2.3.0",
-	"appid": "wx80453461d882b7bd",
+	"appid": "wx861848f2da1b88d0",
 	"projectname": "%E6%96%B0%E5%BB%BA%E6%96%87%E4%BB%B6%E5%A4%B9",
 	"debugOptions": {
 		"hidedInDevtools": []
@@ -35,5 +35,6 @@
 			"current": -1,
 			"list": []
 		}
-	}
+	},
+  "cloudfunctionRoot": "./functions/"
 }

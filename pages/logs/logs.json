@@ -1,3 +1,10 @@
 {
-  "navigationBarTitleText": "查看启动日志"
+  "usingComponents": {
+    "i-cell-group": "../../dist/cell-group/index",
+    "i-cell": "../../dist/cell/index",
+    "i-sticky": "../../dist/sticky/index",
+    "i-sticky-item": "../../dist/sticky-item/index",
+    "i-modal": "../../dist/modal/index",
+    "i-icon": "../../dist/icon/index"
+  }
 }
