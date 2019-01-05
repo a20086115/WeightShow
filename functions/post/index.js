@@ -32,7 +32,7 @@ exports.main = async (event, context) => {
       }).update({
         data:{
           size: month[0].size + 1,
-          avgWeight: (month[0].avgWeight + event.data.weight) / (month[0].size + 1)
+          avgWeight: ((parseFloat(month[0].avgWeight) + parseFloat(event.data.weight) / (month[0].size + 1)).toFixed(2))
         }
       })
     }

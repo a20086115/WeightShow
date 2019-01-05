@@ -144,9 +144,9 @@ Page({
       // 云函数名称
       name: 'get',
     }).then(res => {
-      console.log(res.result.data)
+      console.log(res)
       this.setData({
-        obj: res.result.data.contents
+        obj: res.result
       })
     }).catch(console.error)
   }
