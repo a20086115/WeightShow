@@ -47,7 +47,6 @@ Page({
     }).then(res => {
       console.log(res.result) // 3
     }).catch(console.error)
-
     this.setData({
       weight: null,
       visible: false
@@ -59,11 +58,18 @@ Page({
     })
   },
   handleOkDelete: function () {
-    var arr = this.data.date.split("-");
-    console.log(arr[0], arr[1], arr[2], this.data.weight)
-    this.addData(arr[0], arr[1], arr[2], 0);
+    wx.cloud.callFunction({
+      // 云函数名称
+      name: 'delete',
+      // 传给云函数的参数
+      data: {
+        id: event.currentTarget.dataset._id
+      },
+    }).then(res => {
+      console.log(res.result) // 3
+    }).catch(console.error)
     this.setData({
-      visible2: false,
+      visible2: true
     })
   },
   handleCloseDelete: function () {
@@ -90,12 +96,7 @@ Page({
     })
   },
   deleteDay: function (event) {
-    console.log("delete", event.currentTarget.dataset)
-    this.setData({
-      date: event.currentTarget.dataset.day,
-      weight: event.currentTarget.dataset.weight,
-      visible2: true
-    })
+
   },
   addDay: function (event) {
     this.setData({
@@ -143,6 +144,7 @@ Page({
       // 云函数名称
       name: 'get',
     }).then(res => {
+      console.log(res.result.data)
       this.setData({
         obj: res.result.data.contents
       })

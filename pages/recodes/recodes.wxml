@@ -1,9 +1,9 @@
 
 <button bindtap='addDay'>新增</button>
 <i-sticky scrollTop="{{scrollTop}}">
-  <i-sticky-item i-class="i-sticky-demo-title" wx:for="{{obj}}" wx:for-index="month"  wx:for-item="value" >
-      <view slot="title" data-month="{{month}}" bindtap="clickMonth">
-          月份：{{month}}
+  <i-sticky-item i-class="i-sticky-demo-title" wx:for="{{obj}}" wx:for-index="index"  wx:for-item="month" >
+      <view slot="title" data-month="{{month.year_month}}" bindtap="clickMonth">
+          月份：{{month.year_month}}
       </view>
       <view slot="content"  wx-if="{{curMonth==month}}">
           <view class="i-sticky-demo-item" data-day="{{month + '-' + day}}" data-weight="{{weight}}" bindtap="clickDay" wx:for="{{value}}" class="centent"   wx:for-index="day"  wx:for-item="weight" wx-if="{{weight}}">
