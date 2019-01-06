@@ -5,17 +5,29 @@ cloud.init()
 const db = cloud.database()
 // 云函数入口函数
 exports.main = async (event, context) => {
-  console.log(event.data)
   event.data._openid = event.userInfo.openId;
   try {
+    // 先判断是否有该日期数据
+    let day = await db.collection('datas').where({
+      _openid: event.userInfo.openId,
+      date: event.data.date
+    }).get()
+
+    if(day.data.length == 1){
+      return {
+        done: true
+      }
+    }
+
+    // 从months集合中 获取是否已经存储过该月的信息
+    // 未存储过 则创建信息
+    // 存储过 重新计算月平均值
     let data = await db.collection('months').where({
       _openid: event.userInfo.openId,
       year_month: event.data.year_month
     }).get()
     let month = data.data;
-    console.log(month,"this is month")
     if(month.length == 0){
-      console.log(2222222)
       await db.collection('months').add({
         data:{
           _openid: event.userInfo.openId,
@@ -25,7 +37,6 @@ exports.main = async (event, context) => {
         }
       })
     }else{
-      console.log(333333)
       await db.collection('months').where({
         _openid: event.userInfo.openId,
         year_month: event.data.year_month

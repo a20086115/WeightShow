@@ -9,12 +9,14 @@
   border-bottom: 1px solid gray
   
 }
-.content_left{
-  padding: 10rpx 10rpx 10rpx 50rpx;
-  width: 70%
+.contentLeft{
+  padding: 10rpx 10rpx 10rpx 40rpx;
+  font-size: 32rpx;
+  width: 75%
 }
-.content_right{
+.contentRight{
   padding: 10rpx;
+  font-size: 32rpx;
 }
 .h-80{
   height:80rpx

@@ -2,14 +2,14 @@
 <button bindtap='addDay'>新增</button>
 <i-sticky scrollTop="{{scrollTop}}">
   <i-sticky-item i-class="i-sticky-demo-title" wx:for="{{obj}}" wx:for-index="index"  wx:for-item="month" >
-      <view slot="title" data-month="{{month.year_month}}" bindtap="clickMonth">
-          月份：{{month.year_month}}
+      <view slot="title" data-month="{{month.data[0].year_month}}" bindtap="clickMonth">
+          月份：{{month.data[0].year_month}}
       </view>
-      <view slot="content"  wx-if="{{curMonth==month}}">
-          <view class="i-sticky-demo-item" data-day="{{month + '-' + day}}" data-weight="{{weight}}" bindtap="clickDay" wx:for="{{value}}" class="centent"   wx:for-index="day"  wx:for-item="weight" wx-if="{{weight}}">
-            <view class="content_left">{{month + "-" + day}} </view>
-            <view class="content_Right ">{{weight}}Kg</view>
-            <i-icon v-if="{{showDelete}}" data-day="{{month + '-' + day}}" data-weight="{{weight}}" bindtap='deleteDay' type="delete" size="28" color="#80848f" />
+      <view slot="content"  wx-if="{{curMonth==month.data[0].year_month}}">
+          <view class="i-sticky-demo-item"  data-day="{{day}}" bindtap="clickDay" wx:for="{{month.data}}" class="centent" bindlongpress="deleteDay"  wx:for-index="indexDay"  wx:for-item="day">
+            <view class="contentLeft">{{day.date}} </view>
+            <view class="contentRight ">{{day.weight}}Kg</view>
+            <!-- <i-icon v-if="{{showDelete}}" data-day="{{day.date}}" data-weight="{{day.weight}}" bindtap='deleteDay' type="delete" size="28" color="#80848f" /> -->
           </view>
       </view>
   </i-sticky-item>
@@ -27,7 +27,8 @@
     </view>
   </view>
 </i-modal>
+
 <i-modal title="确定删除该日期信息？" visible="{{ visible2 }}" bind:ok="handleOkDelete" bind:cancel="handleCloseDelete">
-  <view>{{date}}  </view>
-  <view> {{weight}}Kg</view>
+  <view style='width:50%;float:left'>{{currentDay.date}}  </view>
+  <view style='width:50%;float:right'> {{currentDay.weight}}Kg</view>
 </i-modal>

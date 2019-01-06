@@ -1,6 +1,6 @@
 {
   "pages": [
-    "pages/recodes/recodes",
+    "pages/records/records",
     "pages/index/index"
   ],
   "window": {
@@ -17,7 +17,7 @@
         "text": "首页"
       },
       {
-        "pagePath": "pages/recodes/recodes",
+        "pagePath": "pages/records/records",
         "text": "记录"
       }
     ]

@@ -11,16 +11,15 @@ Page({
    * 页面的初始数据
    */
   data: {
-    obj: {
-      "2018-10": [20, 30, null, 40],
-      "2018-09": [20, 30, null, 40, 20, 30, null, 40, 20, 30, null, 40, 20, 30, null, 40, 20, 30, null, 40, 20, 30, null, 40]
-    },
+    obj: [],
     curMonth: "2018-10",
     objCopy: {},
     scrollTop: 0,
     date: dateStr,
-    visible: true,
-    weight: null
+    visible: false,
+    weight: null,
+    isUpdate: false,
+    currentDay: {}
   },
   bindDateChange: function (e) {
     console.log('picker发送选择改变，携带值为', e.detail.value)
@@ -36,7 +35,7 @@ Page({
   handleOk: function () {
     var arr = this.data.date.split("-");
     wx.cloud.callFunction({
-      name: 'post',
+      name: this.data.isUpdate ? "put" : "post",
       data: {
         data: {
           weight: this.data.weight,
@@ -45,11 +44,21 @@ Page({
         }
       },
     }).then(res => {
-      console.log(res.result) // 3
+      console.log(res)
+      if(res.result.done){
+        wx.showToast({
+          title: '新增失败，该日期数据已经存在！',
+          icon: 'none',
+          duration: 2000
+        })
+      }else{
+        this.getData()
+      }
     }).catch(console.error)
     this.setData({
       weight: null,
-      visible: false
+      visible: false,
+      isUpdate: false
     })
   },
   handleClose: function () {
@@ -63,13 +72,14 @@ Page({
       name: 'delete',
       // 传给云函数的参数
       data: {
-        id: event.currentTarget.dataset._id
+        id: this.data.currentDay._id
       },
     }).then(res => {
-      console.log(res.result) // 3
+      this.getData()
     }).catch(console.error)
+
     this.setData({
-      visible2: true
+      visible2: false
     })
   },
   handleCloseDelete: function () {
@@ -90,13 +100,25 @@ Page({
   clickDay: function (event) {
     console.log(event.currentTarget.dataset)
     this.setData({
-      date: event.currentTarget.dataset.day,
-      weight: event.currentTarget.dataset.weight,
-      visible: true
+      date: event.currentTarget.dataset.day.date,
+      weight: event.currentTarget.dataset.day.weight,
+      visible: true,
+      isUpdate: true
     })
   },
   deleteDay: function (event) {
-
+    this.setData({
+      currentDay: event.currentTarget.dataset.day,
+      visible2: true
+    })
+    // wx.cloud.callFunction({
+    //   name: "delete",
+    //   data: {
+    //     id: event.currentTarget.dataset.day._id
+    //   },
+    // }).then(res => {
+    //   this.getData()
+    // }).catch(console.error)
   },
   addDay: function (event) {
     this.setData({
@@ -108,13 +130,6 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    // var keyArr = Object.keys(this.obj)
-    // keyArr.sort(function (a, b) {
-    //   return a > b
-    // })
-    // for (let key of keyArr) {
-    //   this.objCopy[key] = this.obj[key]
-    // }
     this.getData()
   },
   //页面滚动执行方式
@@ -123,25 +138,9 @@ Page({
       scrollTop: event.scrollTop
     })
   },
-  addData: function (year, month, day, weight) {
-    var datas = this.data.obj;
-    var key = year + "-" + month;
-    datas[key][parseInt(day)] = weight;
-    console.log("datas:", datas)
-    wx.cloud.callFunction({
-      // 云函数名称
-      name: 'add',
-      // 传给云函数的参数
-      data: {
-        datas: datas
-      },
-    }).then(res => {
-      console.log(res.result) // 3
-    }).catch(console.error)
-  },
   getData: function () {
+    console.log("this.getData")
     wx.cloud.callFunction({
-      // 云函数名称
       name: 'get',
     }).then(res => {
       console.log(res)
