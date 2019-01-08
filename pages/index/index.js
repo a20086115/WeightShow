@@ -40,41 +40,8 @@ Page({
     })
   },
   onLoad: function () {
-    for (var i in this.data.dataInfo) {
-      var item = this.data.dataInfo[i];
-      let ring = {
-        canvasId: "ringGraph", // 与canvas-id一致
-        type: "ring",
-        series: [
-          {
-            name: "已完成",
-            data: item.percentage,
-            color: '#ff6600'
-          },
-          {
-            name: "未完成",
-            data: 100 - item.percentage,
-            color: '#eeeeee'
-          }
-        ],
-        width: 100,
-        height: 100,
-        dataLabel: false,
-        legend: false,
-        title: { // 显示百分比
-          name: item.percentage + '%',
-          color: '#333333',
-          fontSize: 14
-        },
-        extra: {
-          pie: {
-            offsetAngle: -90
-          },
-          ringWidth: 6,
-        }
-      };
-      new wxCharts(ring);
-    }
+    this.getData();
+     
   },
   click () {
     console.log("!")
@@ -95,42 +62,13 @@ Page({
     }).catch(console.error)
     this.ringShow()
   },
-  ringShow: function () {
-    for (var i in this.data.dataInfo) {
-      var item = this.data.dataInfo[i];
-      let ring = {
-        canvasId: "ringGraph", // 与canvas-id一致
-        type: "ring",
-        series: [
-          {
-            name: "已完成",
-            data: item.percentage,
-            color: '#ff6600'
-          },
-          {
-            name: "未完成",
-            data: 100 - item.percentage,
-            color: '#eeeeee'
-          }
-        ],
-        width: 100,
-        height: 100,
-        dataLabel: false,
-        legend: false,
-        title: { // 显示百分比
-          name: item.percentage + '%',
-          color: '#333333',
-          fontSize: 14
-        },
-        extra: {
-          pie: {
-            offsetAngle: -90
-          },
-          ringWidth: 6,
-        }
-      };
-      new wxCharts(ring);
-    }
+  getData: function(){
+    wx.cloud.callFunction({
+      name: 'get',
+    }).then(res => {
+      console.log(res)
+      this.lineShow();
+    }).catch(console.error)
   },
   lineShow: function(){
     var random1 = Math.floor(Math.random() * (500 - 50 + 1) + 50),

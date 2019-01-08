@@ -139,7 +139,6 @@ Page({
     })
   },
   getData: function () {
-    console.log("this.getData")
     wx.cloud.callFunction({
       name: 'get',
     }).then(res => {

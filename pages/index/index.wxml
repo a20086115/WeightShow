@@ -1,4 +1,4 @@
 <button bindtap='click'>记录管理</button>
-<canvas class="canvas" canvas-id="ringGraph"></canvas>
+<canvas class="canvas" canvas-id="lineGraph"></canvas>
 
 <!-- BMI指数（英文为Body Mass Index，简称BMI），是用体重公斤数除以身高米数平方得出的数字，是目前国际上常用的衡量人体胖瘦程度以及是否健康的一个标准。当我们需要比较及分析一个人的体重对于不同高度的人所带来的健康影响时，BMI值是一个中立而可靠的指标。 -->
