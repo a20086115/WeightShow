@@ -41,32 +41,19 @@ Page({
   },
   onLoad: function () {
     this.getData();
-     
-  },
-  click () {
-    console.log("!")
-    wx.cloud.callFunction({
-      // 云函数名称
-      name: 'add',
-      // 传给云函数的参数
-      data: {
-        contents: {
-          "2018-10":{
-            "01": "70",
-            "02": "60"
-          }
-        }
-      },
-    }).then(res => {
-        console.log(res.result) // 3
-    }).catch(console.error)
-    this.ringShow()
   },
   getData: function(){
     wx.cloud.callFunction({
       name: 'get',
     }).then(res => {
       console.log(res)
+      var arr = [];
+      for(let item of res.result){
+        arr = arr.concat(item.data);
+      }
+      this.setData({
+        arr: arr
+      })
       this.lineShow();
     }).catch(console.error)
   },
@@ -76,14 +63,20 @@ Page({
       random3 = Math.floor(Math.random() * (1000 - 200 + 1) + 200),
       random4 = Math.floor(Math.random() * (300 - 10 + 1) + 10),
       random5 = Math.floor(Math.random() * (600 - 300 + 1) + 300)
+      var weightArr = [];
+      var dateArr = [];
+      for(let item of this.data.arr){
+        weightArr.push(item.weight)
+        dateArr.push(item.date.substring(5))
+      }
 
       let line = {
         canvasId: 'lineGraph', // canvas-id
         type: 'line', // 图表类型，可选值为pie, line, column, area, ring
-        categories: ['201708', '201709', '201710', '201711', '201712'],
+        categories: dateArr.reverse(),
         series: [{ // 数据列表
           name: ' ',
-          data: [random1, random2, random3, random4, random5]
+          data: weightArr.reverse()
         }],
         yAxis: {
           min: 300 // Y轴起始值
