@@ -39,7 +39,7 @@ Page({
       date: e.detail.value
     })
   },
-  onLoad: function () {
+  onShow: function () {
     this.getData();
   },
   getData: function(){
@@ -58,11 +58,6 @@ Page({
     }).catch(console.error)
   },
   lineShow: function(){
-    var random1 = Math.floor(Math.random() * (500 - 50 + 1) + 50),
-      random2 = Math.floor(Math.random() * (800 - 100 + 1) + 100),
-      random3 = Math.floor(Math.random() * (1000 - 200 + 1) + 200),
-      random4 = Math.floor(Math.random() * (300 - 10 + 1) + 10),
-      random5 = Math.floor(Math.random() * (600 - 300 + 1) + 300)
       var weightArr = [];
       var dateArr = [];
       for(let item of this.data.arr){
@@ -81,7 +76,7 @@ Page({
         yAxis: {
           min: 300 // Y轴起始值
         },
-        width: 310,
+        width: 350,
         height: 200,
         dataLabel: true, // 是否在图表中显示数据内容值
         legend: false, // 是否显示图表下方各类别的标识
@@ -91,7 +86,4 @@ Page({
       }
     new wxCharts(line);
   },
-  add: function(){
-    
-  }
 })
