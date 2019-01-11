@@ -10,33 +10,42 @@ var day = date.getDate();
 month = month<10 ? "0" + month : month;
 day = day<10 ? "0" + day : day;
 var dateStr = year + "-" + month + "-" + day
-
 Page({
   data: {
-    dataInfo: [
-      {
-        id: 1,
-        subNum: "C1609050001",
-        percentage: 30,
-        grade: "SPCC",
-        spec: "2.5*1200*C",
-        weight: 500
-      },
-      {
-        id: 2,
-        subNum: "A1609050001",
-        percentage: 80,
-        grade: "SPCC",
-        spec: "3.5*1200*C",
-        weight: 100
-      }
-    ],
+    tips: [{
+      color:"RGB(141,216,248)",
+      left: "分类",
+      right: "BMI 范围"
+    }, {
+        color: "RGB(204,204,204)",
+        left: "偏瘦",
+        right: " <= 18.4"
+      }, {
+        color: "RGB(102,204,0)",
+        left: "正常",
+        right: "18.5 ~ 23.9"
+      }, {
+        color: "RGB(255,255,0)",
+        left: "过重",
+        right: "24.0 ~27.9"
+      }, {
+        color: "RGB(255,153,0)",
+        left: "肥胖",
+        right: ">= 28.0 "
+      },],
     date: dateStr,
+    height:0,
+    showChange: false
   },
   bindDateChange: function (e) {
     console.log('picker发送选择改变，携带值为', e.detail.value)
     this.setData({
       date: e.detail.value
+    })
+  },
+  onLoad: function(){
+    this.setData({
+      height: wx.getStorageSync("height")
     })
   },
   onShow: function () {
@@ -55,6 +64,7 @@ Page({
         arr: arr
       })
       this.lineShow();
+      this.getBMI(arr[0].weight);
     }).catch(console.error)
   },
   lineShow: function(){
@@ -86,4 +96,35 @@ Page({
       }
     new wxCharts(line);
   },
+  showBmiInfo: function(){
+    wx.showModal({
+      content: 'BMI指数（英文为Body Mass Index，简称BMI），是用体重公斤数除以身高米数平方得出的数字，是目前国际上常用的衡量人体胖瘦程度以及是否健康的一个标准。当我们需要比较及分析一个人的体重对于不同高度的人所带来的健康影响时，BMI值是一个中立而可靠的指标。',
+      showCancel:false
+    })
+  },
+  bindconfirm(e) {
+    console.log("confimHeight",e.detail.value)
+    var height = e.detail.value
+    this.setData({
+      height: height,
+      showChange: false
+    })
+    wx.setStorage({
+      key: 'height',
+      data: height
+    })
+    this.getBMI();
+  },
+  getBMI:function(){
+    var weight = this.data.arr[0].weight
+    var BMI = weight / (this.data.height * this.data.height/10000);
+    this.setData({
+      BMI: BMI.toFixed(2)
+    })
+  },
+  changeHeight: function(){
+    this.setData({
+      showChange: true
+    })
+  }
 })
