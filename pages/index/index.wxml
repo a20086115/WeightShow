@@ -8,8 +8,9 @@
   <text style="color:blue;text-align:right;padding-right:5px" bindtap="changeHeight">修改</text>
 </view>
 
-<view wx:else style="border: 1px solid black;margin:5px 20px 5px 20px;padding:3px;">
-  <input type="number" bindconfirm="bindconfirm" placeholder="请输入您的身高数据(cm)" />
+<view wx:else style="display:flex;height:30px;flex-direction:row;border: 1px solid black;margin:5px 20px 5px 20px;padding:3px;">
+  <input type="number" confirm-type="down" bindconfirm="bindconfirm" bindinput="getHeight" placeholder="请输入您的身高数据(cm)" />
+  <text style="color:blue;text-align:right;padding-right:5px" bindtap="bindconfirm">提交</text>
 </view>
 
 <view  style='text-align:center;padding:5px;' bindtap='showBmiInfo'>BMI 中国标准</view>

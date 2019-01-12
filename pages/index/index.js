@@ -35,6 +35,7 @@ Page({
       },],
     date: dateStr,
     height:0,
+    heightInput:0,
     showChange: false
   },
   bindDateChange: function (e) {
@@ -103,8 +104,7 @@ Page({
     })
   },
   bindconfirm(e) {
-    console.log("confimHeight",e.detail.value)
-    var height = e.detail.value
+    var height = this.data.heightInput
     this.setData({
       height: height,
       showChange: false
@@ -126,5 +126,11 @@ Page({
     this.setData({
       showChange: true
     })
+  },
+  getHeight: function(e){
+    var val = e.detail.value;
+    this.setData({
+      heightInput: val
+    });
   }
 })
