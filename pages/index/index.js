@@ -56,7 +56,9 @@ Page({
     wx.cloud.callFunction({
       name: 'get',
     }).then(res => {
-      console.log(res)
+      if(!res.result){
+        return ;
+      }
       var arr = [];
       for(let item of res.result){
         arr = arr.concat(item.data);
