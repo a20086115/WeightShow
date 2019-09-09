@@ -1,0 +1,43 @@
+<canvas class="canvas" canvas-id="lineGraph"></canvas>
+
+<!-- <view style='text-indent:20rpx;font-size:32rpx;'>
+
+</view> -->
+<view wx:if="{{height && !showChange}}" style="display:flex;height:30px;flex-direction:row;">
+  <text style="width:80%;padding-left:20px">您的BMI为{{BMI}}</text>
+  <text style="color:blue;text-align:right;padding-right:5px" bindtap="changeHeight">修改</text>
+</view>
+
+<view wx:else style="display:flex;height:30px;flex-direction:row;border: 1px solid black;margin:5px 20px 5px 20px;padding:3px;">
+  <input type="number" confirm-type="down" bindconfirm="bindconfirm" bindinput="getHeight" placeholder="请输入您的身高数据(cm)" />
+  <text style="color:blue;text-align:right;padding-right:5px" bindtap="bindconfirm">提交</text>
+</view>
+
+<view  style='text-align:center;padding:5px;' bindtap='showBmiInfo'>BMI 中国标准</view>
+<view wx:for="{{tips}}" wx:for-item="item" style="display:flex;height:30px;flex-direction:row;background: {{item.color}}">
+    <view class="left ">{{item.left}}</view>
+    <view class="right">{{item.right}}</view>
+</view>
+
+<view>
+  <image src='../../images/insert1.png' bindtap="showInsertDialog"></image>
+</view>
+
+<i-modal title="请录入信息" visible="{{ visible }}" bind:ok="handleOk" bind:cancel="handleClose">
+  <view class="section h-80" >
+    <picker style='width:50%;float:left' mode="date" value="{{date}}"  bindchange="bindDateChange">
+      <view  class="picker h-80" style="line-height:80rpx">
+       {{date}}
+      </view>
+    </picker>
+    <view class="h-80" style='width:50%;display:inline-block;line-height:80rpx'>
+      <input class="h-80"  type='digit' bindinput="bindKeyInput" value="{{weight}}"  placeholder="请输入体重(Kg)"></input>
+    </view>
+  </view>
+</i-modal>
+<!-- BMI 中国标准
+分类	BMI 范围
+偏瘦	<= 18.4
+正常	18.5 ~ 23.9
+过重	24.0 ~ 27.9
+肥胖	>= 28.0 -->

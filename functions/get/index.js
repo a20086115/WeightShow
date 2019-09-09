@@ -1,60 +1,18 @@
-// 云函数入口文件
 const cloud = require('wx-server-sdk')
-
 cloud.init()
 const db = cloud.database()
-const MAX_LIMIT = 100
+// 根据表名和query对象查询数据
 exports.main = async (event, context) => {
-
-  // 先取出集合记录总数
-  const countResult = await db.collection('datas').count()
-  const total = countResult.total
-  // 计算需分几次取
-  const batchTimes = Math.ceil(total / 100)
-  // 承载所有读操作的 promise 的数组
-  const tasks = []
-  for (let i = 0; i < batchTimes; i++) {
-    const promise = db.collection('datas').field({
-      year_month: true
-    }).orderBy("year_month","desc").skip(i * MAX_LIMIT).limit(MAX_LIMIT).get()
-    tasks.push(promise)
+  let openId = event.userInfo.openId;
+  let tbName = event.tbName; // 要查询的表名
+  let query = event.query;  // 要查询的query条件
+  // 如果openId为ture, 则把openId添加到查询条件
+  if(query.openId){
+    query.openId = openId
   }
-  // 等待所有
-  let allData = null;
-  if(tasks.length == 0){
-      return null;
-  }else{
-    allData = (await Promise.all(tasks)).reduce((acc, cur) => ({
-      data: acc.data.concat(cur.data),
-      errMsg: acc.errMsg,
-    }))
+  try {
+    return await db.collection(tbName).where(query).get()
+  } catch (e) {
+    console.error(e)
   }
-
-
-  function distinct(arr) {
-    let result = []
-    let obj = {}
-    for (let i of arr) {
-      if (!obj[i.year_month]) {
-        result.push(i.year_month)
-        obj[i.year_month] = 1
-      }
-    }
-    return result
-  }
-  
-  const yearMonthArray = distinct(allData.data)
-  const len = yearMonthArray.length;
-  var datasTask = []
-  for (let i = 0; i < len; i++) {
-    const promise = db.collection('datas')
-      .where({
-        _openid: event.userInfo.openId, // 填入当前用户 openid
-        year_month: yearMonthArray[i]
-      })
-      .orderBy("date", "desc").get()
-    datasTask.push(promise)
-  }
-
-  return await Promise.all(datasTask)
 }

@@ -1,4 +1,6 @@
 {
+  "miniprogramRoot": "miniprogram/",
+  "cloudfunctionRoot": "functions/",
 	"description": "项目配置文件",
 	"packOptions": {
 		"ignore": []
@@ -18,7 +20,6 @@
 		"hidedInDevtools": []
 	},
 	"isGameTourist": false,
-	"cloudfunctionRoot": "functions/",
 	"condition": {
 		"search": {
 			"current": -1,
