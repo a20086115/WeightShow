@@ -1,3 +1,4 @@
+import { cloud as CF } from '../../utils/cloudFunction.js'
 //获取应用实例
 const app = getApp()
 
@@ -10,6 +11,14 @@ day = day<10 ? "0" + day : day;
 var dateStr = year + "-" + month + "-" + day
 Page({
   data: {
+    curYear: new Date().getFullYear(), // 年份
+    curMonth: new Date().getMonth() + 1,// 月份 1-12
+    day: new Date().getDate(), // 日期 1-31 若日期超过该月天数，月份自动增加
+    speciallist:[],
+    txt_style:{
+      "font-size": "20px",
+      color: "black"
+    },
     tips: [{
       color:"RGB(141,216,248)",
       left: "分类",
@@ -46,19 +55,25 @@ Page({
     this.setData({
       height: wx.getStorageSync("height")
     })
+    this.setData({
+      speciallist: [
+        { date: '2019-09-02', background: 'yellow', text: '文字1', color: '' },
+        { date: '2019-09-05', background: 'red', text: '文字2' },
+      ]
+    })
   },
   onShow: function () {
     this.getData();
   },
   getData: function(){
-    wx.cloud.callFunction({
-      name: 'get',
-    }).then(res => {
-      if(!res.result){
-        return ;
+    CF.get("records", {
+      openId: true
+    }, res => {
+      if (!res.result) {
+        return;
       }
       var arr = [];
-      for(let item of res.result){
+      for (let item of res.result) {
         arr = arr.concat(item.data);
       }
       this.setData({
@@ -66,36 +81,7 @@ Page({
       })
       this.lineShow();
       this.getBMI(arr[0].weight);
-    }).catch(console.error)
-  },
-  lineShow: function(){
-      var weightArr = [];
-      var dateArr = [];
-      for(let item of this.data.arr){
-        weightArr.push(item.weight)
-        dateArr.push(item.date.substring(5))
-      }
-
-      let line = {
-        canvasId: 'lineGraph', // canvas-id
-        type: 'line', // 图表类型，可选值为pie, line, column, area, ring
-        categories: dateArr.reverse(),
-        series: [{ // 数据列表
-          name: ' ',
-          data: weightArr.reverse()
-        }],
-        yAxis: {
-          min: 300 // Y轴起始值
-        },
-        width: 350,
-        height: 200,
-        dataLabel: true, // 是否在图表中显示数据内容值
-        legend: false, // 是否显示图表下方各类别的标识
-        extra: {
-          lineStyle: 'curve' // (仅对line, area图表有效) 可选值：curve曲线，straight直线 (默认)
-        }
-      }
-    new wxCharts(line);
+    })
   },
   showBmiInfo: function(){
     wx.showModal({
@@ -132,5 +118,17 @@ Page({
     this.setData({
       heightInput: val
     });
-  }
+  },
+  /**
+  * 点击上个月
+  */
+  nextMonth: function (e) {
+    console.log(e)
+    const currentYear = e.detail.currentYear;
+    const currentMonth = e.detail.currentMonth;
+    wx.showModal({
+      title: '当前日期',
+      content: '当前年份：' + currentYear + '年\n当前月份：' + currentMonth + '月'
+    });
+  },
 })

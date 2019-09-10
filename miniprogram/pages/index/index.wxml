@@ -1,5 +1,11 @@
-<canvas class="canvas" canvas-id="lineGraph"></canvas>
-
+<calendar 
+cur-year="{{curYear}}"
+cur-month="{{curMonth}}" 
+speciallist="{{speciallist}}"
+txt_style='{{txt_style}}'
+day="{{day}}" 
+bindselectDate='selectDate'  bindnextMonth='nextMonth' bindprevMonth='prevMonth'
+ count_txt="您当前BMI指数为18.5" remark_show="{{true}}" circle_show="{{false}}" />
 <!-- <view style='text-indent:20rpx;font-size:32rpx;'>
 
 </view> -->

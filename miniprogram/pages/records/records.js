@@ -1,13 +1,6 @@
 import { cloud as CF } from '../../utils/cloudFunction.js'
 import  dayjs  from '../../utils/dayjs.min.js'
 
-const date = new Date()
-const year = date.getFullYear();
-var month = date.getMonth() + 1;
-var day = date.getDate();
-month = month < 10 ? "0" + month : month;
-day = day < 10 ? "0" + day : day;
-var dateStr = year + "-" + month + "-" + day
 Page({
 
   /**
@@ -15,17 +8,16 @@ Page({
    */
   data: {
     obj: [],
-    curMonth: dayjs().format("yyyy-mm"),
+    curMonth: dayjs().format("YYYY-MM"),
     objCopy: {},
     scrollTop: 0,
-    date: dayjs().format("yyyy-mm-dd"),
+    date: dayjs().format("YYYY-MM-DD"),
     visible: false,
     weight: null,
     isUpdate: false,
     currentDay: {}
   },
   bindDateChange: function (e) {
-    console.log('picker发送选择改变，携带值为', e.detail.value)
     this.setData({
       date: e.detail.value
     })
@@ -36,43 +28,30 @@ Page({
     })
   },
   handleInsertOk: function (e) {
-    console.log(e)
     if(e.detail != "confirm"){
       return;
     }
-
-    var arr = this.data.date.split("-");
-    wx.cloud.callFunction({
-      name: this.data.isUpdate ? "put" : "post",
-      data: {
-        data: {
-          weight: this.data.weight,
-          year_month: arr[0] + "-" + arr[1],
-          date: this.data.date
-        }
-      },
-    }).then(res => {
-      console.log(res)
-      if(res.result.done){
+    CF.get("records", {
+      date: this.data.date,
+    }, (res) =>{
+      if(res.result.data.length == 0){
+        CF.insert("records", {
+          date: this.data.date,
+          weight: this.data.weight
+        }, () => {
+          console.log("成功")
+        }, (err) => {
+          console.log(err)
+        })
+      }else{
         wx.showToast({
           title: '新增失败，该日期数据已经存在！',
           icon: 'none',
           duration: 2000
         })
-      }else{
-        this.getData()
       }
-    }).catch(console.error)
-    this.setData({
-      weight: null,
-      visible: false,
-      isUpdate: false
-    })
-  },
-  handleClose: function () {
-    alert("close")
-    this.setData({
-      visible: false
+    }, () =>{
+      
     })
   },
   handleOkDelete: function () {
@@ -131,7 +110,6 @@ Page({
   },
   addDay: function (event) {
     this.setData({
-      date: dateStr,
       visible: true
     })
   },
@@ -148,13 +126,12 @@ Page({
     })
   },
   getData: function () {
-    wx.cloud.callFunction({
-      name: 'get',
-    }).then(res => {
-      console.log(res)
+    CF.get("records", {
+      openId: true
+    }, res => {
       this.setData({
         obj: res.result
       })
-    }).catch(console.error)
+    })
   }
 })

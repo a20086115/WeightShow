@@ -4,6 +4,7 @@ var cloud = {
   insert: function(tbName, data, cb, errcb){
     wx.showLoading({
       title: '加载中...',
+      icon: 'loading',
     })
     wx.cloud.callFunction({
       name: 'insert',
@@ -15,14 +16,21 @@ var cloud = {
       wx.hideLoading();
       if(typeof cb == "function"){
         cb(e);
+      } else {
+        console.log(cb)
+        console.log("不是正确的回调函数" + typeof cb)
       }
-    }).catch(() => {
+    }).catch((err) => {
       wx.hideLoading();
       wx.showToast({
-        title: '网络出小差了,请稍后再试...',
+        title: '网络出小差了,请重试...',
+        icon: 'none',
       })
       if (typeof errcb == "function") {
-        errcb();
+        errcb(err);
+      } else {
+        console.log(errcb)
+        console.log("不是正确的回调函数" + typeof errcb)
       }
     })
   },
@@ -30,6 +38,7 @@ var cloud = {
   delete: function (tbName, query, cb, errcb) {
     wx.showLoading({
       title: '加载中...',
+      icon: 'loading',
     })
     wx.cloud.callFunction({
       name: 'delete',
@@ -41,20 +50,29 @@ var cloud = {
       wx.hideLoading();
       if (typeof cb == "function") {
         cb(e);
+      } else {
+        console.log(cb)
+        console.log("不是正确的回调函数" + typeof cb)
       }
-    }).catch(() => {
+    }).catch((err) => {
       wx.hideLoading();
       wx.showToast({
         title: '网络出小差了,请稍后再试...',
+        icon: 'none',
       })
       if (typeof errcb == "function") {
-        errcb();
+        errcb(err);
+      } else {
+        console.log(errcb)
+        console.log("不是正确的回调函数" + typeof errcb)
       }
     })
   },
+  // 改
   update: function(tbName, query, data, cb, errcb) {
     wx.showLoading({
       title: '加载中...',
+      icon: 'loading',
     })
     wx.cloud.callFunction({
       name: 'update',
@@ -67,20 +85,29 @@ var cloud = {
       wx.hideLoading();
       if (typeof cb == "function") {
         cb(e);
+      } else {
+        console.log(cb)
+        console.log("不是正确的回调函数" + typeof cb)
       }
     }).catch(() => {
       wx.hideLoading();
       wx.showToast({
         title: '网络出小差了,请稍后再试...',
+        icon: 'none',
       })
       if (typeof errcb == "function") {
         errcb();
+      } else {
+        console.log(errcb)
+        console.log("不是正确的回调函数" + typeof errcb)
       }
     })
   },
-  get: function (tbName, query, cb, errcb) {
+  // 查
+  get: function (tbName, query, cb, errcb, hideError) {
     wx.showLoading({
       title: '加载中...',
+      icon: 'loading',
     })
     wx.cloud.callFunction({
       name: 'get',
@@ -92,14 +119,24 @@ var cloud = {
       wx.hideLoading();
       if (typeof cb == "function") {
         cb(e);
+      } else {
+        console.log(cb)
+        console.log("不是正确的回调函数" + typeof cb)
       }
     }).catch(() => {
       wx.hideLoading();
-      wx.showToast({
-        title: '网络出小差了,请稍后再试...',
-      })
+      if (!hideError){
+        wx.showToast({
+          title: '网络出小差了,请稍后再试...',
+          icon: 'none',
+        })
+      }
+
       if (typeof errcb == "function") {
         errcb();
+      }else{
+        console.log(errcb)
+        console.log("不是正确的回调函数" + typeof errcb)
       }
     })
   },
