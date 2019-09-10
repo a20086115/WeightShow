@@ -15,3 +15,7 @@
   width: 50%
 }
 .flex-wrp {display: flex;}
+.txt_style{
+  font-size: 20px;
+  color: black
+}

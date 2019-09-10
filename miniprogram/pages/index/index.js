@@ -15,10 +15,7 @@ Page({
     curMonth: new Date().getMonth() + 1,// 月份 1-12
     day: new Date().getDate(), // 日期 1-31 若日期超过该月天数，月份自动增加
     speciallist:[],
-    txt_style:{
-      "font-size": "20px",
-      color: "black"
-    },
+    txt_style: "txt_style",
     tips: [{
       color:"RGB(141,216,248)",
       left: "分类",
