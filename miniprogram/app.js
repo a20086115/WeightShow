@@ -36,7 +36,7 @@ App({
     })
   },
   globalData: {
-    userInfo: null,
+    userInfo: {},
     data: {}
   }
 })

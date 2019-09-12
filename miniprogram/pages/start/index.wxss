@@ -1,3 +1,6 @@
+page{
+  height: 100%
+}
 .start {
 	height: 100%;
 }

@@ -1,7 +1,7 @@
 <view class="start">
 	<swiper class="swiper_box" indicator-dots="{{ indicatorDots }}" autoplay="{{ autoplay }}" current="{{ current }}" interval="{{ interval }}" duration="{{ duration }}" circular="{{ circular }}" bindchange="swiperchange">
 	    <swiper-item>
-            <image src="../../images/start.jpg" class="slide-image" bindload="bindload" />
+            <image src="cloud://release-ba24f3.7265-release-ba24f3-1257780911/start.jpg" class="slide-image" />
         </swiper-item>
 	</swiper>
 </view>

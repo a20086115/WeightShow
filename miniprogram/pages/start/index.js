@@ -1,3 +1,4 @@
+import { cloud as CF } from '../../utils/cloudFunction.js'
 const App = getApp()
 
 Page({
@@ -18,28 +19,25 @@ Page({
       console.log("获取授权信息....")
         wx.getUserInfo({
           success: function (result) {
-            console.log("获取授权信息成功....")
-            // 将获取到的userinfo保存至全局变量。
-            App.globalData.userInfo = result.userInfo;
-            // 获取myUserInfo, 内部user表
-            console.log("调用云函数login.获取myUserInfo")
-            wx.cloud.callFunction({
-              name: 'login',
-            }).then(function (e) {
-              console.log("调用云函数login成功，跳转到首页",e)
+            CF.get("users", {
+              openId: true
+            }, (e) => {
+              console.log(e)
+              App.globalData.userInfo = e.result.data[0];
               that.goIndex();
             })
           },
           fail: function (result) {
             console.log("获取授权信息失败，跳转到授权页....")
-            that.goLogin();
+            that.goIndex();
+            // that.goLogin();
           }
         })
       
-    }, 2000)
+    }, 200)
   },
   goIndex() {
-    wx.switchTab({ url: '/pages/index/index' })
+    wx.redirectTo({ url: '/pages/index/index' })
   },
   goLogin() {
     wx.redirectTo({

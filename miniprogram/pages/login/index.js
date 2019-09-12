@@ -11,11 +11,10 @@ Page({
   getUserInfoFun(result) {
     var that = this;
     if (result.detail.encryptedData) {
-      // 把授权获得的数据 存到全局属性
-      App.globalData.userInfo = result.detail.userInfo;
-      // 从网络获取
-      CF.insert("users", App.globalData.userInfo,()=>{
-        wx.switchTab({ url: '/pages/index/index' })
+      CF.insert("users", result.detail.userInfo,(e)=>{
+        console.log(e)
+        App.globalData.userInfo = result.detail.userInfo;
+        wx.redirectTo({ url: '/pages/index/index' })
       })
     } else {
       wx.showModal({
