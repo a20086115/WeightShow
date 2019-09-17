@@ -13,8 +13,12 @@ Page({
     if (result.detail.encryptedData) {
       CF.insert("users", result.detail.userInfo,(e)=>{
         console.log(e)
-        App.globalData.userInfo = result.detail.userInfo;
-        wx.redirectTo({ url: '/pages/index/index' })
+        CF.get("users", {
+          openId: true
+        }, (e) => {
+          App.globalData.userInfo = e.result.data[0] || {}; 
+          wx.redirectTo({ url: '/pages/index/index' })
+        })
       })
     } else {
       wx.showModal({
@@ -24,5 +28,8 @@ Page({
       })
       return false
     }
+  },
+  back:function(){
+    wx.redirectTo({ url: '/pages/index/index' })
   }
 })

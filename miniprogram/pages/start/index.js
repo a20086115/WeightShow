@@ -1,6 +1,7 @@
 import { cloud as CF } from '../../utils/cloudFunction.js'
 const App = getApp()
 
+import data from '../index/data.js'
 Page({
   data: {
     indicatorDots: !1,
@@ -10,31 +11,23 @@ Page({
     duration: 1000,
     circular: !1,
   },
-  onLoad() { },
+  onLoad() {
+
+   },
   onShow() { 
     var that = this;
     setTimeout(function(){
-      // getUserInfo: 若用户授权过小程序，进入success回调，返回用户信息；
-      // 用户未授权，进入fail，跳转到授权界面。
+      // 若用户授权过小程序
       console.log("获取授权信息....")
-        wx.getUserInfo({
-          success: function (result) {
-            CF.get("users", {
-              openId: true
-            }, (e) => {
-              console.log(e)
-              App.globalData.userInfo = e.result.data[0];
-              that.goIndex();
-            })
-          },
-          fail: function (result) {
-            console.log("获取授权信息失败，跳转到授权页....")
-            that.goIndex();
-            // that.goLogin();
-          }
-        })
+      CF.get("users", {
+        openId: true
+      }, (e) => {
+        console.log(e)
+        App.globalData.userInfo = e.result.data[0] || {};
+        that.goIndex();
+      })
       
-    }, 200)
+    }, 300)
   },
   goIndex() {
     wx.redirectTo({ url: '/pages/index/index' })

@@ -9,6 +9,7 @@ exports.main = async (event, context) => {
   let tbName = event.tbName; // 要插入的表名
   let data = event.data;  // 要插入的对象
   data.openId = openId;
+  data.createdate = new Date();
   try {
     return await db.collection(tbName).add({
       data: data

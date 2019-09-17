@@ -1,83 +1,43 @@
-<calendar 
-header-style='header-style' 
-weekheight="100"
-speciallist="{{speciallist}}"
-txt_style='{{txt_style}}'
-bindselectDate='selectDate'  bindnextMonth='nextMonth' bindprevMonth='prevMonth'
- circle_show="{{false}}" />
+<calendar header-style='header-style' weekheight="100" speciallist="{{speciallist}}" txt_style='{{txt_style}}' bindselectDate='selectDate' bindnextMonth='nextMonth' bindprevMonth='prevMonth'  mystatus='{{mystatus}}' circle_show="{{true}}"/>
 
-
-
-    <view  style="position:relative;">
-       <view style="height:75rpx;width:100%;text-align:center"  bindtap="changeHeight"> {{bmiInfo}}
+<view style="position:relative;">
+  <view style="height:75rpx;width:100%;text-align:center" bindtap="changeHeight"> {{bmiInfo}}
   </view>
-       <image style="position:absolute;right:10%;top:5rpx; height:40rpx; width:6%;" src="../../images/help.png" bindtap="showBmiTip" ></image>
-      </view>
-   
-  
-
-
-
-<view class="container">
-    <ec-canvas id="mychart-dom-line" canvas-id="mychart-line" ec="{{ ec }}"></ec-canvas>
+  <image style="position:absolute;right:10%;top:5rpx; height:40rpx; width:6%;" src="../../images/help.png" bindtap="showBmiTip"></image>
 </view>
 
-<!-- <view style='text-indent:20rpx;font-size:32rpx;'>
+<view class="container" hidden="{{ visible || visibleBmi || visibleHeight || hiddenChart}}">
+  <ec-canvas  id="mychart-dom-line" canvas-id="mychart-line" ec="{{ ec }}"></ec-canvas>
+</view>
 
-</view> -->
-
-
-
-
-<van-dialog use-slot show="{{ visibleBmi }}"  bind:close="handleInsertWeight" zIndex="10000" >
-  <view  style='text-align:center;padding:5px;' bindtap='showBmiInfo'>BMI 中国标准</view>
+<van-dialog use-slot show="{{ visibleBmi }}" bind:close="handleShowBmi" zIndex="100000">
+  <view style='text-align:center;padding:5px;' bindtap='showBmiInfo'>BMI 中国标准</view>
   <view wx:for="{{tips}}" wx:for-item="item" wx:key="index" style="display:flex;height:30px;flex-direction:row;background: {{item.color}}">
-      <view class="left ">{{item.left}}</view>
-      <view class="right">{{item.right}}</view>
+    <view class="left ">{{item.left}}</view>
+    <view class="right">{{item.right}}</view>
   </view>
 </van-dialog>
 
-
-<van-dialog use-slot title="请录入信息" show="{{ visible }}"  bind:close="handleInsertWeight" zIndex="10000" show-cancel-button>
+<van-dialog use-slot title="请录入信息" show="{{ visible }}" bind:close="handleInsertWeight" zIndex="100000" show-cancel-button>
   <van-cell-group>
-      <van-field
-        label="日期"
-        value="{{ currentdate }}"
-        placeholder=""
-        border="{{ true }}"
-        disabled
-        bind:change="onChangeTime"
-      />
-      <van-field
-        label="体重"
-        value="{{ weight }}"
-        placeholder="请输入体重"
-        border="{{ true }}"
-        bind:change="onChangeWeight"
-      />
+    <van-field label="日期" value="{{ currentdate }}" placeholder="" border="{{ true }}" disabled bind:change="onChangeTime" />
+    <van-field label="体重" value="{{ weight }}" right-icon="photo-o" bind:click-icon="uploadPhoto" type="digit" placeholder="请输入体重" border="{{ true }}" bind:change="onChangeWeight" />
+  </van-cell-group>
+
+</van-dialog>
+
+<van-dialog use-slot title="请输入身高信息" show="{{ visibleHeight }}" bind:close="handleInsertHeight" show-cancel-button zIndex="100000">
+  <van-cell-group>
+    <van-field type="number" label="身高" value="{{ height }}" placeholder="请输入身高信息（cm）" border="{{ true }}" bind:change="onChangeHeight" />
+    <van-switch-cell title="体重单位（KG）" checked="{{ kgFlag }}" bind:change="onChange" />
   </van-cell-group>
 </van-dialog>
 
-<van-dialog use-slot title="请输入身高信息" show="{{ visibleHeight }}"  bind:close="handleInsertHeight" show-cancel-button>
-  <van-cell-group>
-      <van-field
-       type="number"
-        label="身高"
-        value="{{ height }}"
-        placeholder="请输入身高信息（cm）"
-        border="{{ true }}"
-        bind:change="onChangeHeight"
-      />
-      <van-switch-cell
-        title="体重单位（KG）"
-        checked="{{ kgFlag }}"
-        bind:change="onChange"
-      />
-  </van-cell-group>
+<van-notify id="van-notify" />
+
+<van-dialog use-slot show="{{ fileid && showImage }}"  zIndex="1000001">
+  <image class="coverImage" src="{{fileid}}" bindtap="hideImage" bindlongtap="longTapImage" mode="widthFix"> </image>
 </van-dialog>
-<!-- BMI 中国标准
-分类	BMI 范围
-偏瘦	<= 18.4
-正常	18.5 ~ 23.9
-过重	24.0 ~ 27.9
-肥胖	>= 28.0 -->
+
+<canvasdrawer painting="{{painting}}" class="canvasdrawer" bind:getImage="eventGetImage"/>
+<button bind:tap="eventSave">保存到本地</button>
