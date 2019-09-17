@@ -3,7 +3,10 @@
 <view style="position:relative;">
   <view style="height:75rpx;width:100%;text-align:center" bindtap="changeHeight"> {{bmiInfo}}
   </view>
-  <image style="position:absolute;right:10%;top:5rpx; height:40rpx; width:6%;" src="../../images/help.png" bindtap="showBmiTip"></image>
+  <!-- <image style="position:absolute;right:10%;top:5rpx; height:40rpx; width:6%;" src="../../images/help.png" bindtap="showBmiTip"></image> -->
+  
+  <van-icon style="position:absolute;right:10%;top:5rpx; height:50rpx; width:8%;"  bindtap="showBmiTip"  name="info-o" />
+  <van-icon style="position:absolute;right:2%;top:5rpx; height:50rpx; width:8%;"  bindtap="save"  name="share" />
 </view>
 
 <view class="container" hidden="{{ visible || visibleBmi || visibleHeight || hiddenChart}}">
@@ -35,9 +38,9 @@
 
 <van-notify id="van-notify" />
 
-<van-dialog use-slot show="{{ fileid && showImage }}"  zIndex="1000001">
+<van-dialog confirmButtonText="下载图片" bind:close="downLoadImage" show-cancel-button use-slot show="{{ fileid && showImage }}"  zIndex="1000001">
   <image class="coverImage" src="{{fileid}}" bindtap="hideImage" bindlongtap="longTapImage" mode="widthFix"> </image>
 </van-dialog>
 
 <canvasdrawer painting="{{painting}}" class="canvasdrawer" bind:getImage="eventGetImage"/>
-<button bind:tap="eventSave">保存到本地</button>
+<button bind:tap="save">保存到本地</button>

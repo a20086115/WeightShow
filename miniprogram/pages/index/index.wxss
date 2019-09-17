@@ -72,7 +72,7 @@ ec-canvas {
 .calendar--circle {
     top: 45px !important;  
 }
-json2canvas{
-  width: 100%;
-  height: 100%
+
+.iconClass{
+position:absolute;right:10%;top:5rpx; height:40rpx; width:6%;
 }

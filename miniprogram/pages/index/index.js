@@ -13,7 +13,7 @@ var yData = [];
 function setOption(chart) {
   var option = {
     title: {
-      text: '本月曲线走势',
+      text: '本月体重曲线',
       left: 'center',
       z:1,
     },
@@ -118,13 +118,56 @@ Page({
     fileid: "",
     mystatus:[],
     hiddenChart: true,
-    painting: data,
+    painting: {},
+    canvasImagePath: ""
   },
   onReady: function () {
     // 获取组件
     this.ecComponent = this.selectComponent('#mychart-dom-line');
 
     
+  },
+  // 分享生成海报
+  showPoster:function(){
+    data.views[1].content = "您的好友【 " + App.globalData.userInfo.nickName + "】" 
+    var bb = new Array();
+    for (var i = 0; i < this.data.records.length; i++) {
+      bb.push(this.data.records[i].weight);
+    };
+
+    var max = Math.max.apply(null, bb);
+    var min = Math.min.apply(null, bb);
+
+    data.views[2].content = "在【" + this.data.currentMonth + "】期间体重狂减" + (max - min) +"Kg！" 
+
+    data.views[3].url = this.data.canvasImagePath 
+
+
+
+    console.log("444444")
+    this.setData({
+      painting: data,
+    })
+    console.log(data)
+    // data.views[1].content = "您的好友【 " + App.globalData.userInfo.nickName + "】" 
+  },
+  save() {
+    wx.showLoading({
+      title: '生成海报中...',
+    })
+    console.log("save")
+    // 保存图片到临时的本地文件
+    setTimeout(() => {
+      this.ecComponent.canvasToTempFilePath({
+        success: res => {
+          console.log("22222")
+          this.data.canvasImagePath = res.tempFilePath;
+          this.showPoster()
+        },
+        fail: res => console.log("333", res)
+      });
+      }, 300)
+   
   },
   onChange(event) {
     // 需要手动对 checked 状态进行更新
@@ -225,6 +268,39 @@ Page({
     this.setData({
       visibleBmi: false
     })
+  },
+  downLoadImage:function(e){
+    this.setData({
+      showImage: false
+    })
+    if (e.detail != "confirm") {
+      return;
+    }
+    if(this.data.fileid.indexOf("cloud") == 0){
+      wx.cloud.downloadFile({
+        fileID: this.data.fileid, // 文件 ID
+        success: res => {
+          // 返回临时文件路径
+          wx.showToast({
+            title: '保存图片成功',
+            icon: 'success',
+            duration: 2000
+          })
+        },
+        fail: console.error
+      })
+    }else{
+      wx.saveImageToPhotosAlbum({
+        filePath: this.data.fileid,
+        success(res) {
+          wx.showToast({
+            title: '保存图片成功',
+            icon: 'success',
+            duration: 2000
+          })
+        }
+      })
+    }
   },
   /**
    * 点击提交体重
@@ -405,13 +481,6 @@ Page({
    * 展示体重数据到日历中
    */
   showWeightRecords: function(records){
-
-
-    this.setData({
-      painting: data,
-    })
-    console.log(data)
-
     var specialist = [];
     var mystatus = new Array(31);
     mystatus.fill(null);

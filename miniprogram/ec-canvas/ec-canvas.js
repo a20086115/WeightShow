@@ -76,7 +76,7 @@ Component({
 
       ctx.draw(true, () => {
         wx.canvasToTempFilePath(opt, this);
-      });
+      },300);
     },
 
     touchStart(e) {
