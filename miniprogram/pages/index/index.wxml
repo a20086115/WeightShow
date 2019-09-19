@@ -1,15 +1,15 @@
 <calendar header-style='header-style' weekheight="100" speciallist="{{speciallist}}" txt_style='{{txt_style}}' bindselectDate='selectDate' bindnextMonth='nextMonth' bindprevMonth='prevMonth'  mystatus='{{mystatus}}' circle_show="{{true}}"/>
 
 <view style="position:relative;">
-  <view style="height:75rpx;width:100%;text-align:center" bindtap="changeHeight"> {{bmiInfo}}
-  </view>
+  <view style="height:75rpx;width:100%;text-align:center" bindtap="changeHeight"> {{bmiInfo}}</view>
   <!-- <image style="position:absolute;right:10%;top:5rpx; height:40rpx; width:6%;" src="../../images/help.png" bindtap="showBmiTip"></image> -->
   
-  <van-icon style="position:absolute;right:10%;top:5rpx; height:50rpx; width:8%;"  bindtap="showBmiTip"  name="info-o" />
-  <van-icon style="position:absolute;right:2%;top:5rpx; height:50rpx; width:8%;"  bindtap="save"  name="share" />
+  <van-icon style="position:absolute;right:20%;top:0;" size="50rpx"  bindtap="showBmiTip"  name="info-o" />
+  <van-icon style="position:absolute;right:11%;top:0;" size="50rpx" bindtap="save"  name="share" />
+  <van-icon style="position:absolute;right:2%;top:0;" size="50rpx" bindtap="clockSet"  name="clock-o" />
 </view>
 
-<view class="container" hidden="{{ visible || visibleBmi || visibleHeight || hiddenChart}}">
+<view class="container" hidden="{{ visible || visibleBmi || visibleHeight || hiddenChart || showImage || visibleClock}}">
   <ec-canvas  id="mychart-dom-line" canvas-id="mychart-line" ec="{{ ec }}"></ec-canvas>
 </view>
 
@@ -26,7 +26,6 @@
     <van-field label="日期" value="{{ currentdate }}" placeholder="" border="{{ true }}" disabled bind:change="onChangeTime" />
     <van-field label="体重" value="{{ weight }}" right-icon="photo-o" bind:click-icon="uploadPhoto" type="digit" placeholder="请输入体重" border="{{ true }}" bind:change="onChangeWeight" />
   </van-cell-group>
-
 </van-dialog>
 
 <van-dialog use-slot title="请输入身高信息" show="{{ visibleHeight }}" bind:close="handleInsertHeight" show-cancel-button zIndex="100000">
@@ -38,9 +37,36 @@
 
 <van-notify id="van-notify" />
 
-<van-dialog confirmButtonText="下载图片" bind:close="downLoadImage" show-cancel-button use-slot show="{{ fileid && showImage }}"  zIndex="1000001">
-  <image class="coverImage" src="{{fileid}}" bindtap="hideImage" bindlongtap="longTapImage" mode="widthFix"> </image>
+<van-dialog cancelButtonText="{{showImageButton ? '取消': '长按图片修改'}}" confirmButtonText="保存本地" bind:close="downLoadImage" closeOnClickOverlay="{{true}}" use-slot show="{{ fileid && showImage }}" showCancelButton="{{true}}"  showConfirmButton="{{showImageButton}}"  zIndex="1000001">
+  <image class="coverImage" src="{{fileid}}" bindtap="hideImage"  bindlongpress="longTapImage" mode="widthFix"> </image>
 </van-dialog>
 
 <canvasdrawer painting="{{painting}}" class="canvasdrawer" bind:getImage="eventGetImage"/>
-<button bind:tap="save">保存到本地</button>
+
+<van-action-sheet
+  z-index="1000002"	
+  show="{{ showActions }}"
+  actions="{{ actions }}"
+  cancel-text="取消"
+  overlay="{{true}}"
+  close-on-click-overlay="{{true}}"
+  bind:cancel="onClose"
+  bind:close="onClose"
+  bind:select="onSelect"
+/>
+
+<van-dialog use-slot title="设置定时推送提醒" show="{{ visibleClock }}" bind:close="handleClockSet" show-cancel-button zIndex="100000">
+  <van-cell-group>
+    <van-cell title="单元格" value="{{clockDate}}" bindtap="showDateInput"/>
+    <van-switch-cell title="定时开关" checked="{{ clockOpen }}" bind:change="onClockOpenChange" />
+  </van-cell-group>
+</van-dialog>
+
+<van-popup show="{{ visibleDate }}" bind:close="onDateClose" position="bottom" zIndex="100001">
+    <van-datetime-picker
+      type="time"
+      value="{{ clockDate }}"
+      bind:confirm="onClockDateConfirm"
+      bind:cancel="onClockDateCancel"
+    />
+</van-popup>

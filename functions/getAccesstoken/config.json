@@ -1,0 +1,9 @@
+{
+  "triggers": [
+    {
+      "name": "pollGetAccessToken",
+      "type": "timer",
+      "config": "0 0 */1 * * * *"
+    }
+  ]
+}

@@ -74,9 +74,9 @@ Component({
         opt.canvasId = this.data.canvasId;
       }
 
-      ctx.draw(true, () => {
+      ctx.draw(true, setTimeout(() => {
         wx.canvasToTempFilePath(opt, this);
-      },300);
+      }, 100) );
     },
 
     touchStart(e) {

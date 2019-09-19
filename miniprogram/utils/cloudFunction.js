@@ -2,6 +2,7 @@
 var cloud = {
   // 增
   insert: function(tbName, data, cb, errcb){
+    console.log("insert", tbName, data, cb, errcb)
     wx.showLoading({
       title: '加载中...',
       icon: 'loading',
@@ -30,12 +31,13 @@ var cloud = {
         errcb(err);
       } else {
         console.log(errcb)
-        console.log("不是正确的回调函数" + typeof errcb)
+        console.log("不是正确的错误回调函数" + typeof errcb)
       }
     })
   },
   // 删
   delete: function (tbName, query, cb, errcb) {
+    console.log("delete", tbName, query, cb, errcb)
     wx.showLoading({
       title: '加载中...',
       icon: 'loading',
@@ -69,7 +71,8 @@ var cloud = {
     })
   },
   // 改
-  update: function(tbName, query, data, cb, errcb) {
+  update: function (tbName, query, data, cb, errcb) {
+    console.log("update", tbName, query, data, cb, errcb)
     wx.showLoading({
       title: '加载中...',
       icon: 'loading',
@@ -105,6 +108,7 @@ var cloud = {
   },
   // 查
   get: function (tbName, query, cb, errcb, hideError) {
+    console.log("get", tbName, query, cb, errcb)
     wx.showLoading({
       title: '加载中...',
       icon: 'loading',

@@ -27,7 +27,7 @@ Page({
         that.goIndex();
       })
       
-    }, 300)
+    }, 3000)
   },
   goIndex() {
     wx.redirectTo({ url: '/pages/index/index' })
