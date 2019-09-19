@@ -1,5 +1,6 @@
 const rp = require('request-promise');
 const sendTemplateMsg = async (token, msgid, msgData, openid, formid, page) => {
+  console.log("sendTemplateMsg")
   await rp({
     json: true,
     method: 'POST',
@@ -12,6 +13,7 @@ const sendTemplateMsg = async (token, msgid, msgData, openid, formid, page) => {
       data: msgData
     }
   }).then(res => {
+    console.log("send", res)
   }).catch(err => {
     console.error(err)
   })

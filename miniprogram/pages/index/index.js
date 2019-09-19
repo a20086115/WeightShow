@@ -142,24 +142,39 @@ Page({
     clockOpen: true,
     clockDate:"12:00"
   },
-
+  handleClockCancel(e) {
+    this.setData({
+      visibleClock: false
+    })
+  },
   handleClockSet(e) {
-    if (e.detail == "confirm") { // 点击取消
-      console.log("shezhi ")
+    console.log(e)
+    this.setData({
+      visibleClock: false
+    })
       CF.update("users", {
         openId: true
       }, {
         clockDate: this.data.clockDate,
         clockOpen: this.data.clockOpen
       }, () => {
-        wx.showToast({
-          title: '设置提醒成功',
-          icon: 'success',
-          duration: 2000
+        CF.insert("formids", {
+          formid: e.detail.formId
+        }, () =>{
+          wx.showToast({
+            title: '设置提醒成功',
+            icon: 'success',
+            duration: 2000
+          })
+        },() => {
+          wx.showToast({
+            title: '设置提醒失败，请重试',
+            icon: 'success',
+            duration: 2000
+          })
         })
+    
       })
-
-    }
   },
   onClockDateInput(event) {
     console.log(event)

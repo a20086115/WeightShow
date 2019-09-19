@@ -55,11 +55,18 @@
   bind:select="onSelect"
 />
 
-<van-dialog use-slot title="设置定时推送提醒" show="{{ visibleClock }}" bind:close="handleClockSet" show-cancel-button zIndex="100000">
-  <van-cell-group>
-    <van-cell title="单元格" value="{{clockDate}}" bindtap="showDateInput"/>
-    <van-switch-cell title="定时开关" checked="{{ clockOpen }}" bind:change="onClockOpenChange" />
-  </van-cell-group>
+<van-dialog use-slot title="设置定时推送提醒" show="{{ visibleClock }}" bind:close="handleClockSet" showConfirmButton="{{false}}"  zIndex="100000">
+  <form bindsubmit='handleClockSet' report-submit='true'>
+    <van-cell-group>
+      <van-cell title="单元格" value="{{clockDate}}" bindtap="showDateInput"/>
+      <van-switch-cell title="定时开关" checked="{{ clockOpen }}" bind:change="onClockOpenChange" />
+    </van-cell-group>
+    <view class='buttons'>
+      <button class='canclebtn' bindtap='handleClockCancel'>取消</button>
+      <button class='confirmbtn' form-type='submit'>确定</button>
+    </view>
+  </form>
+  
 </van-dialog>
 
 <van-popup show="{{ visibleDate }}" bind:close="onDateClose" position="bottom" zIndex="100001">
@@ -70,3 +77,10 @@
       bind:cancel="onClockDateCancel"
     />
 </van-popup>
+
+<form bindsubmit='registerFormSubmit' report-submit='true'>
+  <view class='buttons'>
+    <button class='canclebtn' bindtap='verifyCancleAction'>取消</button>
+    <button class='confirmbtn' form-type='submit'>确定</button>
+  </view>
+</form>
