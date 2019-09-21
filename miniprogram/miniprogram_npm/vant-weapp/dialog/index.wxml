@@ -40,7 +40,7 @@
       class="van-dialog__button"
       loading="{{ loading.confirm }}"
       custom-class="van-dialog__confirm"
-
+      form-type="submit"
       open-type="{{ confirmButtonOpenType }}"
       lang="{{ lang }}"
       business-id="{{ businessId }}"

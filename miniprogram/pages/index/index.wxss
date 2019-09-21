@@ -79,8 +79,11 @@ position:absolute;right:10%;top:5rpx; height:40rpx; width:6%;
 .buttons .canclebtn{
   width: 50%;
   display: inline-block;
+  background: white;
 }
 .buttons .confirmbtn{
   width: 50%;
   display: inline-block;
+  background: white;
+  border: 0px;
 }

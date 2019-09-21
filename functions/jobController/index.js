@@ -1,5 +1,6 @@
 const cloud = require('wx-server-sdk')
 const templateMessage = require('templateMessage.js')
+const dayjs = require ('dayjs')
 cloud.init()
 const db = cloud.database()
 const COLLNAME = 'publicField';
@@ -16,19 +17,23 @@ exports.main = async (event, context) => {
     let tokenRes = await db.collection(COLLNAME).doc(FIELDNAME).get();
     let token = tokenRes.data.token; // access_token
 
-    var h = new Date().getHours();
-    var min = new Date().getMinutes();
-    var time = h < 10 ? "0" + h : h;
-    if (min < 10) {
-      time = time + ":0" + min;
-    } else {
-      time = time + ":" + min;
+    var time = dayjs().add(8,"hour").format("HH:mm")
+    var date = dayjs().add(8, "hour").format("YYYY-MM-DD")
+
+    // 清空一下过期formid
+    if(time == "00:00"){
+      var deleteDay = dayjs().subtract(7, "day").format("YYYY-MM-DD")
+
+      var ss = db.collection("formids").where({
+        createdate: db.command.lt(new Date(deleteDay))
+      }).remove()
     }
+
     console.log(time)
 
     let usersRes = await db.collection("users").where({
       clockOpen: true,
-      // clockDate: time
+      clockDate: time
     }).get()
     console.log(usersRes)
     let users = usersRes.data;
@@ -56,21 +61,28 @@ exports.main = async (event, context) => {
       let openid = user.openId;
       let formid = obj[openid];
       if(formid){
-        formidArr.push(formid)
-        let msgData = {
-          "keyword1": {
-            "value": "瘦身打卡助手"
-          },
-          "keyword2": {
-            "value": "今天您还没来打卡哦~"
-          },
-          "keyword3": {
-            "value": time
-          },
-        };
-        let page = "pages/index/index"
-        console.log("发送一个")
-        await templateMessage.sendTemplateMsg(token, MSGID, msgData, openid, formid, page);
+        // 判断今天是否已经有数据
+        let records = await db.collection("records").where({
+          openId: openid,
+          date: date
+        }).get()
+        console.log(records)
+        if (records.data.length == 0 || !records.data[0].weight){
+          formidArr.push(formid)
+          let msgData = {
+            "keyword1": {
+              "value": "瘦身打卡助手提醒您"
+            },
+            "keyword2": {
+              "value": "您今天还没有打卡哦~~"
+            },
+            "keyword3": {
+              "value": time
+            },
+          };
+          let page = "pages/index/index"
+          await templateMessage.sendTemplateMsg(token, MSGID, msgData, openid, formid, page);
+        }
       } 
     }
 

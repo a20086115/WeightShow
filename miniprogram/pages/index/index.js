@@ -7,6 +7,8 @@ console.log(data)
 //获取应用实例
 const App = getApp()
 const TODAY = dayjs().format("YYYY-MM-DD");
+const HOUR = ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'];
+const MIN = ['00', '30'];
 
 var xData = [];
 var yData = [];
@@ -16,15 +18,14 @@ function setOption(chart) {
       text: '本月体重曲线',
       left: 'center',
       z:1,
+      show:true
     },
     color: ["#37A2DA"],
     legend: {
-      data: ['A'],
-      top: 50,
+      data: ['本月体重曲线'],
+      top: 0,
       left: 'center',
-      backgroundColor: 'red',
-      z: 100,
-      show: false
+      show: false,
     },
     grid: {
       containLabel: true
@@ -33,7 +34,16 @@ function setOption(chart) {
       show: true,
       // confine:true,
       trigger: 'axis',
-      formatter: '{b0}: {c0}'
+      formatter: '{b0}: {c0}',
+      position: function (pos, params, dom, rect, size) {
+        // 鼠标在左侧时 tooltip 显示到右侧，鼠标在右侧时 tooltip 显示到左侧。
+        if (pos[0] < size.viewSize[0] / 2){
+          return { top: pos[1], left: pos[0] + 5 }
+        }else{
+          return { top: pos[1], right: size.viewSize[0] - pos[0] - 5 }
+        }
+
+      }
     },
     xAxis: {
       type: 'category',
@@ -56,7 +66,7 @@ function setOption(chart) {
       // show: false
     },
     series: [{
-      name: '体重',
+      name: '本月体重曲线',
       type: 'line',
       smooth: true,
 
@@ -73,6 +83,8 @@ function setOption(chart) {
 let chart = null
 Page({
   data: {
+    multiArray:[HOUR, MIN],
+    multiIndex:[10,0],
     visibleBmi:false,
     ec: {
       // 将 lazyLoad 设为 true 后，需要手动初始化图表
@@ -138,9 +150,8 @@ Page({
     days:{},
     showImageButton: true,
     visibleClock:false,
-    visibleDate:false,
     clockOpen: true,
-    clockDate:"12:00"
+    clockDate: App.globalData.userInfo.clockDate || "12:00" 
   },
   handleClockCancel(e) {
     this.setData({
@@ -152,57 +163,37 @@ Page({
     this.setData({
       visibleClock: false
     })
-      CF.update("users", {
-        openId: true
-      }, {
-        clockDate: this.data.clockDate,
-        clockOpen: this.data.clockOpen
-      }, () => {
-        CF.insert("formids", {
-          formid: e.detail.formId
-        }, () =>{
-          wx.showToast({
-            title: '设置提醒成功',
-            icon: 'success',
-            duration: 2000
-          })
-        },() => {
-          wx.showToast({
-            title: '设置提醒失败，请重试',
-            icon: 'success',
-            duration: 2000
-          })
-        })
-    
+
+    if (e.detail != "confirm") { // 点击取消
+      return;
+    }
+    CF.update("users", {
+      openId: true
+    }, {
+      clockDate: this.data.clockDate,
+      clockOpen: this.data.clockOpen
+    },  () =>{
+
+      App.globalData.userInfo.clockDate = this.data.clockDate
+      wx.showToast({
+        title: '设置成功',
+        icon: 'success',
+        duration: 2000
       })
-  },
-  onClockDateInput(event) {
-    console.log(event)
-    this.setData({
-      clockDate: event.detail
-    });
+    },() => {
+        wx.showToast({
+          title: '设置失败，请重试',
+          icon: 'none',
+          duration: 2000
+      })
+    })
   },
   onClockDateConfirm(event) {
     console.log(event)
+    var hour = event.detail.value[0];
+    var min = event.detail.value[1];
     this.setData({
-      clockDate: event.detail,
-      visibleDate: false
-    });
-  },
-  onClockDateCancel(event) {
-    console.log(event)
-    this.setData({
-      visibleDate: false
-    });
-  },
-  showDateInput(){
-    this.setData({
-      visibleDate: true
-    });
-  },
-  onDateClose(){
-    this.setData({
-      visibleDate: false
+      clockDate: HOUR[hour] + ":" + MIN[min],
     });
   },
   // 获取组件
@@ -222,7 +213,6 @@ Page({
       if (!min){
         min = this.data.records[len - 1 -i].weight;
       }
-
       if(min && max){
         break
       }
@@ -339,11 +329,15 @@ Page({
     var currentMonth = e.detail.currentMonth;
     if (currentMonth < 10) {
       currentMonth = "0" + currentMonth;
-    }
-    this.queryRecordsByMonth(currentYear + "-" + currentMonth)
+    } 
     this.setData({
       currentMonth: currentYear + "-" + currentMonth
     })
+    this.queryRecordsByMonth(currentYear + "-" + currentMonth)
+
+  },
+  bindchooseDate(e){
+    console.log(e)
   },
   /**
    * 点击日期
@@ -659,6 +653,9 @@ Page({
         icon: 'none',
         title: '请先授权',
       })
+      wx.redirectTo({
+        url: '/pages/login/index'
+      })
       return;
     }
     // 判断是否有照片， 有则显示，没有则上传
@@ -831,7 +828,37 @@ Page({
     this.setData({ showActions: false });
   },
   clockSet(){
-    this.setData({ visibleClock: true });
+    var openId = App.globalData.userInfo.openId;
+    if (!openId) {
+      // 请先授权
+      wx.showToast({
+        icon: 'none',
+        title: '请先授权',
+      })
+      wx.redirectTo({
+        url: '/pages/login/index'
+      })
+      return;
+    }else{
+      var clockDate = App.globalData.userInfo.clockDate || "12:00"
+      var columns =  [
+        {
+          values: HOUR,
+          className: 'column1',
+          defaultIndex: parseInt(clockDate.substring(0,2))
+        },
+        {
+          values: MIN,
+          className: 'column2',
+          defaultIndex: "00" == clockDate.substring(3) ? 0 : 1
+        }
+      ];
+      this.setData({
+        multiIndex: [clockDate.substring(0, 2), "00" == clockDate.substring(3) ? 0 : 1],
+        clockDate: clockDate,
+        visibleClock: true
+      });
+    }
   }
 })
 

@@ -3,7 +3,8 @@
     "calendar": "plugin://calendar/calendar",
     "ec-canvas": "../../ec-canvas/ec-canvas",
     "json2canvas": "/miniprogram_npm/json2canvas/index",
-    "canvasdrawer": "/components/canvasdrawer/canvasdrawer"
+    "canvasdrawer": "/components/canvasdrawer/canvasdrawer",
+    "layout": "/components/formLayout/formLayout"
   }
 }
 

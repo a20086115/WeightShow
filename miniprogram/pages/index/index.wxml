@@ -1,12 +1,17 @@
-<calendar header-style='header-style' weekheight="100" speciallist="{{speciallist}}" txt_style='{{txt_style}}' bindselectDate='selectDate' bindnextMonth='nextMonth' bindprevMonth='prevMonth'  mystatus='{{mystatus}}' circle_show="{{true}}"/>
+<layout>
+  <view>
+    
+<calendar header-style='header-style' weekheight="100" speciallist="{{speciallist}}" txt_style='{{txt_style}}' bindselectDate='selectDate' bindnextMonth='nextMonth' bindprevMonth='prevMonth'  mystatus='{{mystatus}}' 
+  isClick="{{true}}" bindchooseDate="nextMonth" circle_show="{{true}}"/>
 
 <view style="position:relative;">
   <view style="height:75rpx;width:100%;text-align:center" bindtap="changeHeight"> {{bmiInfo}}</view>
   <!-- <image style="position:absolute;right:10%;top:5rpx; height:40rpx; width:6%;" src="../../images/help.png" bindtap="showBmiTip"></image> -->
   
-  <van-icon style="position:absolute;right:20%;top:0;" size="50rpx"  bindtap="showBmiTip"  name="info-o" />
+  <van-icon  style="position:absolute;right:20%;top:0;" size="50rpx"  bindtap="showBmiTip"  name="info-o" />
   <van-icon style="position:absolute;right:11%;top:0;" size="50rpx" bindtap="save"  name="share" />
   <van-icon style="position:absolute;right:2%;top:0;" size="50rpx" bindtap="clockSet"  name="clock-o" />
+
 </view>
 
 <view class="container" hidden="{{ visible || visibleBmi || visibleHeight || hiddenChart || showImage || visibleClock}}">
@@ -55,32 +60,16 @@
   bind:select="onSelect"
 />
 
-<van-dialog use-slot title="设置定时推送提醒" show="{{ visibleClock }}" bind:close="handleClockSet" showConfirmButton="{{false}}"  zIndex="100000">
-  <form bindsubmit='handleClockSet' report-submit='true'>
+<van-dialog use-slot title="设置定时推送提醒" show="{{ visibleClock }}" bind:close="handleClockSet" showCancelButton="{{true}}"  zIndex="100000">
     <van-cell-group>
-      <van-cell title="单元格" value="{{clockDate}}" bindtap="showDateInput"/>
+      <picker mode="multiSelector" bindchange="onClockDateConfirm" value="{{multiIndex}}" range="{{multiArray}}">
+        <van-cell title="定时时间" value="{{clockDate}}" bindtap=""/>
+      </picker>
+
       <van-switch-cell title="定时开关" checked="{{ clockOpen }}" bind:change="onClockOpenChange" />
     </van-cell-group>
-    <view class='buttons'>
-      <button class='canclebtn' bindtap='handleClockCancel'>取消</button>
-      <button class='confirmbtn' form-type='submit'>确定</button>
-    </view>
-  </form>
-  
 </van-dialog>
 
-<van-popup show="{{ visibleDate }}" bind:close="onDateClose" position="bottom" zIndex="100001">
-    <van-datetime-picker
-      type="time"
-      value="{{ clockDate }}"
-      bind:confirm="onClockDateConfirm"
-      bind:cancel="onClockDateCancel"
-    />
-</van-popup>
-
-<form bindsubmit='registerFormSubmit' report-submit='true'>
-  <view class='buttons'>
-    <button class='canclebtn' bindtap='verifyCancleAction'>取消</button>
-    <button class='confirmbtn' form-type='submit'>确定</button>
+  
   </view>
-</form>
+</layout>

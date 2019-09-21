@@ -1,12 +1,15 @@
 // 云函数 增删改查封装
 var cloud = {
   // 增
-  insert: function(tbName, data, cb, errcb){
+  insert: function(tbName, data, cb, errcb, hide){
     console.log("insert", tbName, data, cb, errcb)
-    wx.showLoading({
-      title: '加载中...',
-      icon: 'loading',
-    })
+    if(!hide){
+      wx.showLoading({
+        title: '加载中...',
+        icon: 'loading',
+      })
+    }
+
     wx.cloud.callFunction({
       name: 'insert',
       data: {
