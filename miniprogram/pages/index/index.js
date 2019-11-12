@@ -3,6 +3,7 @@ import dayjs from '../../utils/dayjs.min.js'
 import * as echarts from '../../ec-canvas/echarts';
 import Notify from '../../miniprogram_npm/vant-weapp/notify/notify';
 import data from './data'
+import dataHappy from './dataHappy'
 console.log(data)
 //获取应用实例
 const App = getApp()
@@ -151,7 +152,8 @@ Page({
     showImageButton: true,
     visibleClock:false,
     clockOpen: true,
-    clockDate: App.globalData.userInfo.clockDate || "12:00" 
+    clockDate: App.globalData.userInfo.clockDate || "12:00" ,
+    confirmButtonText:"保存本地"
   },
   handleClockCancel(e) {
     this.setData({
@@ -237,6 +239,9 @@ Page({
     return true;
   },
   save() {
+    this.setData({
+      confirmButtonText: "保存本地"
+    })
     // 判断是否可以生成海报
     if (!this.canGetPoster()){
       return;
@@ -254,6 +259,42 @@ Page({
       fail: res => console.log("333", res)
     });
   }, 
+  showPhoto(){
+    this.setData({
+      confirmButtonText: "保存并分享"
+    })
+    // 选择图片
+    var avatarUrl = App.globalData.userInfo.avatarUrl;
+    if (!avatarUrl) {
+      // 请先授权
+      wx.showToast({
+        icon: 'none',
+        title: '请先授权',
+      })
+      wx.redirectTo({
+        url: '/pages/login/index'
+      })
+      return;
+    }
+    wx.showLoading({
+      title: '生成头像中...',
+    })
+    var that = this;
+    wx.getUserInfo({
+      success: function (res) {
+        var userInfo = res.userInfo
+        var nickName = userInfo.nickName
+        avatarUrl = userInfo.avatarUrl
+        avatarUrl = avatarUrl.replace("/132", "/0")
+        dataHappy.views[0].url = avatarUrl
+        console.log(dataHappy)
+        that.setData({
+          painting: dataHappy,
+        })
+      }
+    })
+
+  },
   onChange(event) {
     // 需要手动对 checked 状态进行更新
     this.setData({ kgFlag: event.detail });
@@ -261,6 +302,33 @@ Page({
   onClockOpenChange(event) {
     // 需要手动对 clockOpen 状态进行更新
     this.setData({ clockOpen: event.detail });
+  },
+  onShareAppMessage(){
+    var that = this;
+    　　// 设置菜单中的转发按钮触发转发事件时的转发内容
+　　  var shareObj = {
+          title:"打开小程序，点击小红旗，给你一面国旗",        // 默认是小程序的名称(可以写slogan等)
+          path:'/pages/start/index',        // 默认是当前页面，必须是以‘/’开头的完整路径
+  　　　　imageUrl: this.data.fileid,     //自定义图片路径，可以是本地文件路径、代码包文件路径或者网络图片路径，支持PNG及JPG，不传入 imageUrl 则使用默认截图。显示图片长宽比是 5:4
+  　　　　success:function (res) {
+    　　　　　　// 转发成功之后的回调
+    　　　　　　if (res.errMsg == 'shareAppMessage:ok') {
+    　　　　　　}
+  　　　　},
+  　　　　fail:function () {
+    　　　　　　// 转发失败之后的回调
+    　　　　　　if (res.errMsg == 'shareAppMessage:fail cancel') {
+      　　　　　　　　// 用户取消转发
+    　　　　　　} else if (res.errMsg == 'shareAppMessage:fail') {
+      　　　　　　　　// 转发失败，其中 detail message 为详细失败信息
+    　　　　　　}
+  　　　　},
+  　　　　complete:function(){
+    　　　　　　// 转发结束之后的回调（转发成不成功都会执行）
+  　　　　}
+  　　}
+　　// 返回shareObj
+　　return shareObj;
   },
   // 点击按钮后初始化图表
   init: function () {
@@ -766,11 +834,13 @@ Page({
   },
   // 海报获得图片
   eventGetImage(event) {
+    console.log("海报获得图片")
     wx.hideLoading()
     const { tempFilePath, errMsg } = event.detail
-    if (errMsg === 'canvasdrawer:ok') {
+    console.log(errMsg)
+    if (errMsg === 'canvasdrawer:ok' || errMsg === 'canvasdrawer:samme params') {
       this.setData({
-        fileid: tempFilePath,
+        fileid: tempFilePath || this.data.fileid,
         showImage: true,
         showImageButton: true
       })

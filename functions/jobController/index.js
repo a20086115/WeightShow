@@ -86,9 +86,11 @@ exports.main = async (event, context) => {
       } 
     }
 
-    db.collection("formids").where({
+    let deleteCount = db.collection("formids").where({
       formid: db.command.in(formidArr)
     }).remove()
+
+    console.log("删除" + deleteCount)
 
   } catch (e) {
     console.error(e)

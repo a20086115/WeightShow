@@ -5,6 +5,7 @@
   isClick="{{true}}" bindchooseDate="nextMonth" circle_show="{{true}}"/>
 
 <view style="position:relative;">
+  <van-icon style="position:absolute;left:5%;top:0;" color="red"  size="50rpx" info="火" name="flag-o" bindtap="showPhoto"/>
   <view style="height:75rpx;width:100%;text-align:center" bindtap="changeHeight"> {{bmiInfo}}</view>
   <!-- <image style="position:absolute;right:10%;top:5rpx; height:40rpx; width:6%;" src="../../images/help.png" bindtap="showBmiTip"></image> -->
   
@@ -42,8 +43,8 @@
 
 <van-notify id="van-notify" />
 
-<van-dialog cancelButtonText="{{showImageButton ? '取消': '长按图片修改'}}" confirmButtonText="保存本地" bind:close="downLoadImage" closeOnClickOverlay="{{true}}" use-slot show="{{ fileid && showImage }}" showCancelButton="{{true}}"  showConfirmButton="{{showImageButton}}"  zIndex="1000001">
-  <image class="coverImage" src="{{fileid}}" bindtap="hideImage"  bindlongpress="longTapImage" mode="widthFix"> </image>
+<van-dialog cancelButtonText="{{showImageButton ? '取消': '长按图片修改'}}" confirmButtonOpenType="share" confirmButtonText="{{confirmButtonText}}" bind:close="downLoadImage" closeOnClickOverlay="{{true}}" use-slot show="{{ fileid && showImage }}" showCancelButton="{{true}}"  showConfirmButton="{{showImageButton}}"  zIndex="1000001">
+  <image class="coverImage"  src="{{fileid}}" bindtap="hideImage"  bindlongpress="longTapImage" mode="widthFix"> </image>
 </van-dialog>
 
 <canvasdrawer painting="{{painting}}" class="canvasdrawer" bind:getImage="eventGetImage"/>
