@@ -1,0 +1,28 @@
+
+<view class="page_container" >
+
+  <view style="margin-top:150rpx">
+    <view class="info">
+      <view>1.可邀请好友一起组队打卡，互相PK。</view>
+      <view>2.好友之间体重曲线、打卡记录共享。</view>
+    </view>
+    <van-button type="primary" custom-class="newPkBtn" bindtap="newPk">发起PK</van-button>
+  </view>
+
+  <van-popup show="{{ showTipFlag }}" bind:close="onClose">       
+      1.可邀请好友一起组队打卡，互相PK。
+      2.好友之间体重曲线、打卡记录共享。
+  </van-popup>
+
+  <view class="info">
+    <view wx:for="{{pkList}}" wx:key="{{item._id}}"> 
+          <text  bindtap="clickPk" data-item="{{item}}">{{item.name}}</text>
+    </view>
+  </view>
+</view>
+
+<van-dialog use-slot title="发起Pk组队赛" show="{{ visible_name }}" bind:close="handleInsertPk" zIndex="100000" show-cancel-button>
+  <van-cell-group>
+    <van-field label="名称" value="{{ pk.name }}"  border="{{ true }}" placeholder="请输入PK赛名称" id="pk.name" bind:change="onValueChange" />
+  </van-cell-group>
+</van-dialog>

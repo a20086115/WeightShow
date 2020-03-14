@@ -1,0 +1,11 @@
+<!--miniprogram/pages/pk/pk.wxml-->
+<view class="page_container">
+  <ec-canvas  id="mychart-dom-line" canvas-id="mychart-line" ec="{{ ec }}"></ec-canvas>
+
+  <view class="memberTitle">当前成员</view>
+  <view class="memberListContiner">
+      <van-image custom-class="memberListItem" round width="100rpx" height="100rpx" src="https://img.yzcdn.cn/vant/cat.jpeg" />
+      <van-image custom-class="memberListItem" round width="100rpx" height="100rpx" src="https://img.yzcdn.cn/vant/cat.jpeg" />
+  </view>
+
+</view>

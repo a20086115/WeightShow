@@ -37,40 +37,6 @@ export default {
         width: 290,
         height: 290
       },
-      // {
-      //   type: 'text',
-      //   content: '看看他的体重曲线趋势图',
-      //   fontSize: 16,
-      //   lineHeight: 21,
-      //   color: '#383549',
-      //   textAlign: 'left',
-      //   top: 336,
-      //   left: 44,
-      //   width: 287,
-      //   MaxLineNumber: 2,
-      //   breakWord: true,
-      //   bolder: true
-      // },
-      // {
-      //   type: 'text',
-      //   content: '￥0.00',
-      //   fontSize: 19,
-      //   color: '#E62004',
-      //   textAlign: 'left',
-      //   top: 387,
-      //   left: 44.5,
-      //   bolder: true
-      // },
-      // {
-      //   type: 'text',
-      //   content: '原价:￥138.00',
-      //   fontSize: 13,
-      //   color: '#7E7E8B',
-      //   textAlign: 'left',
-      //   top: 391,
-      //   left: 110,
-      //   textDecoration: 'line-through'
-      // },
       {
         type: 'image',
         url: 'qrcode.jpg',

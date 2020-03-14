@@ -1,0 +1,13 @@
+/* miniprogram/pages/pk/pk.wxss */
+
+.memberTitle{
+  text-align: center;
+}
+.memberListContiner{
+  display: flex;
+  justify-content: center;
+  flex-wrap:wrap;
+}
+.memberListItem{
+  margin: 20rpx;
+}

@@ -73,9 +73,7 @@ ec-canvas {
     top: 45px !important;  
 }
 
-.iconClass{
-position:absolute;right:10%;top:5rpx; height:40rpx; width:6%;
-}
+
 .buttons .canclebtn{
   width: 50%;
   display: inline-block;
@@ -86,4 +84,19 @@ position:absolute;right:10%;top:5rpx; height:40rpx; width:6%;
   display: inline-block;
   background: white;
   border: 0px;
+}
+.bmiInfo{
+  width:100%;
+  text-align:center;
+  padding: 10rpx;
+  margin-bottom: 35rpx;
+}
+.canvasTitle{
+  display: block;
+  text-align: center;
+  padding-left: 200rpx;
+}
+.iconClass{
+  float:right;
+  margin-right:20rpx;
 }

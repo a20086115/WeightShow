@@ -1,22 +1,25 @@
-<layout>
+
   <view>
     
 <calendar header-style='header-style' weekheight="100" speciallist="{{speciallist}}" txt_style='{{txt_style}}' bindselectDate='selectDate' bindnextMonth='nextMonth' bindprevMonth='prevMonth'  mystatus='{{mystatus}}' 
   isClick="{{true}}" bindchooseDate="nextMonth" circle_show="{{true}}"/>
 
 <view style="position:relative;">
-  <van-icon style="position:absolute;left:5%;top:0;" color="red"  size="50rpx" info="火" name="flag-o" bindtap="showPhoto"/>
-  <view style="height:75rpx;width:100%;text-align:center" bindtap="changeHeight"> {{bmiInfo}}</view>
-  <!-- <image style="position:absolute;right:10%;top:5rpx; height:40rpx; width:6%;" src="../../images/help.png" bindtap="showBmiTip"></image> -->
-  
-  <van-icon  style="position:absolute;right:20%;top:0;" size="50rpx"  bindtap="showBmiTip"  name="info-o" />
-  <van-icon style="position:absolute;right:11%;top:0;" size="50rpx" bindtap="save"  name="share" />
-  <van-icon style="position:absolute;right:2%;top:0;" size="50rpx" bindtap="clockSet"  name="clock-o" />
-
+  <van-icon class="" style="position:absolute;left:5%;top:0;" color="red"  size="50rpx" info="火" name="flag-o" bindtap="showHTML"/>
+  <view class="bmiInfo" bindtap="changeHeight">BMI指数：<text style="{{ bmiStyle }}" >{{bmiInfo}}</text></view>
 </view>
 
-<view class="container" hidden="{{ visible || visibleBmi || visibleHeight || hiddenChart || showImage || visibleClock}}">
-  <ec-canvas  id="mychart-dom-line" canvas-id="mychart-line" ec="{{ ec }}"></ec-canvas>
+<view class="canvasTitle">
+  <text>体重与BMI曲线</text>
+  
+  <van-icon class="iconClass" size="50rpx" bindtap="openFeedback"  name="phone-circle-o" />
+  <van-icon class="iconClass" size="50rpx" bindtap="save"  name="share" />
+  <van-icon class="iconClass" size="50rpx"  bindtap="showBmiTip"  name="info-o" />
+  <van-icon class="iconClass hide" size="50rpx" bindtap="clockSet"  name="clock-o" />
+</view>
+
+<view class="container" hidden="{{ visible || visibleBmi || visibleHeight || hiddenChart || showImage || visibleClock || visibleHtml}}">
+  <ec-canvas  id="mychart-dom-line" canvas-id="mychart-line" ec="{{ ec }}" force-use-old-canvas="true"></ec-canvas>
 </view>
 
 <van-dialog use-slot show="{{ visibleBmi }}" bind:close="handleShowBmi" zIndex="100000">
@@ -43,7 +46,7 @@
 
 <van-notify id="van-notify" />
 
-<van-dialog cancelButtonText="{{showImageButton ? '取消': '长按图片修改'}}" confirmButtonOpenType="share" confirmButtonText="{{confirmButtonText}}" bind:close="downLoadImage" closeOnClickOverlay="{{true}}" use-slot show="{{ fileid && showImage }}" showCancelButton="{{true}}"  showConfirmButton="{{showImageButton}}"  zIndex="1000001">
+<van-dialog cancelButtonText="{{showImageButton ? '取消': '长按图片修改'}}"  confirmButtonText="{{confirmButtonText}}" bind:close="downLoadImage" closeOnClickOverlay="{{true}}" use-slot show="{{ fileid && showImage }}" showCancelButton="{{true}}"  showConfirmButton="{{showImageButton}}"  zIndex="1000001">
   <image class="coverImage"  src="{{fileid}}" bindtap="hideImage"  bindlongpress="longTapImage" mode="widthFix"> </image>
 </van-dialog>
 
@@ -71,6 +74,12 @@
     </van-cell-group>
 </van-dialog>
 
+<van-dialog cancelButtonText="取消"  confirmButtonText="保存" bind:close="closeHtml" closeOnClickOverlay="{{true}}" use-slot show="{{ visibleHtml }}" showCancelButton="{{true}}" zIndex="1000001">
+  <view style="height:1000rpx;overflow:scroll">
+    <image class="coverImage"  src="{{htmlImage}}"  mode="widthFix"> </image>
+  </view>
+</van-dialog>
+
   
   </view>
-</layout>
+

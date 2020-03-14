@@ -4,7 +4,7 @@ import * as echarts from '../../ec-canvas/echarts';
 import Notify from '../../miniprogram_npm/vant-weapp/notify/notify';
 import data from './data'
 import dataHappy from './dataHappy'
-console.log(data)
+
 //获取应用实例
 const App = getApp()
 const TODAY = dayjs().format("YYYY-MM-DD");
@@ -13,20 +13,19 @@ const MIN = ['00', '30'];
 
 var xData = [];
 var yData = [];
+var bmiData = [];
 function setOption(chart) {
   var option = {
     title: {
       text: '本月体重曲线',
       left: 'center',
       z:1,
-      show:true
+      show:false
     },
-    color: ["#37A2DA"],
+    color: ["#37A2DA",'#B865DF'],
     legend: {
-      data: ['本月体重曲线'],
-      top: 0,
-      left: 'center',
-      show: false,
+      data: ['体重',"BMI指数"],
+      show: true,
     },
     grid: {
       containLabel: true
@@ -35,7 +34,6 @@ function setOption(chart) {
       show: true,
       // confine:true,
       trigger: 'axis',
-      formatter: '{b0}: {c0}',
       position: function (pos, params, dom, rect, size) {
         // 鼠标在左侧时 tooltip 显示到右侧，鼠标在右侧时 tooltip 显示到左侧。
         if (pos[0] < size.viewSize[0] / 2){
@@ -43,42 +41,50 @@ function setOption(chart) {
         }else{
           return { top: pos[1], right: size.viewSize[0] - pos[0] - 5 }
         }
-
       }
     },
     xAxis: {
       type: 'category',
       boundaryGap: false,
       data:xData
-      // data: ["2019-09-04", "2019-09-05", "2019-09-06", "2019-09-07", "2019-09-08"],
-      // show: false
     },
-    yAxis: {
-      x: 'center',
-      type: 'value',
-      splitLine: {
-        lineStyle: {
-          type: 'dashed'
+    yAxis: [
+      {
+        x: 'center',
+        type: 'value',
+        name: '体重',
+        nameLocation: 'end',
+        min: function (value) {
+          return parseInt(value.min - 4);
         }
       },
-      min: function (value) {
-        return parseInt(value.min - 4);
+      {
+        x: 'center',
+        type: 'value',
+        name: 'BMI指数',
+        nameLocation: 'end',
+        min: function (value) {
+          return parseInt(value.min - 4);
+        }
       }
-      // show: false
-    },
+    ],
     series: [{
-      name: '本月体重曲线',
+      name: '体重',
       type: 'line',
       smooth: true,
-
+      yAxisIndex: 0,
       data: yData
-      // data: ["81", "81", "81", "81", "81"]
+    },
+    {
+      name: 'BMI指数',
+      type: 'line',
+      smooth: true,
+      yAxisIndex: 1,
+      data: bmiData
     }]
   };
 
   chart.setOption(option);
-  
-  
 }
 
 let chart = null
@@ -100,32 +106,33 @@ Page({
       left: "分类",
       right: "BMI 范围"
     }, {
-        color: "RGB(204,204,204)",
+        color: "#0066CC",
         left: "偏瘦",
         right: " <= 18.4"
       }, {
-        color: "RGB(102,204,0)",
+        color: "#01814A",
         left: "正常",
         right: "18.5 ~ 23.9"
       }, {
-        color: "RGB(255,255,0)",
+        color: "#C6A300",
         left: "过重",
         right: "24.0 ~27.9"
       }, {
-        color: "RGB(255,153,0)",
+        color: "#AE0000",
         left: "肥胖",
         right: ">= 28.0 "
-      },],
+      }],
     height:"",
     heightInput:0,
     showChange: false,
     visible: false, // 控制模态框的显示
     visibleHeight: false, // 体重输入框
-    bmiInfo: "点击授权查看BMI",
+    bmiInfo: "授权查看BMI",
     weight: 0,  // 输入框的value
     lastWeight: "", // 最新体重
     text: false, // 记录点击日期的体重
     records:[],
+    bmiStyle:"",
     kgFlag: true,
     showImage:false,
     fileid: "",
@@ -153,7 +160,9 @@ Page({
     visibleClock:false,
     clockOpen: true,
     clockDate: App.globalData.userInfo.clockDate || "12:00" ,
-    confirmButtonText:"保存本地"
+    confirmButtonText:"保存本地",
+    visibleHtml: false,
+    htmlImage:"cloud://release-ba24f3.7265-release-ba24f3-1257780911/activity.png"
   },
   handleClockCancel(e) {
     this.setData({
@@ -221,7 +230,7 @@ Page({
     }
     var unit = App.globalData.userInfo.kgFlag ? "KG" : "斤";
     
-    data.views[2].content = "在【" + this.data.currentMonth + "】期间体重狂减" + (max - min).toFixed(2) + unit + "！" 
+    data.views[2].content = "在【" + this.data.currentMonth + "】期间体重减少" + (max - min).toFixed(2) + unit + "！" 
     data.views[3].url = this.data.canvasImagePath 
     this.setData({
       painting: data,
@@ -259,6 +268,8 @@ Page({
       fail: res => console.log("333", res)
     });
   }, 
+
+  // 生成红旗头像
   showPhoto(){
     this.setData({
       confirmButtonText: "保存并分享"
@@ -303,10 +314,10 @@ Page({
     // 需要手动对 clockOpen 状态进行更新
     this.setData({ clockOpen: event.detail });
   },
-  onShareAppMessage(){
+  onShareAppMessage(options){
     var that = this;
-    　　// 设置菜单中的转发按钮触发转发事件时的转发内容
-　　  var shareObj = {
+　　// 设置菜单中的转发按钮触发转发事件时的转发内容
+　　var shareObj = {
           title:"打开小程序，点击小红旗，给你一面国旗",        // 默认是小程序的名称(可以写slogan等)
           path:'/pages/start/index',        // 默认是当前页面，必须是以‘/’开头的完整路径
   　　　　imageUrl: this.data.fileid,     //自定义图片路径，可以是本地文件路径、代码包文件路径或者网络图片路径，支持PNG及JPG，不传入 imageUrl 则使用默认截图。显示图片长宽比是 5:4
@@ -328,6 +339,10 @@ Page({
   　　　　}
   　　}
 　　// 返回shareObj
+    // 来自页面内的按钮的转发
+　　if (options.from != 'button') {
+      shareObj.title = "快来和我一起打卡，记录体重变化吧";
+　　}
 　　return shareObj;
   },
   // 点击按钮后初始化图表
@@ -465,6 +480,33 @@ Page({
       })
     }
   },
+  // 生成HTML
+  showHTML() {
+    this.setData({
+      visibleHtml: true
+    })
+  },
+  // 关闭HTML 
+  closeHtml: function (e) {
+    this.setData({
+      visibleHtml: false
+    })
+    if (e.detail != "confirm") {
+      return;
+    }
+    wx.cloud.downloadFile({
+      fileID: this.data.htmlImage, // 文件 ID
+      success: res => {
+        // 返回临时文件路径
+        wx.showToast({
+          title: '保存二维码成功',
+          icon: 'success',
+          duration: 2000
+        })
+      },
+      fail: console.error
+    })
+  },
   /**
    * 点击提交体重
    */
@@ -595,6 +637,7 @@ Page({
     mystatus.fill(null);
     xData = [];
     yData = [];
+    bmiData = [];
     for (var record of records) {
       this.data.days[record.date] = record;
       record.text = record.weight;
@@ -604,6 +647,15 @@ Page({
       if (record.text) {
         xData.push(record.date);
         yData.push(record.text);
+        if(App.globalData.userInfo.height){
+          var weight = record.text;
+          var height = this.data.height;
+          if (!this.data.kgFlag) {
+            weight = weight / 2
+          }
+          var BMI = weight / (height * height / 10000);
+          bmiData.push(BMI.toFixed(2));
+        }
       }
     }
     
@@ -650,14 +702,9 @@ Page({
     })
   },
   getBMI: function () {
+
     var weight = this.data.lastWeight;
     var height = this.data.height;
-    console.log("getBMI", weight, height)
-    
-    if(!this.data.kgFlag){
-      weight = weight/2
-    }
-
     if (!App.globalData.userInfo.avatarUrl) {
       this.setData({
         bmiInfo: "点击授权查看BMI"
@@ -676,12 +723,33 @@ Page({
       })
       return;
     }
+
+    if (!this.data.kgFlag) {
+      weight = weight / 2
+    }
     var BMI = weight / (height * height / 10000);
     this.data.BMI = BMI.toFixed(2);
-    this.setData({
-      bmiInfo: "BMI指数：" + BMI.toFixed(2)
-    })
+ 
+    var bmiStyle = "";
+    var bmiInfo = "";
+    if (this.data.BMI <= 18.4){
+      bmiStyle = "color: " + this.data.tips[1].color
+      bmiInfo = `${this.data.BMI} (${this.data.tips[1].left})`
+    }else if(this.data.BMI < 24){
+      bmiStyle = "color: " + this.data.tips[2].color
+      bmiInfo = `${this.data.BMI} (${this.data.tips[2].left})`
+    }else if(this.data.BMI < 28){
+      bmiStyle = "color: " + this.data.tips[3].color
+      bmiInfo = `${this.data.BMI} (${this.data.tips[3].left})`
+    }else{
+      bmiStyle = "color: " + this.data.tips[4].color
+      bmiInfo = `${this.data.BMI} (${this.data.tips[4].left})`
+    }
 
+    this.setData({
+      bmiInfo: bmiInfo,
+      bmiStyle: bmiStyle
+    })
   },
   /**
    * 体重输入框

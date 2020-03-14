@@ -13,28 +13,22 @@ Page({
   },
   onLoad() {
 
-   },
+  },
   onShow() { 
     var that = this;
     setTimeout(function(){
       // 若用户授权过小程序
-      console.log("获取授权信息....")
       CF.get("users", {
         openId: true
       }, (e) => {
-        console.log(e)
         App.globalData.userInfo = e.result.data[0] || {};
         that.goIndex();
+      }, () => {
+        that.goIndex();
       })
-      
-    }, 3000)
+    }, 1000)
   },
   goIndex() {
-    wx.redirectTo({ url: '/pages/index/index' })
-  },
-  goLogin() {
-    wx.redirectTo({
-      url:'/pages/login/index'
-    })
+    wx.switchTab({ url: '/pages/index/index' })
   },
 })

@@ -12,12 +12,11 @@ Page({
     var that = this;
     if (result.detail.encryptedData) {
       CF.insert("users", result.detail.userInfo,(e)=>{
-        console.log(e)
         CF.get("users", {
           openId: true
         }, (e) => {
           App.globalData.userInfo = e.result.data[0] || {}; 
-          wx.redirectTo({ url: '/pages/index/index' })
+          this.back()
         })
       })
     } else {
@@ -30,6 +29,6 @@ Page({
     }
   },
   back:function(){
-    wx.redirectTo({ url: '/pages/index/index' })
+    wx.navigateBack({delta: 1})
   }
 })
