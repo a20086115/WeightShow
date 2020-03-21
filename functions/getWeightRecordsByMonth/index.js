@@ -6,6 +6,9 @@ const _ = db.command
 exports.main = async (event, context) => {
   let openId = event.userInfo.openId;
   let month = event.month; // 要查询的月份
+  if(event.openId){
+    openId = event.openId;
+  }
   try {
     return await db.collection('records')
       .where({

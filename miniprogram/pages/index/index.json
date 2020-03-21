@@ -1,7 +1,6 @@
 {
   "usingComponents": {
     "calendar": "plugin://calendar/calendar",
-    "wxparse": "plugin://wxparse/wxparse",
     "ec-canvas": "../../ec-canvas/ec-canvas",
     "canvasdrawer": "/components/canvasdrawer/canvasdrawer",
     "layout": "/components/formLayout/formLayout"
