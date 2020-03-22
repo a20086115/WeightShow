@@ -7,7 +7,27 @@
   display: flex;
   justify-content: center;
   flex-wrap:wrap;
+  padding: 20rpx;
 }
 .memberListItem{
+  width: 16%;
   margin: 20rpx;
+}
+.container {
+  position: relative;
+  width: 100%;
+  height: 750rpx;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+} 
+ec-canvas {
+  position: absolute;
+  top: 0px;
+  bottom: 0;
+  left: 0;
+  right: 0;
 }

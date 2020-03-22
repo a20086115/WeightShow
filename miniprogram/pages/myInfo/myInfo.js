@@ -48,7 +48,7 @@ Page({
   },
   queryPk(){
     if(App.globalData.userInfo._id){
-      CF.get("pk", { members: App.globalData.userInfo.openId }, (e) => {
+      CF.get("pk", { "members.openId": App.globalData.userInfo.openId }, (e) => {
         this.setData({
           pkList: e.result.data
         })
@@ -58,11 +58,10 @@ Page({
   // 展示name输入框
   newPk(){
 
-    wx.showModal({
-      title: '提示',
-      content: '正在紧急开发中,马上上线啦!',
-    })
-    return;
+    // wx.showModal({
+    //   title: '提示',
+    //   content: '正在紧急开发中,马上上线啦!',
+    // })
     if (App.globalData.userInfo._id) {
       this.setData({
         visible_name: true
@@ -80,24 +79,23 @@ Page({
     }
   },
    /**
-   * 点击提交体重
+   * 点击提交PK
    */
   handleInsertPk (e) {
     this.setData({
       visible_name: false
     })
-    if (e.detail != "confirm") { // 点击取消
-      return;
-    }
-    if (this.data.pk._id) {   // 之前已经有值
-      CF.update("pk", { _id: pk._id }, this.data.pk, () => {
-        this.queryPk()
-      })
-    }else{
-      this.data.pk.members = [App.globalData.userInfo.openId];
-      CF.insert("pk", this.data.pk, () => {
-        this.queryPk()
-      })
+    if (e.detail == "confirm") {
+      if (this.data.pk._id) {   // 之前已经有值
+        CF.update("pk", { _id: pk._id }, this.data.pk, () => {
+          this.queryPk()
+        })
+      } else {
+        this.data.pk.members = [App.globalData.userInfo];
+        CF.insert("pk", this.data.pk, () => {
+          this.queryPk()
+        })
+      }
     }
   },
   clickPk(e){
