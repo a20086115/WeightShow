@@ -162,7 +162,8 @@ Page({
     clockDate: App.globalData.userInfo.clockDate || "12:00" ,
     confirmButtonText:"保存本地",
     visibleHtml: false,
-    htmlImage:"cloud://release-ba24f3.7265-release-ba24f3-1257780911/activity.png"
+    htmlImage:"cloud://release-ba24f3.7265-release-ba24f3-1257780911/activity.png",
+    visibleFeedback: false
   },
   handleClockCancel(e) {
     this.setData({
@@ -261,7 +262,7 @@ Page({
     // 保存图片到临时的本地文件
     this.ecComponent.canvasToTempFilePath({
       success: res => {
-        console.log("22222")
+        console.log(res)
         this.data.canvasImagePath = res.tempFilePath;
         this.showPoster()
       },
@@ -898,6 +899,16 @@ Page({
   hideImage: function(){
     this.setData({
       showImage: false
+    })
+  },
+  openFeedback(){
+    this.setData({
+      visibleFeedback: true
+    })
+  },
+  onFeedbackClose(){
+    this.setData({
+      visibleFeedback: false
     })
   },
   // 海报获得图片

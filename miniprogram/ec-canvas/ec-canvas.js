@@ -174,8 +174,13 @@ Component({
           opt.canvasId = this.data.canvasId;
         }
         ctx.draw(true, () => {
-          wx.canvasToTempFilePath(opt, this);
+          setTimeout(() => {
+            wx.canvasToTempFilePath(opt, this)
+          }, 1000)
         });
+        setTimeout(() => {
+          wx.canvasToTempFilePath(opt, this)
+        }, 1000)
       }
     },
 

@@ -18,7 +18,7 @@
   <van-icon class="iconClass hide" size="50rpx" bindtap="clockSet"  name="clock-o" />
 </view>
 
-<view class="container" hidden="{{ visible || visibleBmi || visibleHeight || hiddenChart || showImage || visibleClock || visibleHtml}}">
+<view class="container" hidden="{{ visible || visibleBmi || visibleHeight || visibleFeedback || hiddenChart || showImage || visibleClock || visibleHtml}}">
   <ec-canvas  id="mychart-dom-line" canvas-id="mychart-line" ec="{{ ec }}" force-use-old-canvas="true"></ec-canvas>
 </view>
 
@@ -80,6 +80,16 @@
   </view>
 </van-dialog>
 
+<van-dialog
+  title="意见反馈"
+  message="欢迎对小程序提出意见和建议，或点击左方小红旗加群和大家交流。"
+  show="{{ visibleFeedback }}"
+  show-cancel-button
+  confirmButtonText="客服"
+  confirm-button-open-type="contact"
+  bind:close="onFeedbackClose"
+>
+</van-dialog>
   
   </view>
 
