@@ -1,4 +1,5 @@
 // miniprogram/pages/pk/pk.js
+import { cloud as CF } from '../../utils/cloudFunction.js'
 import pkHelp from "./help.js"
 import * as echarts from '../../ec-canvas/echarts';
 import dayjs from '../../utils/dayjs.min.js'
@@ -15,7 +16,7 @@ function setOption(chart, series) {
       text: '本月体重曲线',
       left: 'center',
       z: 1,
-      show: false
+      show: true
     },
     color: ["#37A2DA", '#B865DF'],
     legend: {
@@ -77,51 +78,113 @@ Page({
    * 页面的初始数据
    */
   data: {
-    pk: {}
+    pk: {},
+    visibleInviteDialog: false,
+    ec: {
+      // 将 lazyLoad 设为 true 后，需要手动初始化图表
+      lazyLoad: true
+    }
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-      var data = JSON.parse(options.data)
-      console.log(options, data)
-      this.setData({
-        pk: data
-      })
-
-      var month = dayjs().format("MM")
-      var date = dayjs().date()
-      for (var i = 1; i <= date; i++) {
-        xData.push(month + "-" + (i < 10 ? "0" + i : i))
-      }
-
-      // 查询当月记录
-      var member = data.members;
-      var ajaxArray = [];
-      for(let m of member){
-        ajaxArray.push(this.queryRecordsByMonth(dayjs().format("YYYY-MM"), m.openId))
-      }
-
-      wx.showLoading({ title: '加载中...', icon: 'loading' })
-      Promise.all(ajaxArray).then((res) => {
-        console.log("queryRecordsByMonth success")
-        wx.hideLoading();
-        res.forEach((item, index) => {
-          this.prepareSeriesData(item.result.data, member[index])
+      this.initXdata();
+      if (options.id) {
+        var id = decodeURIComponent(options.id);
+        CF.get("pk", { _id: id }, (e) => {
+          this.setData({
+            pk: e.result.data[0]
+          })
+          this.requestData();
+        });
+        // 查询授权信息
+        CF.get("users", {
+          openId: true
+        }, (e) => {
+          App.globalData.userInfo = e.result.data[0] || {};
+          this.setData({
+            visibleInviteDialog: true
+          })
         })
+      }else{
+        var data = JSON.parse(options.data)
+        this.setData({
+          pk: data
+        })
+        this.requestData();
+      }
+  },
+  initXdata(){
+    xData = []
+    var month = dayjs().format("MM")
+    var date = dayjs().date()
+    for (var i = 1; i <= date; i++) {
+      xData.push(month + "-" + (i < 10 ? "0" + i : i))
+    }
+  },
+  requestData(){
+    // 查询当月记录
+    var member = this.data.pk.members;
+    var ajaxArray = [];
+    for (let m of member) {
+      ajaxArray.push(this.queryRecordsByMonth(dayjs().format("YYYY-MM"), m.openId))
+    }
 
-        this.init()
-      }).catch((e) => {
-        console.log("queryRecordsByMonth failed", e)
-        wx.hideLoading();
-        wx.showToast({ title: '网络出小差了,请稍后再试...', icon: 'none' })
+    wx.showLoading({ title: '加载中...', icon: 'loading' })
+    Promise.all(ajaxArray).then((res) => {
+      // 清空信息
+      seriesData.length = 0;
+      seriesBmiData.length = 0;
+      wx.hideLoading();
+      res.forEach((item, index) => {
+        this.prepareSeriesData(item.result.data, member[index])
       })
-      // this.queryRecordsByMonth(dayjs().format("YYYY-MM"))
+
+      this.init()
+    }).catch((e) => {
+      console.log("queryRecordsByMonth failed", e)
+      wx.hideLoading();
+      wx.showToast({ title: '网络出小差了,请稍后再试...', icon: 'none' })
+    })
+  },
+  // 邀请
+  onInviteClose(e){
+    var openId = App.globalData.userInfo.openId;
+    if (!openId) {
+      // 请先授权
+      wx.showToast({ icon: 'none', title: '请先授权'})
+      wx.navigateTo({ url: '/pages/login/index' })
+      return;
+    }
+    this.setData({
+      visibleInviteDialog: false
+    });
+    // 判断是否在组队中
+    for(let member of this.data.pk.members){
+      if(member.openId == App.globalData.userInfo.openId){
+        return;
+      }
+    }
+    this.data.pk.members.push(App.globalData.userInfo)
+    if(e.detail == "confirm"){
+      CF.update("pk",{_id: this.data.pk._id},{
+        members: this.data.pk.members
+      },()=>{
+        wx.showToast({
+          title: '组队成功',
+        })
+        this.setData({
+          pk: this.data.pk
+        })
+        this.requestData()
+      })
+    }
   },
   prepareSeriesData(records, member){
     var obj = {
-      name: member.nickname,
+      name: member.nickName,
       type: 'line',
       smooth: true,
       data: []
@@ -152,6 +215,7 @@ Page({
     }
     obj.data = arr;
     bmiObj.data = bimData;
+
     seriesData.push(obj)
     seriesBmiData.push(bmiObj)
   },
@@ -168,52 +232,8 @@ Page({
         openId: openId
       }
     })
-
-    wx.cloud.callFunction({
-      name: 'getWeightRecordsByMonth',
-      data: {
-        month: month
-      }
-    }).then((e) => {
-      console.log("queryRecordsByMonth success")
-      wx.hideLoading();
-      this.showWeightRecords(e.result.data)
-    
-    }).catch(() => {
-      console.log("queryRecordsByMonth failed")
-      wx.hideLoading();
-      wx.showToast({ title: '网络出小差了,请稍后再试...', icon: 'none' })
-    })
   },
-  /**
-  * 展示体重数据到日历中
-  */
-  showWeightRecords: function (records) {
-    var specialist = [];
-    var mystatus = new Array(31);
-    mystatus.fill(null);
-    xData = [];
-    yData = [];
-    bmiData = [];
-    for (var record of records) {
-      record.text = record.weight;
-      if (record.text) {
-        xData.push(record.date);
-        yData.push(record.text);
-        if (App.globalData.userInfo.height) {
-          var weight = record.text;
-          var height = App.globalData.userInfo.height;
-          if (App.globalData.userInfo.kgFlag) {
-            weight = weight / 2
-          }
-          var BMI = weight / (height * height / 10000);
-          bmiData.push(BMI.toFixed(2));
-        }
-      }
-    }
-    console.log(bmiData)
-    this.init()
-  },
+ 
   // 获取组件
   onReady: function () {
     this.ecComponent = this.selectComponent('#mychart-dom-line');
@@ -232,6 +252,13 @@ Page({
       // 获取组件的 canvas、width、height 后的回调函数
       // 在这里初始化图表
       console.log(canvas, width, height)
+      if(width == 0 && height ==0){
+        setTimeout(() => {
+          console.log("获取canvas对象")
+          this.init()
+        }, 100)
+        return
+      }
       const chart = echarts.init(canvas, null, {
         width: width,
         height: height
@@ -239,10 +266,6 @@ Page({
       setOption(chart, seriesData);
       // 将图表实例绑定到 this 上，可以在其他成员函数（如 dispose）中访问
       this.chart = chart;
-      this.setData({
-        isLoaded: true,
-        isDisposed: false
-      });
       // 注意这里一定要返回 chart 实例，否则会影响事件处理等
       return chart;
     });
@@ -250,16 +273,15 @@ Page({
   /**
    * 用户点击右上角分享
    */
-  onShareAppMessage: function () {
-    if (res.from === 'button') {
-      // 来自页面内转发按钮
-      console.log(res.target)
-    }
+  onShareAppMessage: function (res) {
     return {
-      title: '自定义转发标题',
-      path: '/page/user?id=123',
+      title: '嗨~来和我一起PK打卡吗',
+      path: '/pages/pk/pk?id='+ this.data.pk._id,
       success: function (res) {
         // 转发成功
+        wx.showToast({
+          title: '发送邀请成功',
+        })
       },
       fail: function (res) {
         // 转发失败

@@ -283,7 +283,7 @@ Page({
         icon: 'none',
         title: '请先授权',
       })
-      wx.redirectTo({
+      wx.navigateTo({
         url: '/pages/login/index'
       })
       return;
@@ -771,7 +771,7 @@ Page({
         visibleHeight: true
       })
     }else{
-      wx.redirectTo({
+      wx.navigateTo({
         url: '/pages/login/index'
       })
     }
@@ -790,7 +790,7 @@ Page({
         icon: 'none',
         title: '请先授权',
       })
-      wx.redirectTo({
+      wx.navigateTo({
         url: '/pages/login/index'
       })
       return;
@@ -984,7 +984,7 @@ Page({
         icon: 'none',
         title: '请先授权',
       })
-      wx.redirectTo({
+      wx.navigateTo({
         url: '/pages/login/index'
       })
       return;

@@ -24,10 +24,18 @@
   justify-content: space-between;
   box-sizing: border-box;
 } 
+
 ec-canvas {
   position: absolute;
   top: 0px;
   bottom: 0;
   left: 0;
   right: 0;
+}
+
+.hideText{
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space:nowrap; 
+  font-size: 24rpx
 }
