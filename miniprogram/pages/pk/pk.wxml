@@ -1,5 +1,6 @@
 <!--miniprogram/pages/pk/pk.wxml-->
 <view class="page_container">
+  <view bindtap="changeTitle" style="text-align:center">{{showBmi ? "本月BMI曲线（点击切换）" : "本月体重曲线（点击切换）"}}</view>
   <view class="container" hidden="{{ visibleInviteDialog }}">
     <ec-canvas  id="mychart-dom-line" canvas-id="mychart-line" ec="{{ ec }}" force-use-old-canvas="true"></ec-canvas>
   </view>

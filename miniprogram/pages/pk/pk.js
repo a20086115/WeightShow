@@ -16,11 +16,11 @@ function setOption(chart, series) {
       text: '本月体重曲线',
       left: 'center',
       z: 1,
-      show: true
+      show: false
     },
-    color: ["#37A2DA", '#B865DF'],
     legend: {
-      data: ['体重'],
+      type: 'scroll',
+      bottom: 10,
       show: true,
     },
     grid: {
@@ -83,9 +83,20 @@ Page({
     ec: {
       // 将 lazyLoad 设为 true 后，需要手动初始化图表
       lazyLoad: true
+    },
+    showBmi:false
+  },
+  changeTitle(){
+    this.setData({
+      showBmi: !this.data.showBmi
+    })
+    console.log(seriesBmiData)
+    if(this.data.showBmi){
+      setOption(this.chart, seriesBmiData);
+    } else {
+      setOption(this.chart, seriesData);
     }
   },
-
   /**
    * 生命周期函数--监听页面加载
    */
@@ -193,6 +204,7 @@ Page({
       type: 'line',
       smooth: true,
       data: [],
+      yAxisIndex: 0,
       connectNulls: true
     }
     var bmiObj = {
@@ -200,6 +212,7 @@ Page({
       type: 'line',
       smooth: true,
       data: [],
+      yAxisIndex:1,
       connectNulls: true
     }
     var arr = new Array(xData.length);
@@ -210,9 +223,9 @@ Page({
       if (record.weight) {
         arr[record.date.substr("8")] = record.weight
         if (member.height) {
-          var weight = record.text;
+          var weight = record.weight;
           var height = member.height;
-          if (member.kgFlag) {
+          if (!member.kgFlag) {
             weight = weight / 2
           }
           var BMI = weight / (height * height / 10000);
@@ -270,7 +283,11 @@ Page({
         width: width,
         height: height
       });
-      setOption(chart, seriesData);
+      if(this.data.showBmi){
+        setOption(chart, seriesBmiData);
+      }else{
+        setOption(chart, seriesData);
+      }
       // 将图表实例绑定到 this 上，可以在其他成员函数（如 dispose）中访问
       this.chart = chart;
       // 注意这里一定要返回 chart 实例，否则会影响事件处理等
