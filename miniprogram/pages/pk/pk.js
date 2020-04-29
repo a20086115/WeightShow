@@ -116,6 +116,11 @@ Page({
         this.requestData();
       }
   },
+  goBack(){
+    wx.switchTab({
+      url: '/pages/index/index',
+    })
+  },
   initXdata(){
     xData = []
     var month = dayjs().format("MM")
@@ -187,13 +192,15 @@ Page({
       name: member.nickName,
       type: 'line',
       smooth: true,
-      data: []
+      data: [],
+      connectNulls: true
     }
     var bmiObj = {
       name: member.nickname,
       type: 'line',
       smooth: true,
-      data: []
+      data: [],
+      connectNulls: true
     }
     var arr = new Array(xData.length);
     arr.fill(null);

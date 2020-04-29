@@ -29,3 +29,6 @@
 .info{
   text-align: center
 }
+.pkItem{
+  height:75rpx;
+}
