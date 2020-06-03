@@ -15,6 +15,7 @@
   </view>
   <view style="text-align:center">
     <van-button open-type="share" type="info">邀请好友</van-button>
+    <van-button bindtap="goBack" style="margin-left:75rpx;" type="info">返回首页</van-button>
   </view>
  
   <van-dialog

@@ -15,8 +15,9 @@
   </van-popup>
 
   <view class="info">
-    <view wx:for="{{pkList}}" wx:key="{{item._id}}"> 
-          <text  bindtap="clickPk" data-item="{{item}}">{{item.name}}</text>
+    <view class="pkItem" wx:for="{{pkList}}" wx:key="{{item._id}}"> 
+          <text  bindtap="clickPk" data-item="{{item}}" style="margin-right:50rpx">{{item.name}}</text>
+          <van-icon bindtap="deletePk" data-item="{{item}}" name="cross" />
     </view>
   </view>
 </view>

@@ -32,11 +32,6 @@ Page({
   },
   // 展示name输入框
   newPk(){
-
-    // wx.showModal({
-    //   title: '提示',
-    //   content: '正在紧急开发中,马上上线啦!',
-    // })
     if (App.globalData.userInfo._id) {
       this.setData({
         visible_name: true
@@ -82,13 +77,16 @@ Page({
   },
   deletePk(e){
     var curPk = e.currentTarget.dataset.item
+    var _this = this;
     wx.showModal({
       title: '提示',
       content: '确定要删除' + curPk.name + "吗?",
       success(res) {
-        CF.delete("pk", { _id: curPk._id}, ()=>{
-          this.queryPk();
-        })
+        if (res.confirm) {
+          CF.delete("pk", { _id: curPk._id }, () => {
+            _this.queryPk();
+          })
+        }
       }
     })
   },

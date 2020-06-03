@@ -37,5 +37,6 @@ ec-canvas {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space:nowrap; 
-  font-size: 24rpx
+  font-size: 24rpx;
+  text-align: center;
 }

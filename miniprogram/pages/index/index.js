@@ -186,7 +186,7 @@ Page({
       clockOpen: this.data.clockOpen
     },  () =>{
 
-      App.globalData.userInfo.clockDate = this.data.clockDate
+    App.globalData.userInfo.clockDate = this.data.clockDate
       wx.showToast({
         title: '设置成功',
         icon: 'success',

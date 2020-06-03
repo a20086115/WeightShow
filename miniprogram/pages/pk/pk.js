@@ -75,8 +75,20 @@ Page({
       lazyLoad: true
     },
     titleFlag: true,
+    },
+    showBmi:false
   },
-
+  changeTitle(){
+    this.setData({
+      showBmi: !this.data.showBmi
+    })
+    console.log(seriesBmiData)
+    if(this.data.showBmi){
+      setOption(this.chart, seriesBmiData);
+    } else {
+      setOption(this.chart, seriesData);
+    }
+  },
   /**
    * 生命周期函数--监听页面加载
    */
@@ -112,6 +124,11 @@ Page({
       titleFlag: !this.data.titleFlag
     })
     setOption(this.chart, this.data.titleFlag ? seriesData : seriesBmiData)
+  },
+  goBack(){
+    wx.switchTab({
+      url: '/pages/index/index',
+    })
   },
   initXdata(){
     xData = []
@@ -184,13 +201,17 @@ Page({
       name: member.nickName,
       type: 'line',
       smooth: true,
-      data: []
+      data: [],
+      yAxisIndex: 0,
+      connectNulls: true
     }
     var bmiObj = {
       name: member.nickName,
       type: 'line',
       smooth: true,
-      data: []
+      data: [],
+      yAxisIndex:1,
+      connectNulls: true
     }
     var arr = new Array(xData.length);
     arr.fill(null);
@@ -260,7 +281,11 @@ Page({
         width: width,
         height: height
       });
-      setOption(chart, seriesData);
+      if(this.data.showBmi){
+        setOption(chart, seriesBmiData);
+      }else{
+        setOption(chart, seriesData);
+      }
       // 将图表实例绑定到 this 上，可以在其他成员函数（如 dispose）中访问
       this.chart = chart;
       // 注意这里一定要返回 chart 实例，否则会影响事件处理等
