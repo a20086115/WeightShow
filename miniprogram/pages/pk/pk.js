@@ -16,12 +16,11 @@ function setOption(chart, series) {
       text: '本月体重曲线',
       left: 'center',
       z: 1,
-      show: true
+      show: false
     },
-    color: ["#37A2DA", '#B865DF'],
     legend: {
-      data: ['体重'],
-      show: true,
+      type: 'scroll',
+      bottom: 10,
     },
     grid: {
       containLabel: true
@@ -48,16 +47,7 @@ function setOption(chart, series) {
       {
         x: 'center',
         type: 'value',
-        name: '体重',
-        nameLocation: 'end',
-        min: function (value) {
-          return parseInt(value.min - 4);
-        }
-      },
-      {
-        x: 'center',
-        type: 'value',
-        name: 'BMI指数',
+        name: '体重/BMI',
         nameLocation: 'end',
         min: function (value) {
           return parseInt(value.min - 4);
@@ -83,7 +73,8 @@ Page({
     ec: {
       // 将 lazyLoad 设为 true 后，需要手动初始化图表
       lazyLoad: true
-    }
+    },
+    titleFlag: true,
   },
 
   /**
@@ -116,6 +107,12 @@ Page({
         this.requestData();
       }
   },
+  clickTitle(){
+    this.setData({
+      titleFlag: !this.data.titleFlag
+    })
+    setOption(this.chart, this.data.titleFlag ? seriesData : seriesBmiData)
+  },
   initXdata(){
     xData = []
     var month = dayjs().format("MM")
@@ -126,6 +123,9 @@ Page({
   },
   requestData(){
     // 查询当月记录
+    // 清空信息
+    seriesData.length = 0;
+    seriesBmiData.length = 0;
     var member = this.data.pk.members;
     var ajaxArray = [];
     for (let m of member) {
@@ -134,9 +134,6 @@ Page({
 
     wx.showLoading({ title: '加载中...', icon: 'loading' })
     Promise.all(ajaxArray).then((res) => {
-      // 清空信息
-      seriesData.length = 0;
-      seriesBmiData.length = 0;
       wx.hideLoading();
       res.forEach((item, index) => {
         this.prepareSeriesData(item.result.data, member[index])
@@ -190,7 +187,7 @@ Page({
       data: []
     }
     var bmiObj = {
-      name: member.nickname,
+      name: member.nickName,
       type: 'line',
       smooth: true,
       data: []
@@ -201,15 +198,15 @@ Page({
     bimData.fill(null);
     for (var record of records) {
       if (record.weight) {
-        arr[record.date.substr("8")] = record.weight
+        arr[parseInt(record.date.substr("8")) - 1] = record.weight
         if (member.height) {
-          var weight = record.text;
+          var weight = record.weight;
           var height = member.height;
-          if (member.kgFlag) {
+          if (!member.kgFlag) {
             weight = weight / 2
           }
           var BMI = weight / (height * height / 10000);
-          bimData[record.date.substr("8")] = BMI.toFixed(2)
+          bimData[parseInt(record.date.substr("8")) - 1] = BMI.toFixed(2)
         }
       }
     }
@@ -259,7 +256,7 @@ Page({
         }, 100)
         return
       }
-      const chart = echarts.init(canvas, null, {
+      chart = echarts.init(canvas, null, {
         width: width,
         height: height
       });

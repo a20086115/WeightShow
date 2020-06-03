@@ -1,5 +1,6 @@
 <!--miniprogram/pages/pk/pk.wxml-->
 <view class="page_container">
+  <view style="text-align:center; color: #37A2DA;" bindtap="clickTitle">{{ titleFlag ? "体重曲线" : "BMI曲线"}}</view>
   <view class="container" hidden="{{ visibleInviteDialog }}">
     <ec-canvas  id="mychart-dom-line" canvas-id="mychart-line" ec="{{ ec }}" force-use-old-canvas="true"></ec-canvas>
   </view>
