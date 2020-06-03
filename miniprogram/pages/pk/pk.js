@@ -81,39 +81,39 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    this.initXdata();
-    if (options.id) {
-      var id = decodeURIComponent(options.id);
-      CF.get("pk", { _id: id }, (e) => {
+      this.initXdata();
+      if (options.id) {
+        var id = decodeURIComponent(options.id);
+        CF.get("pk", { _id: id }, (e) => {
+          this.setData({
+            pk: e.result.data[0]
+          })
+          this.requestData();
+        });
+        // 查询授权信息
+        CF.get("users", {
+          openId: true
+        }, (e) => {
+          App.globalData.userInfo = e.result.data[0] || {};
+          this.setData({
+            visibleInviteDialog: true
+          })
+        })
+      }else{
+        var data = JSON.parse(options.data)
         this.setData({
-          pk: e.result.data[0]
+          pk: data
         })
         this.requestData();
-      });
-      // 查询授权信息
-      CF.get("users", {
-        openId: true
-      }, (e) => {
-        App.globalData.userInfo = e.result.data[0] || {};
-        this.setData({
-          visibleInviteDialog: true
-        })
-      })
-    } else {
-      var data = JSON.parse(options.data)
-      this.setData({
-        pk: data
-      })
-      this.requestData();
-    }
+      }
   },
-  clickTitle() {
+  clickTitle(){
     this.setData({
       titleFlag: !this.data.titleFlag
     })
     setOption(this.chart, this.data.titleFlag ? seriesData : seriesBmiData)
   },
-  initXdata() {
+  initXdata(){
     xData = []
     var month = dayjs().format("MM")
     var date = dayjs().date()
@@ -121,7 +121,7 @@ Page({
       xData.push(month + "-" + (i < 10 ? "0" + i : i))
     }
   },
-  requestData() {
+  requestData(){
     // 查询当月记录
     // 清空信息
     seriesData.length = 0;
@@ -147,11 +147,11 @@ Page({
     })
   },
   // 邀请
-  onInviteClose(e) {
+  onInviteClose(e){
     var openId = App.globalData.userInfo.openId;
     if (!openId) {
       // 请先授权
-      wx.showToast({ icon: 'none', title: '请先授权' })
+      wx.showToast({ icon: 'none', title: '请先授权'})
       wx.navigateTo({ url: '/pages/login/index' })
       return;
     }
@@ -159,16 +159,16 @@ Page({
       visibleInviteDialog: false
     });
     // 判断是否在组队中
-    for (let member of this.data.pk.members) {
-      if (member.openId == App.globalData.userInfo.openId) {
+    for(let member of this.data.pk.members){
+      if(member.openId == App.globalData.userInfo.openId){
         return;
       }
     }
     this.data.pk.members.push(App.globalData.userInfo)
-    if (e.detail == "confirm") {
-      CF.update("pk", { _id: this.data.pk._id }, {
+    if(e.detail == "confirm"){
+      CF.update("pk",{_id: this.data.pk._id},{
         members: this.data.pk.members
-      }, () => {
+      },()=>{
         wx.showToast({
           title: '组队成功',
         })
@@ -179,7 +179,7 @@ Page({
       })
     }
   },
-  prepareSeriesData(records, member) {
+  prepareSeriesData(records, member){
     var obj = {
       name: member.nickName,
       type: 'line',
@@ -230,7 +230,7 @@ Page({
       }
     })
   },
-
+ 
   // 获取组件
   onReady: function () {
     this.ecComponent = this.selectComponent('#mychart-dom-line');
@@ -249,7 +249,7 @@ Page({
       // 获取组件的 canvas、width、height 后的回调函数
       // 在这里初始化图表
       console.log(canvas, width, height)
-      if (width == 0 && height == 0) {
+      if(width == 0 && height ==0){
         setTimeout(() => {
           console.log("获取canvas对象")
           this.init()
@@ -273,7 +273,7 @@ Page({
   onShareAppMessage: function (res) {
     return {
       title: '嗨~来和我一起PK打卡吗',
-      path: '/pages/pk/pk?id=' + this.data.pk._id,
+      path: '/pages/pk/pk?id='+ this.data.pk._id,
       success: function (res) {
         // 转发成功
         wx.showToast({
@@ -285,5 +285,5 @@ Page({
       }
     }
   },
-
+  
 })
