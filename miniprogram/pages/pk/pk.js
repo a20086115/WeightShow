@@ -221,7 +221,7 @@ Page({
     bimData.fill(null);
     for (var record of records) {
       if (record.weight) {
-        arr[record.date.substr("8")] = record.weight
+        arr[parseInt(record.date.substr("8"))] = record.weight
         if (member.height) {
           var weight = record.weight;
           var height = member.height;
@@ -229,7 +229,7 @@ Page({
             weight = weight / 2
           }
           var BMI = weight / (height * height / 10000);
-          bimData[record.date.substr("8")] = BMI.toFixed(2)
+          bimData[parseInt(record.date.substr("8"))] = BMI.toFixed(2)
         }
       }
     }
