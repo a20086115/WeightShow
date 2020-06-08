@@ -1,0 +1,18 @@
+<!--miniprogram/pages/addPlace/addPlace.wxml-->
+<view class="pageContainer">
+  <van-cell-group>
+    <van-field title-width="120px" id="nickName" value="{{ currentUser.nickName }}" bind:change="onValueChange" clearable label="昵称" placeholder="昵称" />
+    <van-field title-width="120px" id="age" value="{{ currentUser.age }}" clearable label="年龄" placeholder="请输入年龄" bind:change="onValueChange"/>
+    <van-field title-width="120px" id="height" value="{{ currentUser.height }}" clearable label="身高（厘米）" placeholder="请输入身高（厘米）" bind:change="onValueChange"/>
+    <van-field title-width="120px" id="lastWeightKg" value="{{ currentUser.weightKg }}" disabled="true"  clearable label="当前体重（千克）"  type="number" placeholder="请在首页打卡" bind:change="onValueChange" />
+    <van-field title-width="120px" id="lastWeight" value="{{ currentUser.weight }}" disabled="true"  clearable label="当前体重（斤）"  type="number" placeholder="请在首页打卡" bind:change="onValueChange" />
+    
+    <van-field title-width="120px" id="aimWeightKg" value="{{ currentUser.aimWeightKg }}" clearable label="目标体重（千克）" type="number" placeholder="请输入目标体重（千克）" bind:change="onValueChange"/>
+    <van-field title-width="120px" id="aimWeight" value="{{ currentUser.aimWeight }}" clearable label="目标体重（斤）" type="number" placeholder="请输入目标体重（斤）" bind:change="onValueChange"/>
+    <van-field title-width="120px" id="bmi" value="{{ currentUser.bmi }}" disabled="true" label="当前BMI" type="number" />
+  
+  </van-cell-group>
+
+  <van-button class="margin-top-50" type="info" size="large" bindtap="saveData">保存</van-button>
+  <van-toast id="van-toast" />
+</view>

@@ -129,6 +129,7 @@ Page({
     visibleHeight: false, // 体重输入框
     bmiInfo: "授权查看BMI",
     weight: 0,  // 输入框的value
+    weightKg: 0,
     lastWeight: "", // 最新体重
     text: false, // 记录点击日期的体重
     records:[],
@@ -523,6 +524,7 @@ Page({
     }
     var date = this.data.currentdate;
     var weight = this.data.weight;
+    var weightKg = this.data.weightKg;
     if(weight == this.data.text){
       // 较之前没有改变
       if (this.data.refreshFlag) {
@@ -557,7 +559,8 @@ Page({
           openId: true,
           date: date,
         }, {
-          weight: weight
+          weight: weight,
+          weightKg: weightKg
         }, () => {
             this.queryRecordsByMonth(this.data.currentMonth)
         })
@@ -566,7 +569,8 @@ Page({
       console.log("insert")
       CF.insert("records", {
         date: date,
-        weight: weight
+        weight: weight,
+        weightKg: weightKg
       }, () => {
         this.queryRecordsByMonth(this.data.currentMonth)
       })
@@ -756,7 +760,16 @@ Page({
    * 体重输入框
    */
   onChangeWeight: function(e){
-    this.setData({weight: e.detail})
+    this.setData({
+      weight: e.detail,
+      weightKg: (e.detail / 2).toFixed(2)
+    })
+  },
+  onChangeWeightKg: function(e){
+    this.setData({
+      weightKg: e.detail,
+      weight: e.detail * 2
+    })
   },
   /**
    * 身高输入框

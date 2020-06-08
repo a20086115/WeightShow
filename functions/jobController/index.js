@@ -1,7 +1,9 @@
 const cloud = require('wx-server-sdk')
 const templateMessage = require('templateMessage.js')
 const dayjs = require ('dayjs')
-cloud.init()
+// cloud.init({
+//   env: cloud.DYNAMIC_CURRENT_ENV
+// })
 const db = cloud.database()
 const COLLNAME = 'publicField';
 const FIELDNAME = 'd6a66296-cc14-4405-a177-208939644eb1'

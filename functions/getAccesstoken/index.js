@@ -4,6 +4,9 @@ const APPID = 'wx861848f2da1b88d0';
 const APPSECRET = 'dd9bd641b13d0c6acdba6ad6cc89f663';
 const COLLNAME = 'publicField';
 const FIELDNAME = 'd6a66296-cc14-4405-a177-208939644eb1'
+// cloud.init({
+//   env: cloud.DYNAMIC_CURRENT_ENV
+// })
 cloud.init()
 const db = cloud.database()
 

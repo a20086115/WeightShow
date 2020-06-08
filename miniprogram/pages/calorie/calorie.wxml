@@ -1,0 +1,9 @@
+
+
+<view class="container" >
+
+  <calendar header-style='header-style' weekheight="100" speciallist="{{speciallist}}" txt_style='txt_style' bindselectDate='selectDate' bindnextMonth='nextMonth' bindprevMonth='prevMonth'  mystatus='{{mystatus}}' 
+  isClick="{{ true }}" bindchooseDate="nextMonth" circle_show="{{ true }}"/>
+
+  <ec-canvas  id="mychart-dom-line" canvas-id="mychart-line" ec="{{ ec }}" force-use-old-canvas="true"></ec-canvas>
+</view>

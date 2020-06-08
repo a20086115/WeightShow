@@ -6,7 +6,11 @@
     "pages/index/index",
     "pages/records/records",
     "pages/pk/pk",
-    "pages/success/success"
+    "pages/success/success",
+    "pages/my/my",
+    "pages/userinfo/userinfo",
+    "pages/aboutUs/about",
+    "pages/calorie/calorie"
   ],
   "usingComponents": {
     "van-action-sheet": "./miniprogram_npm/vant-weapp/action-sheet/index",
@@ -86,15 +90,27 @@
     "borderStyle": "black",
     "list": [
       {
-        "selectedIconPath": "images/mall1.png",
-        "iconPath": "images/mall.png",
+        "selectedIconPath": "images/weight1.png",
+        "iconPath": "images/weight.png",
         "pagePath": "pages/index/index",
-        "text": "首页"
+        "text": "体重"
+      },
+      {
+        "selectedIconPath": "images/kaluli1.png",
+        "iconPath": "images/kaluli.png",
+        "pagePath": "pages/calorie/calorie",
+        "text": "热量"
+      },
+      {
+        "selectedIconPath": "images/pk1.png",
+        "iconPath": "images/pk.png",
+        "pagePath": "pages/myInfo/myInfo",
+        "text": "组队PK"
       },
       {
         "selectedIconPath": "images/my1.png",
         "iconPath": "images/my.png",
-        "pagePath": "pages/myInfo/myInfo",
+        "pagePath": "pages/my/my",
         "text": "我的"
       }
     ]

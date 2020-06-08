@@ -1,4 +1,7 @@
 const cloud = require('wx-server-sdk')
+// cloud.init({
+//   env: cloud.DYNAMIC_CURRENT_ENV
+// })
 cloud.init()
 const db = cloud.database()
 // 根据表名和query对象，data更新数据
@@ -9,7 +12,7 @@ exports.main = async (event, context) => {
 
   let openId = event.userInfo.openId;
   // 如果openId为ture, 则把openId添加到查询条件
-  if (query.openId) {
+  if (query.openId === true) {
     query.openId = openId
   }
   try {
