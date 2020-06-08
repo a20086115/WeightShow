@@ -1,0 +1,49 @@
+<view class="">
+  <!-- 头部信息 -->
+  <view class="head container bg-gradual-blue margin shadow">
+    <button 
+      open-type="getUserInfo" 
+      bindgetuserinfo="onGetUserInfo"
+      class="cu-avatar xl round margin-top-xl"
+      style="background-image: url({{avatarUrl}})"
+      size="default"
+    ></button>
+
+    <view class="text-center margin-top margin-bottom-xl">
+      {{userInfo.nickName?userInfo.nickName:'点击头像登录'}}
+    </view>
+  </view>
+  <!-- 中间信息 -->
+  <view class="padding radius shadow">
+      <view class="cu-list menu text-left solid-top">
+          
+          <view class="cu-item" bindtap="navToUserInfoPage">
+            <view class="content">
+              <text class="text-grey">个人信息</text>
+            </view>
+           <view class="action text-xxl">
+             <view class="cuIcon-edit "></view>
+            </view>
+          </view>
+          <view class="cu-item" bindtap="navToAreaInfoPage">
+            <view class="content">
+              <text class="text-grey">我也要用</text>
+            </view>
+           <view class="action text-xxl">
+             <view class="cuIcon-like "></view>
+            </view>
+          </view>
+          <view class="cu-item" bindtap="navToLinkusPage">
+            <view class="content">
+              <text class="text-grey">关于我们</text>
+            </view>
+             <view class="action text-xxl">
+             <view class="cuIcon-question "></view>
+            </view>
+          </view>
+        
+        </view>
+
+  </view>
+
+</view>

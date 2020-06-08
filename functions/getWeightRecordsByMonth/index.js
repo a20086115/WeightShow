@@ -1,12 +1,15 @@
 const cloud = require('wx-server-sdk')
-cloud.init()
+cloud.init({
+  env: cloud.DYNAMIC_CURRENT_ENV
+})
+// cloud.init()
 const db = cloud.database()
 const _ = db.command
 // 根据表名和query对象查询数据
 exports.main = async (event, context) => {
   let openId = event.userInfo.openId;
   let month = event.month; // 要查询的月份
-  if(event.openId){
+  if(event.openId === true){
     openId = event.openId;
   }
   try {
