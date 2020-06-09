@@ -1,4 +1,4 @@
-import { cloud as CF } from '../../utils/cloudFunction.js'
+import { cloud as CF } from '../../utils/cloudFunctionPromisejs'
 import dayjs from '../../utils/dayjs.min.js'
 import * as echarts from '../../ec-canvas/echarts';
 
@@ -98,7 +98,7 @@ Page({
    * 按日期查询
    */
   queryRecordsByMonth: function(month){
-    console.log("queryRecordsByMonth" + month)
+    CF.list("meal", {openId: true}, 1, 100, "createdate", desc)
   },
   /**
   * 展示饮食数据到日历中

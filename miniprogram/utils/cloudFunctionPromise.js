@@ -2,7 +2,7 @@
 const app = getApp();
 import dayjs from './day.min.js'
 
-var ajax = function (obj, cb, errcb) {
+var ajax = function (obj) {
   return new Promise(function (resolve, reject) {
     obj.data.env = app.globalData.CLOUD_ENV;
     wx.showLoading({ title: '加载中...' })
@@ -22,7 +22,7 @@ var ajax = function (obj, cb, errcb) {
 
 var cloud = {
   // 增
-  insert: function (tbName, data, cb, errcb) {
+  insert: function (tbName, data) {
     data.createon = dayjs().format("YYYY-MM-DD HH:mm:ss");
     return ajax({
       name: 'insert',
@@ -30,19 +30,19 @@ var cloud = {
         "tbName": tbName, // 数据库表名
         "data": data // 要存储的内容
       }
-    }, cb, errcb)
+    })
   },
   // 删
-  delete: function (tbName, query, cb, errcb) {
+  delete: function (tbName, query) {
     ajax({
       name: 'delete',
       data: {
         tbName: tbName, // 数据库表名
         query: query // 查询条件
       }
-    }, cb, errcb)
+    })
   },
-  update: function (tbName, query, data, cb, errcb) {
+  update: function (tbName, query, data) {
     ajax({
       name: 'update',
       data: {
@@ -50,18 +50,18 @@ var cloud = {
         query: query, // 查询条件
         data: data
       }
-    }, cb, errcb)
+    })
   },
-  get: function (tbName, query, cb, errcb) {
+  get: function (tbName, query) {
     ajax({
       name: 'get',
       data: {
         tbName: tbName, // 数据库表名
         query: query // 查询条件
       }
-    }, cb, errcb)
+    })
   },
-  list: function (tbName, query, page, size, field, order, cb, errcb) {
+  list: function (tbName, query, page, size, field, order) {
     ajax({
       name: 'list',
       data: {
@@ -72,7 +72,7 @@ var cloud = {
         field: field,
         order: order
       }
-    }, cb, errcb)
+    })
   },
   ajax: ajax
 }

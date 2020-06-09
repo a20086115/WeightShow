@@ -9,20 +9,19 @@ const _ = db.command
 exports.main = async (event, context) => {
   let openId = event.userInfo.openId;
   let month = event.month; // 要查询的月份
+  // 正常查询本人信息， 如果传有openid, 则查询该人的。
   if(event.openId){
     openId = event.openId;
   }
   try {
-    return await db.collection('meal').aggregate()
-    .match({
-      date: _.and(_.gte(month + "-01"), _.lte(month + "-31")),
-    })
-    .group({
-      _id: '$date',
-      totalCalorie: $.sum('$calorie')
-    })
-    .end()
-
+    return await db.collection('meal').where({openId: true}).aggregate()
+      .lookup({
+        from: 'foods',
+        localField: 'name',
+        foreignField: '_id',
+        as: 'foodsList',
+      })
+      .end()
   } catch (e) {
     console.error(e)
   }

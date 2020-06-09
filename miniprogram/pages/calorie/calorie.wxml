@@ -6,4 +6,6 @@
   isClick="{{ true }}" bindchooseDate="nextMonth" circle_show="{{ true }}"/>
 
   <ec-canvas  id="mychart-dom-line" canvas-id="mychart-line" ec="{{ ec }}" force-use-old-canvas="true"></ec-canvas>
+
+
 </view>
