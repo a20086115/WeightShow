@@ -9,7 +9,8 @@
     "pages/success/success",
     "pages/my/my",
     "pages/userinfo/userinfo",
-    "pages/aboutUs/about"
+    "pages/aboutUs/about",
+    "pages/calorie/calorie"
   ],
   "usingComponents": {
     "van-action-sheet": "./miniprogram_npm/vant-weapp/action-sheet/index",
@@ -97,7 +98,7 @@
       {
         "selectedIconPath": "images/kaluli1.png",
         "iconPath": "images/kaluli.png",
-        "pagePath": "pages/index/index",
+        "pagePath": "pages/calorie/calorie",
         "text": "热量"
       },
       {

@@ -27,7 +27,7 @@
           </view>
           <view class="cu-item" bindtap="navToAreaInfoPage">
             <view class="content">
-              <text class="text-grey">我也要用</text>
+              <text class="text-grey">意见反馈</text>
             </view>
            <view class="action text-xxl">
              <view class="cuIcon-like "></view>

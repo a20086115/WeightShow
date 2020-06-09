@@ -15,12 +15,7 @@
   width: 50%
 }
 .flex-wrp {display: flex;}
-.txt_style{
-  font-size: 12px;
-  color: rgb(238, 83, 83);
-  line-height: 12px;
 
-}
 
 .calendar--weekday_label{
   padding: 0px !important;
@@ -36,6 +31,11 @@
 .header-style{
   background: #188be4 ;  
   color: #fff;
+}
+.txt_style{
+  font-size: 12px;
+  color: rgb(238, 83, 83);
+  line-height: 12px;
 }
 .active-coloro {
   color: #fff;
