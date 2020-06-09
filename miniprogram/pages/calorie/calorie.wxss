@@ -7,3 +7,29 @@
   color: rgb(238, 83, 83);
   line-height: 12px;
 }
+.canvas {
+  width: 100%;
+  height: 200px;
+}
+.picker_date{
+  width: 100%;
+  height: 250rpx;
+}
+.calendar--weekday_label{
+padding: 0px !important;
+}
+.calendar--mytext{
+margin-top: 0px !important;
+}
+.circle{
+  background: #188be4 ;  
+  color: #fff;
+}
+/* 图表的样式，必须设置，否则没有大小 */
+ec-canvas {
+  position: absolute;
+  top: 0px;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}

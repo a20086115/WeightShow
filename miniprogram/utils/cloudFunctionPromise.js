@@ -1,6 +1,6 @@
 // 云函数 增删改查封装
 const app = getApp();
-import dayjs from './day.min.js'
+import dayjs from './dayjs.min.js'
 
 var ajax = function (obj) {
   return new Promise(function (resolve, reject) {

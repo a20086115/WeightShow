@@ -13,15 +13,13 @@ exports.main = async (event, context) => {
     openId = event.openId;
   }
   try {
-    return await db.collection('meal').aggregate()
-    .match({
+    return await db.collection('records')
+    .where({
       date: _.and(_.gte(month + "-01"), _.lte(month + "-31")),
+      openId: openId
     })
-    .group({
-      _id: '$date',
-      totalCalorie: $.sum('$calorie')
-    })
-    .end()
+    .orderBy('date', 'asc')
+    .get()
 
   } catch (e) {
     console.error(e)

@@ -4,6 +4,7 @@ const cloud = require('wx-server-sdk')
 // })
 cloud.init()
 const db = cloud.database()
+const $ = db.command.aggregate
 const _ = db.command
 // 根据表名和query对象查询数据
 exports.main = async (event, context) => {
@@ -14,14 +15,15 @@ exports.main = async (event, context) => {
     openId = event.openId;
   }
   try {
-    return await db.collection('meal').where({openId: true}).aggregate()
-      .lookup({
-        from: 'foods',
-        localField: 'name',
-        foreignField: '_id',
-        as: 'foodsList',
-      })
-      .end()
+    return await db.collection('meal').aggregate()
+    .match({
+      date: _.and(_.gte(month + "-01"), _.lte(month + "-31")),
+    })
+    .group({
+      _id: '$date',
+      totalCalorie: $.sum('$calorie')
+    })
+    .end()
   } catch (e) {
     console.error(e)
   }

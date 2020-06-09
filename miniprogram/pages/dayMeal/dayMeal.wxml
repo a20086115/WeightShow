@@ -1,0 +1,4 @@
+<!--miniprogram/pages/dayMeal/dayMeal.wxml-->
+<van-sidebar active-key="{{ activeKey }}">
+  <van-sidebar-item title="{{ item.name }}" wx:for="{{ sidebars }}" dot="{{ item.totalCalorie}}"/>
+</van-sidebar>
