@@ -1,7 +1,7 @@
 {
   "pages": [
-    "pages/dayMeal/dayMeal",
     "pages/start/index",
+    "pages/dayMeal/dayMeal",
     "pages/myInfo/myInfo",
     "pages/login/index",
     "pages/index/index",

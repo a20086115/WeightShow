@@ -14,6 +14,12 @@ exports.main = async (event, context) => {
   data.openId = openId;
   data.createdate = new Date();
   try {
+    if(tbName == "records"){
+      if(data.weight){
+        data.weight = parseFloat(data.weight)
+      }
+    }
+
     return await db.collection(tbName).add({
       data: data
     })
