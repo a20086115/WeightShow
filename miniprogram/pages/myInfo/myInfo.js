@@ -86,7 +86,7 @@ Page({
       visible_name: false
     })
     if (e.detail == "confirm") {
-      if (this.data.pk._id) {   // 之前已经有值
+      if (this.data.pk._id)  {   // 之前已经有值
         CF.update("pk", { _id: pk._id }, this.data.pk, () => {
           this.queryPk()
         })

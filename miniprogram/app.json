@@ -6,7 +6,8 @@
     "pages/index/index",
     "pages/records/records",
     "pages/pk/pk",
-    "pages/success/success"
+    "pages/success/success",
+    "pages/RankingList/RankingList"
   ],
   "usingComponents": {
     "van-action-sheet": "./miniprogram_npm/vant-weapp/action-sheet/index",
@@ -96,6 +97,12 @@
         "iconPath": "images/my.png",
         "pagePath": "pages/myInfo/myInfo",
         "text": "我的"
+      },
+      {
+        "selectedIconPath": "images/my1.png",
+        "iconPath": "images/my.png",
+        "pagePath": "pages/RankingList/RankingList",
+        "text": "排行榜"
       }
     ]
   }

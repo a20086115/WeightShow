@@ -1,0 +1,27 @@
+<!--miniprogram/pages/RankingList.wxml-->
+
+<!-- 分类标签 -->
+<van-tabs swipeable bind:click="onClick">
+  <van-tab title="日排行榜" />
+  <van-tab title="周排行榜" />
+  <van-tab title="月排行榜" />
+</van-tabs>
+
+<!-- 排行榜内容 -->
+<van-cell-group>
+  <van-cell center>
+    <!-- title -->
+    <view slot="title" class="rankTitle">
+      <view class="van-cell-text NoLabel">No.</view>
+      <van-tag type="primary" size="large">1</van-tag>
+      <view class="van-cell-text usrName">zhangsan</view>
+    </view>
+    <!-- value -->
+    <view slot="" class="rankInfo">
+      <van-image round width="2rem" height="2rem" class="usrIcon" src="https://img.yzcdn.cn/vant/cat.jpeg" />
+      <view class="van-cell-text lossNum">2.5kg</view>
+    </view>
+  </van-cell>
+</van-cell-group>
+
+
