@@ -1,7 +1,7 @@
 {
   "pages": [
-    "pages/dayMeal/dayMeal",
     "pages/start/index",
+    "pages/dayMeal/dayMeal",
     "pages/myInfo/myInfo",
     "pages/login/index",
     "pages/index/index",
@@ -11,7 +11,9 @@
     "pages/my/my",
     "pages/userinfo/userinfo",
     "pages/aboutUs/about",
-    "pages/calorie/calorie"
+    "pages/calorie/calorie",
+
+    "pages/RankingList/RankingList"
   ],
   "usingComponents": {
     "van-action-sheet": "./miniprogram_npm/vant-weapp/action-sheet/index",
@@ -103,6 +105,12 @@
         "iconPath": "images/kaluli.png",
         "pagePath": "pages/calorie/calorie",
         "text": "热量"
+      },
+      {
+        "selectedIconPath": "images/rank1.png",
+        "iconPath": "images/rank.png",
+        "pagePath": "pages/RankingList/RankingList",
+        "text": "排行榜"
       },
       {
         "selectedIconPath": "images/pk1.png",
