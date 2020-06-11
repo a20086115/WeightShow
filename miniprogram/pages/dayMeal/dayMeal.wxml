@@ -1,4 +1,25 @@
 <!--miniprogram/pages/dayMeal/dayMeal.wxml-->
-<van-sidebar active-key="{{ activeKey }}">
-  <van-sidebar-item title="{{ item.name }}" wx:for="{{ sidebars }}" dot="{{ item.totalCalorie}}"/>
-</van-sidebar>
+<import src="../template-cart/template-cart.wxml" />
+<view class="container">
+  <van-search
+    value="{{ value }}"
+    placeholder="请输入搜索关键词"
+    bind:change="onChange"
+    bind:search="onSearch"
+  />
+<view style="display:flex">
+  <van-sidebar active-key="{{ activeKey }}" style="width:20%">
+    <van-sidebar-item title="{{ item.name }}" wx:for="{{ sidebars }}" dot="{{ item.totalCalorie}}"/>
+  </van-sidebar>
+  <view style="width:80%">
+      <view wx:if="{{!currentFoods}}" class="no-data">
+        <view class="line"></view>
+        <view class="txt">暂无用餐记录</view>
+        <view class="line"></view>
+      </view>
+       <template is="{{currentFoods.length > 0 ? 'cart-goods-list' : 'no-goods'}}" data="{{items: currentFoods}}"></template>
+  </view>
+</view>
+
+
+</view>

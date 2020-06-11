@@ -20,4 +20,9 @@
   margin-right: 50px;
 }
 
-
+.red{
+  color:red
+}
+.blue{
+  color: blue
+}
