@@ -27,16 +27,32 @@ Page({
       name: "晚餐",
       totalCalorie:200
     }],
-    value:""
+    type:"0",
+    date:"",
+    search: ""
+  },
+  
+  /**
+   * 生命周期函数--监听页面加载
+   */
+  onLoad: function (options) {
+    this.setData({
+      date: options.date,
+    })
   },
   onChange(e) {
     this.setData({
-      value: e.detail,
+      type: e.detail,
+    });
+  },
+  onSearchChange(e) {
+    this.setData({
+      search: e.detail,
     });
   },
   onSearch() {
     wx.redirectTo({
-      url: '/pages/foodList/foodList?key=' + this.data.value,
+      url: '/pages/foodList/foodList?key=' + this.data.search +"&type=" +  this.data.type + "&date=" + this.data.date,
     })
   },
   onClick() {

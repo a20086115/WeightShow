@@ -19,9 +19,12 @@ exports.main = async (event, context) => {
     .match({
       date: _.and(_.gte(month + "-01"), _.lte(month + "-31")),
     })
+    .addFields({
+      sumCalorie: $.multiply(["$calorie","$count"])
+    })
     .group({
       _id: '$date',
-      totalCalorie: $.sum('$calorie')
+      totalCalorie: $.sum('$sumCalorie') 
     })
     .end()
   } catch (e) {

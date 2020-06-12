@@ -2,9 +2,9 @@
 <import src="../template-cart/template-cart.wxml" />
 <view class="container">
   <van-search
-    value="{{ value }}"
+    value="{{ search }}"
     placeholder="请输入搜索关键词"
-    bind:change="onChange"
+    bind:change="onSearchChange"
     bind:search="onSearch"
   />
 <view style="display:flex">

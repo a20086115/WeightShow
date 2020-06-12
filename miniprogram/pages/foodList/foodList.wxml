@@ -8,17 +8,45 @@
     bind:search="onSearch"
   />
 
-<view  wx:for="{{currentFoods}}" style="margin-top:10rpx" bindtap="clickFoods(item)">
+<view  wx:for="{{currentFoods}}" style="margin-top:10rpx" bindtap="clickFoods" data-item="{{ item }}">
     <van-card
       num="100g"
       price="{{item.calorie}}"
-      tag="{{item.categories}}"
       title="{{item._id}}"
       thumb="{{ item.img }}"
       currency=""
+      desc=" {{item.categories}}"
       lazy-load="true"
       />
 </view>
+<van-action-sheet show="{{ show }}" title="标题" bind:close="onClose">
+<view>
+ <view class="sku-container">
+   <view class="sku">
+      <view class="t">{{currentFood._id}}</view>
+      <view class="items">
+        <text class="{{index == currentType? 'active' : ''}}" wx:for="{{properties}}"  data-index="{{ index }}" bindtap="selectType">{{item}}</text>
+      </view>
+      <view class="t">{{currentFood.calorie}} 千卡 / 100g</view>
+    </view>
 
+    
+    <view class="num">
+      <view class="t">添加数量</view>
+      <view class="num-box">
+        <text class="a" bindtap="modCount">-</text>
+        <input type="digit" class="b" value="{{currentCount}}" bindinput="onCountChange"></input>
+        <text class="a" bindtap="addCount">+</text>
+      </view>
+    </view>
+  </view>
+  <view class="sku-btn" bindtap="addDayMeal">添加</view>
+</view>
+ 
+</van-action-sheet>
 
+<!-- <block>
+  <view class="sku-mask"></view>
+  
+</block>  -->
 </view>
