@@ -1,0 +1,24 @@
+<!--miniprogram/pages/food/foodList.wxml-->
+<import src="../template-cart/template-cart.wxml" />
+<view class="container">
+  <van-search
+    value="{{ value }}"
+    placeholder="请输入搜索关键词"
+    bind:change="onChange"
+    bind:search="onSearch"
+  />
+
+<view  wx:for="{{currentFoods}}" style="margin-top:10rpx" bindtap="clickFoods(item)">
+    <van-card
+      num="100g"
+      price="{{item.calorie}}"
+      tag="{{item.categories}}"
+      title="{{item._id}}"
+      thumb="{{ item.img }}"
+      currency=""
+      lazy-load="true"
+      />
+</view>
+
+
+</view>

@@ -34,7 +34,7 @@ var cloud = {
   },
   // 删
   delete: function (tbName, query) {
-    ajax({
+    return ajax({
       name: 'delete',
       data: {
         tbName: tbName, // 数据库表名
@@ -43,7 +43,7 @@ var cloud = {
     })
   },
   update: function (tbName, query, data) {
-    ajax({
+    return ajax({
       name: 'update',
       data: {
         tbName: tbName, // 数据库表名
@@ -53,7 +53,7 @@ var cloud = {
     })
   },
   get: function (tbName, query) {
-    ajax({
+    return ajax({
       name: 'get',
       data: {
         tbName: tbName, // 数据库表名
@@ -62,7 +62,7 @@ var cloud = {
     })
   },
   list: function (tbName, query, page, size, field, order) {
-    ajax({
+    return ajax({
       name: 'list',
       data: {
         tbName: tbName, // 数据库表名

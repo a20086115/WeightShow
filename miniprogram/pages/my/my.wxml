@@ -1,6 +1,6 @@
 <view class="">
   <!-- 头部信息 -->
-  <view class="head container bg-gradual-blue margin shadow">
+  <view class="head container bg-gradual-blue margin shadow" style="text-align:center">
     <button 
       open-type="getUserInfo" 
       bindgetuserinfo="onGetUserInfo"

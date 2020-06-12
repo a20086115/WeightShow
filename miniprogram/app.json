@@ -1,5 +1,7 @@
 {
   "pages": [
+    
+    "pages/foodList/foodList",
     "pages/start/index",
     "pages/dayMeal/dayMeal",
     "pages/myInfo/myInfo",
@@ -12,7 +14,6 @@
     "pages/userinfo/userinfo",
     "pages/aboutUs/about",
     "pages/calorie/calorie",
-
     "pages/RankingList/RankingList"
   ],
   "usingComponents": {
