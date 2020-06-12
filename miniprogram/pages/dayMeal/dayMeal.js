@@ -1,4 +1,6 @@
 // miniprogram/pages/dayMeal/dayMeal.js
+import { cloud as CF } from '../../utils/cloudFunctionPromise.js'
+
 Page({
 
   /**
@@ -24,7 +26,8 @@ Page({
     },{
       name: "晚餐",
       totalCalorie:200
-    }]
+    }],
+    value:""
   },
   onChange(e) {
     this.setData({
@@ -32,10 +35,12 @@ Page({
     });
   },
   onSearch() {
-    Toast('搜索' + this.data.value);
+    wx.redirectTo({
+      url: '/pages/foodList/foodList?key=' + this.data.value,
+    })
   },
   onClick() {
-    Toast('搜索' + this.data.value);
+    
   },
 
 })

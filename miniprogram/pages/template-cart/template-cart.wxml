@@ -4,7 +4,7 @@
     空空如也～
   </view>
   <view class="to-index-btn" bindtap="toIndexPage">
-    去逛逛
+    去添加
   </view>
 </template>
 
