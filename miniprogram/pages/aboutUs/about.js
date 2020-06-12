@@ -1,24 +1,6 @@
 // miniprogram/pages/aboutUs/about.js
 Page({
   data: {
-    rankArray: [{
-      usrName: '张德永',
-      lossNum: '-2.5',
-      usrIcon: 'https://img.yzcdn.cn/vant/cat.jpeg'
-    }, {
-      usrName: 'Charles',
-      lossNum: '-1.5',
-      usrIcon: 'https://img.yzcdn.cn/vant/cat.jpeg'
-    }]
-  },
-
-  /*点击分类标签切换排行榜*/
-  onClick(event){
-    console.log(event)
-    wx.showToast({
-      title: `${event.detail.index}`,
-      icon: 'none',
-    });
   },
 
   /**

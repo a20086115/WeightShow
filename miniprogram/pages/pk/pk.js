@@ -113,6 +113,22 @@ Page({
     })
     setOption(this.chart, this.data.titleFlag ? seriesData : seriesBmiData)
   },
+  deletePk(e){
+    var pkID = this.data.pk._id
+    wx.showModal({
+      title: '提示',
+      content: '确定要删除吗?',
+      success(res) {
+        if (res.confirm) {
+          CF.delete("pk", { _id: pkID }, () => {
+            wx.switchTab({
+              url: '/pages/myInfo/myInfo'
+            })
+          })
+        }
+      }
+    })
+  },
   initXdata(){
     xData = []
     var month = dayjs().format("MM")

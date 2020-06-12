@@ -69,25 +69,9 @@ Page({
     }
   },
   clickPk(e){
-    var curPk = e.currentTarget.dataset.item;
-    var data = JSON.stringify(curPk);
+    var data = JSON.stringify(this.data.pkList[e.target.id]);
     wx.navigateTo({
       url: '/pages/pk/pk?data=' + data,
-    })
-  },
-  deletePk(e){
-    var curPk = e.currentTarget.dataset.item
-    var _this = this;
-    wx.showModal({
-      title: '提示',
-      content: '确定要删除' + curPk.name + "吗?",
-      success(res) {
-        if (res.confirm) {
-          CF.delete("pk", { _id: curPk._id }, () => {
-            _this.queryPk();
-          })
-        }
-      }
     })
   },
   changePk(item){

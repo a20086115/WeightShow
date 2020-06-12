@@ -1,5 +1,3 @@
-<!--miniprogram/pages/RankingList.wxml-->
-
 <!-- 分类标签 -->
 <van-tabs swipeable bind:click="onClick">
   <van-tab title="周排行榜" />
@@ -8,19 +6,17 @@
 
 <!-- 排行榜内容 -->
 <van-cell-group>
-  <van-cell center wx:for="{{rankArray}}">
+  <van-cell center wx:for="{{ currentUsers }}">
     <!-- title -->
     <view slot="title" class="rankTitle">
       <view class="van-cell-text NoLabel">No.</view>
-      <van-tag type="{{ [index + 1 ] > 3 ? 'primary' : 'danger'}} " size="large">{{index + 1}}</van-tag>
-      <view class="van-cell-text usrName">{{item.usrName}}</view>
+      <van-tag type="primary" size="large">{{ index + 1 }}</van-tag>
+      <view class="van-cell-text usrName">{{ item.nickName}}</view>
     </view>
     <!-- value -->
     <view slot="" class="rankInfo">
-      <van-image round width="2rem" height="2rem" class="usrIcon" src="{{item.usrIcon}}" />
-      <view class="van-cell-text lossNum">{{item.lossNum}}kg</view>
+      <van-image round width="2rem" height="2rem" class="usrIcon" src=" {{ item.avatarUrl }}" />
+      <view class="van-cell-text lossNum">{{ item.reduceWeight }}kg</view>
     </view>
   </van-cell>
 </van-cell-group>
-
-

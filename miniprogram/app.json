@@ -1,8 +1,9 @@
 {
   "pages": [
+    "pages/myInfo/myInfo",
+    "pages/RankingList/RankingList",
     "pages/dayMeal/dayMeal",
     "pages/start/index",
-    "pages/myInfo/myInfo",
     "pages/login/index",
     "pages/index/index",
     "pages/records/records",

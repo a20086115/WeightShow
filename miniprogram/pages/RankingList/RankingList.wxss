@@ -1,0 +1,22 @@
+/* pages/RankingList/RankingList.wxss */
+
+.NoLabel{
+  display: inline;
+  margin: 3px;
+}
+
+.lossNum{
+  display: inline;
+  color: black;
+}
+
+.usrName{
+  display: inline;
+  color: black;
+  margin-left: 20px;
+}
+
+.usrIcon{
+  display: inline; 
+  margin-right: 50px;
+}
