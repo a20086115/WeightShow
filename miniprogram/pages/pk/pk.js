@@ -2,7 +2,6 @@
 import { cloud as CF } from '../../utils/cloudFunction.js'
 import pkHelp from "./help.js"
 import * as echarts from '../../ec-canvas/echarts';
-import dayjs from '../../utils/dayjs.min.js'
 //获取应用实例
 const App = getApp()
 var xData = [];
@@ -69,26 +68,31 @@ Page({
    */
   data: {
     pk: {},
+    show: false,
+    currentYear: new Date().getFullYear(),
+    currentMonth: new Date().getMonth() + 1,
+    isPKOwner: false,
     visibleInviteDialog: false,
     ec: {
       // 将 lazyLoad 设为 true 后，需要手动初始化图表
       lazyLoad: true
     },
     titleFlag: true,
+    currentDate: new Date().getTime(),
+    maxDate: new Date().getTime(),
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-      this.initXdata();
       if (options.id) {
         var id = decodeURIComponent(options.id);
         CF.get("pk", { _id: id }, (e) => {
           this.setData({
             pk: e.result.data[0]
           })
-          this.requestData();
+          this.requestData(this.data.currentYear + '-' + this.formatMonth(this.data.currentMonth));
         });
         // 查询授权信息
         CF.get("users", {
@@ -96,7 +100,7 @@ Page({
         }, (e) => {
           App.globalData.userInfo = e.result.data[0] || {};
           this.setData({
-            visibleInviteDialog: true
+            visibleInviteDialog: true,
           })
         })
       }else{
@@ -104,8 +108,21 @@ Page({
         this.setData({
           pk: data
         })
-        this.requestData();
-      }
+        this.requestData(this.data.currentYear + '-' + this.formatMonth(this.data.currentMonth));
+      };
+      // console.log(App.globalData.userInfo)
+      // console.log(this.data.pk)
+      this.setOwnerFlag();
+  },
+  setOwnerFlag(){
+    if(this.data.pk.openId == App.globalData.userInfo.openId){
+      this.setData({
+        isPKOwner: true
+      })
+    }
+  },
+  showPopup() {
+    this.setData({ show: true });
   },
   clickTitle(){
     this.setData({
@@ -122,32 +139,92 @@ Page({
         if (res.confirm) {
           CF.delete("pk", { _id: pkID }, () => {
             wx.switchTab({
-              url: '/pages/myInfo/myInfo'
+              url: '../myInfo/myInfo',
+              success: function (res) {
+                var page = getCurrentPages().pop();
+                if (page == undefined || page == null) return;
+                page.onLoad();
+              },
+              fail: function (res) {
+                console.log('跳转到pk列表页面失败')  // fail
+              }
             })
           })
         }
       }
     })
   },
-  initXdata(){
-    xData = []
-    var month = dayjs().format("MM")
-    var date = dayjs().date()
-    for (var i = 1; i <= date; i++) {
-      xData.push(month + "-" + (i < 10 ? "0" + i : i))
-    }
+  onInput(event) {
+    this.setData({
+      currentDate: event.detail,
+    });
   },
-  requestData(){
-    // 查询当月记录
+  confirmDate(event) {
+    var year = new Date(event.detail).getFullYear()
+    var month = new Date(event.detail).getMonth() + 1
+    this.setData({
+      show:false,
+      currentYear: year,
+      currentMonth: month
+    });
+    // 获取选定月的减肥数据
+    var formatMonth = this.formatMonth(month)
+    // console.log(year+'-'+formatMonth)
+    this.requestData(year + '-' + formatMonth);
+  },
+  // 格式化月份，单数月加0
+  formatMonth(month){
+    if(month < 10){
+      return month = '0' + month
+    }
+    else
+      return month
+  },
+  cancel(event) {
+    this.setData({
+      show:false,
+    });
+  },
+  leavePk(e){
+    // var pkID = this.data.pk._id
+    // wx.showModal({
+    //   title: '提示',
+    //   content: '确定要退出吗?',
+    //   success(res) {
+    //     if (res.confirm) {
+    //       // sql修改该pk中members数组
+    //       CF.update("pk",
+    //        {
+    //         members: _.pull({
+    //           openId: 
+    //         })
+    //        }, 
+    //        () => {
+    //         wx.switchTab({
+    //           url: '../myInfo/myInfo',
+    //           success: function (res) {
+    //             var page = getCurrentPages().pop();
+    //             if (page == undefined || page == null) return;
+    //             page.onLoad();
+    //           },
+    //           fail: function (res) {
+    //             console.log('跳转到pk列表页面失败')  // fail
+    //           }
+    //         })
+    //       })
+    //     }
+    //   }
+    // })
+  },
+  requestData(month){
     // 清空信息
     seriesData.length = 0;
     seriesBmiData.length = 0;
     var member = this.data.pk.members;
     var ajaxArray = [];
     for (let m of member) {
-      ajaxArray.push(this.queryRecordsByMonth(dayjs().format("YYYY-MM"), m.openId))
+      ajaxArray.push(this.queryRecordsByMonth(month, m.openId))
     }
-
     wx.showLoading({ title: '加载中...', icon: 'loading' })
     Promise.all(ajaxArray).then((res) => {
       wx.hideLoading();
@@ -236,7 +313,7 @@ Page({
   * 按日期查询
   */
   queryRecordsByMonth: function (month, openId) {
-    console.log("queryRecordsByMonth" + month)
+    console.log("queryRecords" + month)
     var _this = this;
     return wx.cloud.callFunction({
       name: 'getWeightRecordsByMonth',

@@ -1,6 +1,18 @@
 <!--miniprogram/pages/pk/pk.wxml-->
 <view class="page_container">
-  <view style="text-align:center; color: #37A2DA;" bindtap="clickTitle">{{ titleFlag ? "体重曲线" : "BMI曲线"}}</view>
+  <!-- 月份选择控件 -->
+  <van-cell title="{{ currentYear + '年' + currentMonth + '月' }}" is-link  bind:click="showPopup" />
+  <van-popup show="{{ show }}" bind:close="onClose" position="top">
+    <van-datetime-picker
+      type="year-month"
+      value="{{ currentDate }}"
+      max-date="{{ maxDate }}"
+      bind:input="onInput"
+      bind:confirm="confirmDate"
+      bind:cancel="cancel"
+    />
+  </van-popup>
+  <view style="text-align:center; color: #37A2DA;margin-top:10px;margin-bottom:0px" bindtap="clickTitle">{{ titleFlag ? "体重曲线" : "BMI曲线"}}</view>
   <view class="container" hidden="{{ visibleInviteDialog }}">
     <ec-canvas  id="mychart-dom-line" canvas-id="mychart-line" ec="{{ ec }}" force-use-old-canvas="true"></ec-canvas>
   </view>
@@ -16,7 +28,8 @@
   <view style="text-align:center">
     <van-button open-type="share" type="info">邀请好友</van-button>
     <van-button bindtap="goBack" style="margin-left:75rpx;" type="info">返回首页</van-button>
-    <van-button bindtap="deletePk" style="margin-left:75rpx;" type="danger">解散PK</van-button>
+    <van-button bindtap="deletePk" style="margin-left:75rpx;" type="danger" wx:if="{{isPKOwner}}">解散PK</van-button>
+    <van-button bindtap="leavePk" style="margin-left:75rpx;" type="danger" wx:else>离开PK</van-button>
   </view>
  
   <van-dialog
