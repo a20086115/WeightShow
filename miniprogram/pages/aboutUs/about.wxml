@@ -1,13 +1,14 @@
 <view class='margin-xl bg-gradual-blue padding-xl radius shadow-lg'>
-  <view class='text-center margin-bottom text-lg  '>关于出入管理系统</view>
+  <view class='text-center margin-bottom text-lg  '>关于健康打卡小程序</view>
   <view class='text-content'>
-    <view>Hi！各位出入管理的使用者！</view>
-    <view class='margin-top-sm'>该项目是一款管理社区出入微信小程序。该项目有如下特点：</view>
-     <view class='margin-top-sm'>省时：微信扫一扫即可登记，减少人员接触和聚集。</view>
-     <view class='margin-top-sm'>省力：无需重复输入信息，出入信息登记准确。</view>
-    <view class='margin-top-sm'>查询便捷：管理人员方便查看登记信息。</view>
-    <view class='margin-top-sm'>统计方便：方便导出出入日志信息。进行进一步统计。</view>
-    <view class='margin-top-sm'>如有问题，请发送邮件到yinhao1205@qq.com。</view>
+    <view>Hi！各位关注自身健康的小伙伴们！</view>
+    <view class='margin-top-sm'>该小程序旨在为大家提供便捷的健康打卡服务。具备如下特点：</view>
+     <view class='margin-top-sm'>1、省时省力：通过微信进入即可记录每日的体重、卡路里摄入等健康数据！</view>
+     <view class='margin-top-sm'>2、健康社交：可自行发起PK或者加入PK，亦或查看排行榜与好友一较高下！</view>
+    <view class='margin-top-sm'>3、健康分享：快速形成阶段健康数据报告分享给微信好友，收获他和她的点赞 ♪(^∇^*)</view>
+    <view class='margin-top-sm'>4、查询便利：快速查询历史健康数据，和以前的自己来场party~</view>
+     <view class='margin-top-sm'>预祝大家在本小程序收获健康、快乐和友谊！再次感谢您的使用！</view>
+    <view class='margin-top-sm'>如有问题，请联系客服</view>
     <view class='margin-top-sm'>更多功能敬请期待！ ٩(๑❛ᴗ❛๑)۶</view>
   </view>
 </view>
