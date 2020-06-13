@@ -13,13 +13,19 @@
       1.可邀请好友一起组队打卡，互相PK。
       2.好友之间体重曲线、打卡记录共享。
   </van-popup>
-
-  <view class="info">
-    <view class="pkItem" wx:for="{{pkList}}" wx:key="{{item._id}}"> 
-          <text  bindtap="clickPk" data-item="{{item}}" style="margin-right:50rpx">{{item.name}}</text>
-          <van-icon bindtap="deletePk" data-item="{{item}}" name="cross" />
-    </view>
-  </view>
+  
+  <!-- PK队伍列表 -->
+  <van-cell-group>
+   <van-cell 
+    is-link 
+    bind:click="clickPk"
+    wx:for="{{pkList}}" 
+    wx:key="{{item._id}}"
+    title="{{item.name}}"
+    id="{{index}}"
+   />
+  </van-cell-group>
+  
 </view>
 
 <van-dialog use-slot title="发起Pk组队赛" show="{{ visible_name }}" bind:close="handleInsertPk" zIndex="100000" show-cancel-button>
