@@ -45,8 +45,5 @@
  
 </van-action-sheet>
 
-<!-- <block>
-  <view class="sku-mask"></view>
-  
-</block>  -->
 </view>
+<van-toast id="van-toast" />

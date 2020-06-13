@@ -1,6 +1,7 @@
 // miniprogram/pages/dayMeal/dayMeal.js
 import { cloud as CF } from '../../utils/cloudFunctionPromise.js'
-
+import Dialog  from '../../miniprogram_npm/vant-weapp/dialog/dialog';
+import Toast from "../../miniprogram_npm/vant-weapp/toast/toast";
 Page({
 
   /**
@@ -88,8 +89,21 @@ Page({
       url: '/pages/foodList/foodList?key=' + this.data.search +"&type=" +  this.data.type + "&date=" + this.data.date,
     })
   },
-  onClick() {
-    
+  clickFoods(e){
+    var meal = e.currentTarget.dataset.item;
+    Dialog.confirm({
+      title: '友情提示',
+      message: '是否确定删除' + meal.name + "的就餐记录？",
+    }) .then(() => {
+      // on confirm
+      CF.delete("meal", {_id: meal._id}).then(res => {
+        Toast.success('删除成功');
+        this.queryDataList()
+      })
+    })
+    .catch(() => {
+      // on cancel
+    });
   },
 
 })
