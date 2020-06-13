@@ -163,8 +163,7 @@ Page({
     clockDate: App.globalData.userInfo.clockDate || "12:00" ,
     confirmButtonText:"保存本地",
     visibleHtml: false,
-    htmlImage:"cloud://release-ba24f3.7265-release-ba24f3-1257780911/activity.png",
-    visibleFeedback: false
+    htmlImage:"cloud://release-ba24f3.7265-release-ba24f3-1257780911/activity.png"
   },
   handleClockCancel(e) {
     this.setData({
@@ -912,16 +911,6 @@ Page({
   hideImage: function(){
     this.setData({
       showImage: false
-    })
-  },
-  openFeedback(){
-    this.setData({
-      visibleFeedback: true
-    })
-  },
-  onFeedbackClose(){
-    this.setData({
-      visibleFeedback: false
     })
   },
   // 海报获得图片

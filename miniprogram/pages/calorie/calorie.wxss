@@ -16,15 +16,12 @@
   height: 250rpx;
 }
 .calendar--weekday_label{
-padding: 0px !important;
+  padding: 0px !important;
 }
 .calendar--mytext{
-margin-top: 0px !important;
+  margin-top: 0px !important;
 }
-.circle{
-  background: #188be4 ;  
-  color: #fff;
-}
+
 /* 图表的样式，必须设置，否则没有大小 */
 ec-canvas {
   position: absolute;
@@ -32,4 +29,14 @@ ec-canvas {
   bottom: 0;
   left: 0;
   right: 0;
+}
+
+/* 出勤  */
+.dotcolor-o{
+  background-color: #188be4 !important;  
+}
+
+/* 未出勤  */
+.dotcolor-t{
+  background-color: #FF7F50 !important;  
 }

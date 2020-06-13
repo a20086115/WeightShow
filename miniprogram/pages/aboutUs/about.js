@@ -6,6 +6,7 @@ Page({
    */
   data: {
 
+    aboutImage:"cloud://release-ba24f3.7265-release-ba24f3-1257780911/about.png"
   },
 
   /**

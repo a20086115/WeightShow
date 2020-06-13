@@ -32,7 +32,7 @@ function setOption(chart) {
         }
       },
       formatter : function(params){
-        return params[0].name + ": " + params[0].data  + " cal" 
+        return params[0].name + ": " + params[0].data  + " 千卡" 
       }
     },
     xAxis: {
@@ -163,12 +163,9 @@ Page({
    * 按日期查询
    */
   queryRecordsByMonth: function(month){
-    CF.ajax({
-      name: "getMealRecordByMonth",
-      data:{
+    CF.ajax( "getMealRecordByMonth", {
         month: month
-      }
-    }).then(res => {
+      }).then(res => {
       console.log(res)
       var list = res.result.list;
       this.showRecordsByMonth(list)
@@ -183,16 +180,17 @@ Page({
     this.data.days = {}
     xData = [];
     yData = [];
-    var USER_CALORIE = 1000;
+    var USER_CALORIE = 500;
     for (var record of records) {
       this.data.days[record._id] = record;
       record.date = record._id
+
       if(record.totalCalorie <= USER_CALORIE){  // 吃少了
         mystatus[record.date.substring(8) - 1] = 1;
       }else{ // 超了
-        mystatus[record.date.substring(8) - 1] = 1;
+        mystatus[record.date.substring(8) - 1] = 0;
       }
-   
+      console.log(mystatus)
       if (record.date) {
         xData.push(record.date);
         yData.push(record.totalCalorie);

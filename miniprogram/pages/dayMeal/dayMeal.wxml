@@ -1,25 +1,26 @@
 <!--miniprogram/pages/dayMeal/dayMeal.wxml-->
 <import src="../template-cart/template-cart.wxml" />
-<view class="container">
-  <van-search
-    value="{{ search }}"
-    placeholder="请输入搜索关键词"
-    bind:change="onSearchChange"
-    bind:search="onSearch"
-  />
-<view style="display:flex">
-  <van-sidebar active-key="{{ activeKey }}" style="width:20%">
-    <van-sidebar-item title="{{ item.name }}" wx:for="{{ sidebars }}" dot="{{ item.totalCalorie}}"/>
-  </van-sidebar>
-  <view style="width:80%">
-      <view wx:if="{{!currentFoods}}" class="no-data">
-        <view class="line"></view>
-        <view class="txt">暂无用餐记录</view>
-        <view class="line"></view>
+  <view class="container">
+    <van-search
+      value="{{ search }}"
+      placeholder="请输入搜索关键词"
+      bind:change="onSearchChange"
+      bind:search="onSearch"
+    />
+    <view style="display:flex">
+      <van-sidebar active-key="{{ activeKey }}" style="width:20%">
+        <van-sidebar-item title="{{ item.name }}" wx:for="{{ sidebars }}" info="{{ item.totalCalorie}}" bindtap="onClickNav" data-index="{{ index }}"/>
+      </van-sidebar>
+      <view style="width:80%">
+          <view wx:if="{{!currentFoods.length}}" class="no-data">
+            <view class="line"></view>
+            <view class="txt">暂无用餐记录</view>
+            <view class="line"></view>
+          </view>
+          <view  wx:for="{{currentFoods}}" style="margin-top:10rpx" bindtap="clickFoods" data-item="{{ item }}">
+              <van-card num="{{ item.count }}" price="{{item.calorie + '千卡'}} "  title="{{item.foodsList[0]._id}}" thumb="{{ item.foodsList[0].img }}"
+                currency="" desc="100g" />
+          </view>
       </view>
-       <template is="{{currentFoods.length > 0 ? 'cart-goods-list' : 'no-goods'}}" data="{{items: currentFoods}}"></template>
-  </view>
-</view>
-
-
+    </view>
 </view>

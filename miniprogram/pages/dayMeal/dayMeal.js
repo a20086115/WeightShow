@@ -17,19 +17,11 @@ Page({
       name: "晚餐",
       totalCalorie:200
     }],
-    currentFoods:[{
-      name: "早餐",
-      totalCalorie:200
-    },{
-      name: "午餐",
-      totalCalorie:200
-    },{
-      name: "晚餐",
-      totalCalorie:200
-    }],
     type:"0",
     date:"",
-    search: ""
+    search: "",
+    currentFoods:[], // 按类型选择获得
+    totalFoods:[], // 当日总数据
   },
   
   /**
@@ -39,16 +31,57 @@ Page({
     this.setData({
       date: options.date,
     })
+    this.queryDataList();
   },
-  onChange(e) {
+  // 根据日期，查询当前的就餐记录
+  queryDataList(){
+    CF.ajax("getMealRecordByDay", {
+      date: this.data.date
+    }).then(res =>{
+      this.data.totalFoods = res.result.list;
+      // 计算早中晚三餐 总数
+      var total1 = 0, total2 = 0,total = 0;
+      this.data.totalFoods.forEach(item => {
+        if(item.type == 0){
+          total+= item.calorie * item.count
+        }else if(item.type == 1){
+          total1+= item.calorie * item.count
+        }else if(item.type == 2){
+          total2+= item.calorie * item.count
+        }
+      })
+      this.setData({
+        sidebars: [{
+          name: "早餐",
+          totalCalorie:total.toFixed(2)
+        },{
+          name: "午餐",
+          totalCalorie:total1.toFixed(2)
+        },{
+          name: "晚餐",
+          totalCalorie:total2.toFixed(2)
+        }],
+      })
+
+      this.calCurrentFoods();
+    })
+  },
+  // 根据总用餐和当前type选择， 计算要展示的
+  calCurrentFoods(){
+    var arr = this.data.totalFoods.filter(item => {
+      return item.type == this.data.type
+    })
     this.setData({
-      type: e.detail,
-    });
+      currentFoods: arr
+    })
+  },
+  onClickNav(e) {
+    console.log(e)
+    this.setData({ type: e.currentTarget.dataset.index });
+    this.calCurrentFoods()
   },
   onSearchChange(e) {
-    this.setData({
-      search: e.detail,
-    });
+    this.setData({ search: e.detail });
   },
   onSearch() {
     wx.redirectTo({

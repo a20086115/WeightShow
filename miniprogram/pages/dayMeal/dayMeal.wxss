@@ -15,3 +15,7 @@
   color:rgba(153,153,153,1);
   margin: 0 16rpx;
 }
+.van-info{
+  top:-10rpx !important;
+  right:-10rpx !important;
+}

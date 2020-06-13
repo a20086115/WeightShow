@@ -1,6 +1,6 @@
 <view class="">
   <!-- 头部信息 -->
-  <view class="head container bg-gradual-blue margin shadow" style="text-align:center">
+  <view class="head container bg-gradual-blue margin shadow" style="align-items: center;">
     <button 
       open-type="getUserInfo" 
       bindgetuserinfo="onGetUserInfo"
@@ -25,12 +25,20 @@
              <view class="cuIcon-edit "></view>
             </view>
           </view>
-          <view class="cu-item" bindtap="navToAreaInfoPage">
+          <view class="cu-item" bindtap="openFeedback">
             <view class="content">
-              <text class="text-grey">意见反馈</text>
+              <text class="text-grey">在线帮助</text>
             </view>
            <view class="action text-xxl">
              <view class="cuIcon-like "></view>
+            </view>
+          </view>
+          <view class="cu-item" bindtap="openJoinGroupDialog">
+            <view class="content">
+              <text class="text-grey">加群交流</text>
+            </view>
+             <view class="action text-xxl">
+             <view class="cuIcon-question "></view>
             </view>
           </view>
           <view class="cu-item" bindtap="navToLinkusPage">
@@ -41,9 +49,25 @@
              <view class="cuIcon-question "></view>
             </view>
           </view>
-        
         </view>
 
   </view>
 
+  <van-dialog
+    title="意见反馈"
+    message="欢迎对小程序提出意见和建议~感谢🙇‍"
+    show="{{ visibleFeedback }}"
+    cancel="true"
+    show-cancel-button
+    confirmButtonText="客服"
+    confirm-button-open-type="contact"
+    bind:close="onFeedbackClose"
+  >
+  </van-dialog>
+    
+  <van-dialog cancelButtonText="取消"  confirmButtonText="保存" bind:close="closeJoinGroup" closeOnClickOverlay="{{true}}" use-slot show="{{ visibleJoinGroup }}" showCancelButton="{{true}}" zIndex="1000001">
+    <view style="height:850rpx;overflow:scroll">
+      <image class="coverImage"  src="{{htmlImage}}"  mode="widthFix"> </image>
+    </view>
+  </van-dialog>
 </view>

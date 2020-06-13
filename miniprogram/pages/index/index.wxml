@@ -81,16 +81,5 @@
   </view>
 </van-dialog>
 
-<van-dialog
-  title="意见反馈"
-  message="欢迎对小程序提出意见和建议，或点击左方小红旗加群和大家交流。"
-  show="{{ visibleFeedback }}"
-  show-cancel-button
-  confirmButtonText="客服"
-  confirm-button-open-type="contact"
-  bind:close="onFeedbackClose"
->
-</van-dialog>
-  
   </view>
 

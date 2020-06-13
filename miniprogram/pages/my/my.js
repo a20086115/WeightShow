@@ -5,7 +5,11 @@ Page({
   data: {
     avatarUrl: '../../images/user-unlogin.png',
     userInfo: {},
-    app:getApp()
+    app:getApp(),
+    visibleFeedback: false,
+    visibleJoinGroup: false,
+    
+    htmlImage:"cloud://release-ba24f3.7265-release-ba24f3-1257780911/activity.png"
   },
 
   /**
@@ -43,7 +47,7 @@ Page({
    */
   navToLinkusPage:function(){
     wx.navigateTo({
-      url: '/pages/aboutus/about',
+      url: '/pages/aboutUs/about',
     })
   },
   onGetUserInfo: function (e) {
@@ -56,4 +60,39 @@ Page({
       getApp().globalData.userInfo = e.detail.userInfo
     }
   },
+  openFeedback(){
+    this.setData({
+      visibleFeedback: true
+    })
+  },
+  onFeedbackClose(){
+    this.setData({
+      visibleFeedback: false
+    })
+  },
+  openJoinGroupDialog(){
+    this.setData({
+      visibleJoinGroup: true
+    })
+  },
+  closeJoinGroup(e){
+    this.setData({
+      visibleJoinGroup: false
+    })
+    if (e.detail != "confirm") {
+      return;
+    }
+    wx.cloud.downloadFile({
+      fileID: this.data.htmlImage, // 文件 ID
+      success: res => {
+        // 返回临时文件路径
+        wx.showToast({
+          title: '保存二维码成功',
+          icon: 'success',
+          duration: 2000
+        })
+      },
+      fail: console.error
+    })
+  }
 })
