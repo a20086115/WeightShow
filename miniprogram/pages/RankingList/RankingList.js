@@ -32,7 +32,7 @@ Page({
         this.setData({ currentUsers: res.result.list })
       })
     }else if(this.data.currentIndex == 1){
-      // tab0 查询总共的打卡次数
+      // tab1 查询排行榜
       CF.ajax("getRankByReduceWeight", {
         beginDay: dayjs().startOf('month').format("YYYY-MM-DD"),
         endDay: dayjs().format("YYYY-MM-DD")
@@ -44,7 +44,6 @@ Page({
         this.setData({ currentUsers: res.result.list })
       })
     }
-   
   }
  
 })

@@ -10,7 +10,7 @@
 				<view class="alert-text">获得你的公开信息（昵称、头像等）</view>
 			</view>
 		</view>
-		<button class="weui-btn" type="primary" open-type='getUserInfo' bindgetuserinfo="getUserInfoFun" bindtap="login">确认登录</button>
+		<button class="weui-btn" type="primary" open-type='getUserInfo' bindgetuserinfo="getUserInfoFun">确认登录</button>
     <button class="weui-btn" type="primary"  bindtap="back">暂不授权</button>
 	</view>
 </view>

@@ -78,7 +78,6 @@ Page({
   // 获取组件
   onReady: function () {
     this.ecComponent = this.selectComponent('#mychart-calorie');
-    console.log(this.ecComponent)
   },
   // 点击按钮后初始化图表
   init: function () {
@@ -86,7 +85,6 @@ Page({
       this.ecComponent = this.selectComponent('#mychart-calorie');
       console.log(this.ecComponent)
       setTimeout(() =>{
-        console.log("获取canvas对象")
         this.init()
       },100)
       return
@@ -94,26 +92,18 @@ Page({
     this.ecComponent.init((canvas, width, height) => {
       // 获取组件的 canvas、width、height 后的回调函数
       // 在这里初始化图表
-      console.log(canvas, width, height)
       const chart = echarts.init(canvas, null, {
         width: width,
         height: height
       });
       setOption(chart);
-
       // 将图表实例绑定到 this 上，可以在其他成员函数（如 dispose）中访问
       this.chart = chart;
-
-      this.setData({
-        isLoaded: true,
-        isDisposed: false
-      });
-
       // 注意这里一定要返回 chart 实例，否则会影响事件处理等
       return chart;
     });
   },
-  onLoad: function(){
+  onShow: function(){
     // 查询当月记录
     this.queryRecordsByMonth(dayjs().format("YYYY-MM"));
 

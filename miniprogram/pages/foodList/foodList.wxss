@@ -69,17 +69,16 @@
   line-height: 64rpx;
   font-size: 46rpx;
   color: #666;
-  height: 2.2rem;
+  box-sizing: border-box;
 }
 .sku-container .num .num-box .b {
   color: #333;
   line-height: 64rpx;
   padding: 0 32rpx;
-  border-top: 1rpx solid #999;
-  border-bottom: 1rpx solid #999;
+  border: 1rpx solid #999;
   display: block;
-  height: 2.2rem;
-  width: 6rem;
+  height: 64rpx;
+  width: 128rpx;
 }
 .sku-btn {
   width: 100vw;

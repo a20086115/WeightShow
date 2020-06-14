@@ -55,7 +55,7 @@ function setOption(chart) {
         name: '体重',
         nameLocation: 'end',
         min: function (value) {
-          return parseInt(value.min - 4);
+          return parseInt(value.min - 10);
         }
       },
       {
@@ -83,7 +83,8 @@ function setOption(chart) {
       data: bmiData
     }]
   };
-
+  console.log(option)
+  App.globalData.option = option
   chart.setOption(option);
 }
 
@@ -553,8 +554,8 @@ Page({
           openId: true,
           date: date,
         }, {
-          weight: parseFolat(weight),
-          weightKg:  parseFolat(weightKg)
+          weight: parseFloat(weight),
+          weightKg:  parseFloat(weightKg)
         }, () => {
             this.queryRecordsByMonth(this.data.currentMonth)
         })
@@ -563,8 +564,8 @@ Page({
       console.log("insert")
       CF.insert("records", {
         date: date,
-        weight: parseFolat(weight),
-        weightKg: parseFolat(weightKg)
+        weight: parseFloat(weight),
+        weightKg: parseFloat(weightKg)
       }, () => {
         this.queryRecordsByMonth(this.data.currentMonth)
       })

@@ -1,7 +1,14 @@
 <!--miniprogram/pages/pk/pk.wxml-->
 <view class="page_container">
   <!-- 月份选择控件 -->
-  <van-cell title="{{ currentYear + '年' + currentMonth + '月' }}" is-link  bind:click="showPopup" />
+  <view class="components">
+    <van-icon name="arrow-left" bindtap="prevMonth"/>
+    <view class="month" bindtap="showPopup">
+      {{currentYear + '年' + currentMonth + '月'}}
+    </view>
+    <van-icon name="arrow"  bindtap="nextMonth"/>
+  </view>
+
   <van-popup show="{{ show }}" bind:close="onClose" position="top">
     <van-datetime-picker
       type="year-month"
@@ -13,13 +20,13 @@
     />
   </van-popup>
   <view style="text-align:center; color: #37A2DA;margin-top:10px;margin-bottom:0px" bindtap="clickTitle">{{ titleFlag ? "体重曲线" : "BMI曲线"}}</view>
-  <view class="container" hidden="{{ visibleInviteDialog }}">
+  <view class="container" hidden="{{ visibleInviteDialog && !show }}">
     <ec-canvas  id="mychart-dom-line" canvas-id="mychart-line" ec="{{ ec }}" force-use-old-canvas="true"></ec-canvas>
   </view>
 
   <view class="memberTitle">当前成员</view>
   <view class="memberListContiner">
-    <view class="memberListItem" wx:for="{{pk.members}}" wx:key="{{item.openId}}">
+    <view class="memberListItem" wx:for="{{pk.members}}" wx:key="openId">
       <van-image  custom-class="memberListItem" round width="100rpx" height="100rpx" src="{{item.avatarUrl}}" />  
       <view class="hideText">{{item.nickName}}</view>
     </view>

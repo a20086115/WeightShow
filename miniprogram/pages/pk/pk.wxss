@@ -40,3 +40,20 @@ ec-canvas {
   font-size: 24rpx;
   text-align: center;
 }
+.xiaoyuhao{
+  padding-left: 20rpx;
+}
+.dayuhao{
+  padding-right: 20rpx;
+}
+
+.components{
+  height: 100rpx;
+  background: #188be4 ;  
+  color: #fff;
+  display: flex;
+  padding:20rpx;
+  justify-content: space-between;
+  align-items: center;
+  height: 100rpx;
+}

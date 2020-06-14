@@ -2,6 +2,7 @@
 import { cloud as CF } from '../../utils/cloudFunction.js'
 import pkHelp from "./help.js"
 import * as echarts from '../../ec-canvas/echarts';
+import dayjs from '../../utils/dayjs.min.js'
 //获取应用实例
 const App = getApp()
 var xData = [];
@@ -20,6 +21,7 @@ function setOption(chart, series) {
     legend: {
       type: 'scroll',
       bottom: 10,
+      show: true,
     },
     grid: {
       containLabel: true
@@ -30,6 +32,7 @@ function setOption(chart, series) {
       trigger: 'axis',
       position: function (pos, params, dom, rect, size) {
         // 鼠标在左侧时 tooltip 显示到右侧，鼠标在右侧时 tooltip 显示到左侧。
+        console.log(pos, params, dom, rect, size)
         if (pos[0] < size.viewSize[0] / 2) {
           return { top: pos[1], left: pos[0] + 5 }
         } else {
@@ -46,16 +49,16 @@ function setOption(chart, series) {
       {
         x: 'center',
         type: 'value',
-        name: '体重/BMI',
+        name: '体重',
         nameLocation: 'end',
         min: function (value) {
-          return parseInt(value.min - 4);
+          return parseInt(value.min - 10);
         }
       }
     ],
     series: series
   };
-
+  console.log(option)
   chart.setOption(option);
 }
 
@@ -111,8 +114,6 @@ Page({
         })
         this.requestData(this.data.currentYear + '-' + this.formatMonth(this.data.currentMonth));
       };
-      // console.log(App.globalData.userInfo)
-      // console.log(this.data.pk)
       this.setOwnerFlag();
   },
   setOwnerFlag(){
@@ -159,6 +160,68 @@ Page({
     this.setData({
       currentDate: event.detail,
     });
+  },
+  nextMonth(){
+    var currentDate = this.data.currentYear + '-' + this.data.currentMonth
+    // 不能选择以后月份
+    if(parseInt(this.data.currentYear) == new Date().getFullYear() && 
+    parseInt(this.data.currentMonth) == new Date().getMonth() + 1){
+      wx.showToast({
+        title: '未来月份！',
+        image: '../../images/fail.png',
+        duration: 2000
+      })
+      return
+    }
+    var prevMonth = this.getNextMonth(currentDate)
+    var year = prevMonth.split('-')[0]
+    var month = prevMonth.split('-')[1]
+    this.setData({
+      currentYear : year,
+      currentMonth : month
+    })
+    this.requestData(year + '-' + this.formatMonth(month))
+  },
+  prevMonth() {
+    var currentDate = this.data.currentYear + '-' + this.data.currentMonth
+    var prevMonth = this.getPrevMonth(currentDate)
+    var year = prevMonth.split('-')[0]
+    var month = prevMonth.split('-')[1]
+    this.setData({
+      currentYear : year,
+      currentMonth : month
+    })
+    this.requestData(year + '-' + this.formatMonth(month))
+  },
+  // 传入格式为2020-6，月份前不能有0
+  getPrevMonth(date) {
+    var arr = date.split('-');
+    var year = arr[0]; //获取当前日期的年份
+    var month = arr[1]; //获取当前日期的月份
+    if (month == 1) {
+        month = 12;
+        year = parseInt(year) - 1;
+        return year + '-' + month
+    }
+    else{
+        month = parseInt(month) - 1;
+        return year + '-' + month
+    }
+  },
+  // 传入格式为2020-6，月份前不能有0
+  getNextMonth(date) {
+    var arr = date.split('-');
+    var year = arr[0]; //获取当前日期的年份
+    var month = arr[1]; //获取当前日期的月份
+    if (month == 12) {
+        month = 1;
+        year = parseInt(year) + 1;
+        return year + '-' + month
+    }
+    else{
+        month = parseInt(month) + 1;
+        return year + '-' + month
+    }
   },
   confirmDate(event) {
     var year = new Date(event.detail).getFullYear()
@@ -233,13 +296,25 @@ Page({
       res.forEach((item, index) => {
         this.prepareSeriesData(item.result.data, member[index])
       })
-
+      this.initXdata();
       this.init()
     }).catch((e) => {
       console.log("queryRecordsByMonth failed", e)
       wx.hideLoading();
       wx.showToast({ title: '网络出小差了,请稍后再试...', icon: 'none' })
     })
+  },
+  initXdata(){
+    xData = []
+    var startDay = dayjs(this.data.currentYear+"-"+this.data.currentMonth+"-01")
+    var endDate = startDay.endOf('month').date();
+    // 是否查询当月
+    if(dayjs().format("YYYY-MM") == this.data.currentYear+"-"+(this.data.currentMonth < 10 ? ("0" +　this.data.currentMonth): this.data.currentMonth)){
+      endDate = dayjs().date()
+    }
+    for (var i = 1; i <= endDate; i++) {
+      xData.push(this.data.currentMonth + "-" + (i < 10 ? "0" + i : i))
+    }
   },
   // 邀请
   onInviteClose(e){
@@ -283,12 +358,14 @@ Page({
       name: member.nickName,
       type: 'line',
       smooth: true,
+      yAxisIndex: 0,
       data: []
     }
     var bmiObj = {
       name: member.nickName,
       type: 'line',
       smooth: true,
+      yAxisIndex: 0,
       data: []
     }
     var arr = new Array(xData.length);
@@ -317,7 +394,6 @@ Page({
   */
   queryRecordsByMonth: function (month, openId) {
     console.log("queryRecords" + month)
-    var _this = this;
     return wx.cloud.callFunction({
       name: 'getWeightRecordsByMonth',
       data: {
@@ -326,6 +402,7 @@ Page({
       }
     })
   },
+
  
   // 获取组件
   onReady: function () {
@@ -335,7 +412,7 @@ Page({
   init: function () {
     if (!this.ecComponent) {
       setTimeout(() => {
-        console.log("获取canvas对象")
+        this.ecComponent = this.selectComponent('#mychart-dom-line');
         this.init()
       }, 100)
       return
@@ -356,7 +433,7 @@ Page({
         width: width,
         height: height
       });
-      setOption(chart, seriesData);
+      setOption(chart, this.data.titleFlag ? seriesData : seriesBmiData);
       // 将图表实例绑定到 this 上，可以在其他成员函数（如 dispose）中访问
       this.chart = chart;
       // 注意这里一定要返回 chart 实例，否则会影响事件处理等
