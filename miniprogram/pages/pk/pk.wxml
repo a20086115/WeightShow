@@ -1,7 +1,20 @@
 <!--miniprogram/pages/pk/pk.wxml-->
 <view class="page_container">
   <!-- 月份选择控件 -->
-  <van-cell title="{{ currentYear + '年' + currentMonth + '月' }}" is-link  bind:click="showPopup" />
+  <view class="month-component">
+    <view class="components">
+      <view class="xiaoyuhao" bindtap="prevMonth">
+      {{'<'}} 
+      </view>
+      <view class="month" bindtap="showPopup">
+        {{currentYear + '年' + currentMonth + '月'}}
+      </view>
+      <view class="dayuhao" bindtap="nextMonth">
+      {{'>'}} 
+      </view>
+    </view>
+  </view>
+
   <van-popup show="{{ show }}" bind:close="onClose" position="top">
     <van-datetime-picker
       type="year-month"

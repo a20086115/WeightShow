@@ -68,6 +68,8 @@ Page({
    */
   data: {
     pk: {},
+    speciallist:[],
+    mystatus:[],
     show: false,
     currentYear: new Date().getFullYear(),
     currentMonth: new Date().getMonth() + 1,
@@ -158,6 +160,68 @@ Page({
     this.setData({
       currentDate: event.detail,
     });
+  },
+  nextMonth(){
+    var currentDate = this.data.currentYear + '-' + this.data.currentMonth
+    // 不能选择以后月份
+    if(parseInt(this.data.currentYear) == new Date().getFullYear() && 
+    parseInt(this.data.currentMonth) == new Date().getMonth() + 1){
+      wx.showToast({
+        title: '未来月份！',
+        image: '../../images/fail.png',
+        duration: 2000
+      })
+      return
+    }
+    var prevMonth = this.getNextMonth(currentDate)
+    var year = prevMonth.split('-')[0]
+    var month = prevMonth.split('-')[1]
+    this.setData({
+      currentYear : year,
+      currentMonth : month
+    })
+    this.requestData(year + '-' + this.formatMonth(month))
+  },
+  prevMonth() {
+    var currentDate = this.data.currentYear + '-' + this.data.currentMonth
+    var prevMonth = this.getPrevMonth(currentDate)
+    var year = prevMonth.split('-')[0]
+    var month = prevMonth.split('-')[1]
+    this.setData({
+      currentYear : year,
+      currentMonth : month
+    })
+    this.requestData(year + '-' + this.formatMonth(month))
+  },
+  // 传入格式为2020-6，月份前不能有0
+  getPrevMonth(date) {
+    var arr = date.split('-');
+    var year = arr[0]; //获取当前日期的年份
+    var month = arr[1]; //获取当前日期的月份
+    if (month == 1) {
+        month = 12;
+        year = parseInt(year) - 1;
+        return year + '-' + month
+    }
+    else{
+        month = parseInt(month) - 1;
+        return year + '-' + month
+    }
+  },
+  // 传入格式为2020-6，月份前不能有0
+  getNextMonth(date) {
+  var arr = date.split('-');
+  var year = arr[0]; //获取当前日期的年份
+  var month = arr[1]; //获取当前日期的月份
+  if (month == 12) {
+      month = 1;
+      year = parseInt(year) + 1;
+      return year + '-' + month
+  }
+  else{
+      month = parseInt(month) + 1;
+      return year + '-' + month
+  }
   },
   confirmDate(event) {
     var year = new Date(event.detail).getFullYear()

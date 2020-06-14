@@ -40,3 +40,23 @@ ec-canvas {
   font-size: 24rpx;
   text-align: center;
 }
+.xiaoyuhao{
+  display: inline;
+  margin-left: 20%;
+}
+.dayuhao{
+  display: inline;
+  margin-left: 20%;
+}
+.month{
+  display: inline;
+  margin-left: 20%;
+}
+.month-component{
+  height: 30px;
+  background: #188be4 ;  
+  color: #fff;
+}
+.components{
+  padding-top: 10px;
+}
