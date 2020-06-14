@@ -23,21 +23,15 @@
       <van-image  custom-class="memberListItem" round width="100rpx" height="100rpx" src="{{item.avatarUrl}}" />  
       <view class="hideText">{{item.nickName}}</view>
     </view>
-      
   </view>
-  <view style="text-align:center;padding-bottom:10rpx;">
+
+  <view style="padding-bottom:10rpx;display:flex;justify-content: space-around">
     <van-button open-type="share" type="info">邀请好友</van-button>
-    <van-button bindtap="goBack" style="margin-left:75rpx;" type="info">返回首页</van-button>
-    <van-button bindtap="deletePk" style="margin-left:75rpx;" type="danger" wx:if="{{isPKOwner}}">解散PK</van-button>
-    <van-button bindtap="leavePk" style="margin-left:75rpx;" type="danger" wx:else>离开PK</van-button>
+    <van-button bindtap="goBack"  type="info">返回首页</van-button>
+    <van-button bindtap="deletePk" type="danger" wx:if="{{isPKOwner}}">解散PK</van-button>
+    <van-button bindtap="leavePk" type="danger" wx:else>离开PK</van-button>
   </view>
  
-  <van-dialog
-    title="PK邀请"
-    message="您的好友邀请你参与体重PK打卡~是否参加？"
-    show="{{ visibleInviteDialog }}"
-    show-cancel-button
-    bind:close="onInviteClose"
-  >
+  <van-dialog title="PK邀请" message="您的好友邀请你参与体重PK打卡~是否参加？" show="{{ visibleInviteDialog }}" show-cancel-button bind:close="onInviteClose" >
   </van-dialog>
 </view>

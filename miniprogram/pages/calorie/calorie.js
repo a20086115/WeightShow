@@ -13,12 +13,10 @@ function setOption(chart) {
       text: '本月卡路里曲线',
       left: 'center',
       z:1,
-      show: true
+      show: false
     },
     color: ["#37A2DA"],
-    grid: {
-      containLabel: true
-    },
+    grid: { containLabel: true },
     tooltip: {
       show: true,
       // confine:true,
@@ -69,6 +67,8 @@ Page({
     speciallist:[],
     mystatus:[],
     txt_style: "txt_style",
+    needCalorie: 0,
+    needCalorieTip:"请设置目标体重，以计算所需卡路里",
     ec: {
       // 将 lazyLoad 设为 true 后，需要手动初始化图表
       lazyLoad: true
@@ -115,7 +115,52 @@ Page({
   },
   onLoad: function(){
     // 查询当月记录
-    this.queryRecordsByMonth(dayjs().format("YYYY-MM"))
+    this.queryRecordsByMonth(dayjs().format("YYYY-MM"));
+
+    // 计算所需卡路里
+    this.calNeedCalorie();
+
+  },
+  calNeedCalorie(){
+    var user = App.globalData.userInfo;
+    //基本热量 精确算法
+    // 女子
+    // 年龄 公式
+    // 18- 30 岁 14.6 x 体重（公斤） + 450
+    // 31- 60 岁 8.6 x 体重（公斤） + 830
+    // 60岁以上 10.4 x 体重（公斤） + 600
+    // 男子
+    // 18- 30 岁 15.2 x 体重（公斤）+ 680
+    // 31- 60 岁 11.5 x 体重（公斤） + 830
+    // 60岁以上 13.4 x 体重（公斤） + 490
+    var age = user.age;
+    var aimWeightKg = user.aimWeightKg;
+    var gender = user.gender;
+    if(aimWeightKg){
+       // 男 或者 未知
+      var calorie = 0;
+      if(gender == 1 || gender == 0){
+        if(age < 30){
+          calorie = 14.6 * aimWeightKg + 450;
+        }else if(age < 60){
+          calorie = 8.6 * aimWeightKg + 830;
+        }else{
+          calorie = 10.4 * aimWeightKg + 600;
+        }
+      }else{ // 女
+        if(age < 30){
+          calorie = 15.2 * aimWeightKg + 680;
+        }else if(age < 60){
+          calorie = 11.5 * aimWeightKg + 830;
+        }else{
+          calorie = 13.4 * aimWeightKg + 490;
+        }
+      }
+      this.setData({
+        needCalorie: calorie
+      })
+    }
+
   },
   /**
   * 点击上个月
@@ -180,8 +225,9 @@ Page({
     this.data.days = {}
     xData = [];
     yData = [];
-    var USER_CALORIE = 500;
+    var USER_CALORIE = this.data.needCalorie || 1000;
     for (var record of records) {
+      record.totalCalorie = parseFloat(record.totalCalorie).toFixed(2)
       this.data.days[record._id] = record;
       record.date = record._id
 
@@ -218,6 +264,26 @@ Page({
     console.log(xData)
     console.log(yData)
     this.init()
+  },
+  toUserInfo(){
+    if(!getApp().globalData.userInfo.openId){
+      // 如果用户没有授权 或 没有查询到用户信息。 提示先授权。
+      // 请先授权
+      wx.showToast({
+        icon: 'none',
+        title: '请先授权',
+      })
+      wx.navigateTo({
+        url: '/pages/login/index'
+      })
+      return;
+
+    }else{
+      // 跳转到UserInfo 设置界面
+      wx.redirectTo({
+        url: '/pages/userinfo/userinfo',
+      })
+    }
   }
 })
 

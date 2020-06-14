@@ -8,7 +8,6 @@ Page({
     app:getApp(),
     visibleFeedback: false,
     visibleJoinGroup: false,
-    
     htmlImage:"cloud://release-ba24f3.7265-release-ba24f3-1257780911/activity.png"
   },
 
@@ -38,9 +37,23 @@ Page({
    *  跳转到完善信息页面
    */
   navToUserInfoPage:function () {
-      wx.navigateTo({
-        url: "/pages/userinfo/userinfo",
+    if(!getApp().globalData.userInfo.openId){
+      // 如果用户没有授权 或 没有查询到用户信息。 提示先授权。
+      // 请先授权
+      wx.showToast({
+        icon: 'none',
+        title: '请先授权',
       })
+      wx.navigateTo({
+        url: '/pages/login/index'
+      })
+      return;
+    }else{
+      // 跳转到UserInfo 设置界面
+      wx.navigateTo({
+        url: '/pages/userinfo/userinfo',
+      })
+    }
   },
   /**
    *  跳转到关于我们页面

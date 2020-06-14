@@ -1,4 +1,4 @@
-import { cloud as CF } from '../../utils/cloudFunction.js'
+import { cloud as CF } from '../../utils/cloudFunctionPromise.js'
 const App = getApp()
 
 Page({
@@ -11,7 +11,12 @@ Page({
   getUserInfoFun(result) {
     var that = this;
     if (result.detail.encryptedData) {
-      CF.insert("users", result.detail.userInfo,(e)=>{
+      CF.ajax("updateOrInsert",{ 
+        query:{
+          openId: true,
+        },
+        data: result.detail.userInfo 
+      },(e)=>{
         CF.get("users", {
           openId: true
         }, (e) => {

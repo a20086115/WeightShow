@@ -9,6 +9,7 @@ const _ = db.command
 exports.main = async (event, context) => {
   let openId = event.userInfo.openId;
   let month = event.month; // 要查询的月份
+  // 默认查询本人openId, 如果参数中有openId, 则取参数的openId
   if(event.openId){
     openId = event.openId;
   }

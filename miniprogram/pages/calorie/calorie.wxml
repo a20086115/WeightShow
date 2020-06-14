@@ -5,6 +5,23 @@
   <calendar header-style='header-style' weekheight="80" speciallist="{{speciallist}}" txt_style='txt_style' bindselectDate='selectDate' bindnextMonth='nextMonth' bindprevMonth='prevMonth'  mystatus='{{mystatus}}' 
   isClick="{{ true }}" dotcolor-t="dotcolor-t" bindchooseDate="nextMonth" circle_show="{{ true }}"/>
 
+  <view wx:if="{{needCalorie}}" style="display:flex;justify-content: space-around">
+    <view style="display:flex;justify-content: space-around;align-items: center;">
+      <view>超出</view>
+      <view class="dotcolor-t circle"></view>
+    </view>
+    <view style="display:flex;justify-content: space-around;align-items: center;">
+      <view>小于</view>
+      <view class="dotcolor-o circle"></view>
+    </view>
+    <view>所需卡路里：{{needCalorie}} 千卡</view>
+
+  </view>
+
+  <van-row wx:else>
+    <van-col span="24" bindtap="toUserInfo">{{ needCalorieTip}}</van-col>
+  </van-row>
+
   <view class="container" style=" height: 650rpx; position:relative">
     <ec-canvas  id="mychart-calorie" canvas-id="mychart-calorie" ec="{{ ec }}" force-use-old-canvas="true"></ec-canvas>
   </view>

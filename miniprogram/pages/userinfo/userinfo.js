@@ -17,6 +17,7 @@ Page({
   onLoad: function (options) {
     // 获取 USERINFO　信息, 拷贝一下
     var userInfo = {... getApp().globalData.userInfo}
+   
     // 获取 最新体重 信息
     CF.list("records", {openId: true}, 1, 1, "date", "desc", (res) =>{
       if(res.result.data && res.result.data.length > 0){
@@ -48,6 +49,13 @@ Page({
       }, (data) => {
         Toast.success('更新成功');
         getApp().globalData.userInfo = this.data.currentUser
+        wx.navigateBack({
+          complete: (res) => {
+            var page = getCurrentPages().pop();
+            if (page == undefined || page == null) return;
+            page.onLoad();
+          },
+        })
       })
     } else {
       Toast.fail('请将信息填写完整');

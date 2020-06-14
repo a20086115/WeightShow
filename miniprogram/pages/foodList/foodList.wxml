@@ -2,7 +2,7 @@
 <import src="../template-cart/template-cart.wxml" />
 <view class="container">
   <van-search
-    value="{{ value }}"
+    value="{{ search }}"
     placeholder="请输入搜索关键词"
     bind:change="onChange"
     bind:search="onSearch"
@@ -11,11 +11,11 @@
 <view  wx:for="{{currentFoods}}" style="margin-top:10rpx" bindtap="clickFoods" data-item="{{ item }}">
     <van-card
       num="100g"
-      price="{{item.calorie}}"
+      price="{{item.calorie + '千卡'}}"
       title="{{item._id}}"
       thumb="{{ item.img }}"
       currency=""
-      desc=" {{item.categories}}"
+      desc=" {{item.categories == null ? '' : item.categories}}"
       lazy-load="true"
       />
 </view>

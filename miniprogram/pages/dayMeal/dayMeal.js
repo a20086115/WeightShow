@@ -10,13 +10,13 @@ Page({
   data: {
     sidebars: [{
       name: "早餐",
-      totalCalorie:200
+      totalCalorie:0
     },{
       name: "午餐",
-      totalCalorie:200
+      totalCalorie:0
     },{
       name: "晚餐",
-      totalCalorie:200
+      totalCalorie:0
     }],
     type:"0",
     date:"",
@@ -32,6 +32,8 @@ Page({
     this.setData({
       date: options.date,
     })
+  },
+  onShow(){
     this.queryDataList();
   },
   // 根据日期，查询当前的就餐记录
@@ -85,7 +87,7 @@ Page({
     this.setData({ search: e.detail });
   },
   onSearch() {
-    wx.redirectTo({
+    wx.navigateTo({
       url: '/pages/foodList/foodList?key=' + this.data.search +"&type=" +  this.data.type + "&date=" + this.data.date,
     })
   },

@@ -1,6 +1,6 @@
 import { cloud as CF } from '../../utils/cloudFunctionPromise.js'
+import dayjs from '../../utils/dayjs.min.js'
 Page({
-
   /**
    * 页面的初始数据
    */
@@ -11,11 +11,6 @@ Page({
   
   /*点击分类标签切换排行榜*/
   onClick(event){
-    console.log(event)
-    wx.showToast({
-      title: `${event.detail.index}`,
-      icon: 'none',
-    });
     this.setData({
       currentIndex: event.detail.index
     })
@@ -30,17 +25,26 @@ Page({
   },
 
   getRankData: function(){
-    CF.ajax({
-      name : "getRankByType", 
-      data: {
-        type: this.data.currentIndex
-      }
-    }).then(res =>{
-      console.log(res)
-      this.setData({
-        currentUsers: res.result.data
+    if(this.data.currentIndex == 0){
+      // tab0 查询总共的打卡次数
+      CF.ajax("getRankByRecordCount", { }
+      ).then(res =>{
+        this.setData({ currentUsers: res.result.list })
       })
-    })
+    }else if(this.data.currentIndex == 1){
+      // tab0 查询总共的打卡次数
+      CF.ajax("getRankByReduceWeight", {
+        beginDay: dayjs().startOf('month').format("YYYY-MM-DD"),
+        endDay: dayjs().format("YYYY-MM-DD")
+      }).then(res =>{
+
+        for(var user of res.result.list){
+          user.recordsList[0].reduce = (user.recordsList[0].reduce / 2).toFixed(2)
+        }
+        this.setData({ currentUsers: res.result.list })
+      })
+    }
+   
   }
  
 })

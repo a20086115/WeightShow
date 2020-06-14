@@ -26,3 +26,8 @@
 .blue{
   color: blue
 }
+.rankInfo{
+  display:flex;
+  justify-content:space-around;
+  align-items:center;
+}

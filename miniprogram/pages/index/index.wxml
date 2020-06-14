@@ -5,16 +5,16 @@
   isClick="{{true}}" bindchooseDate="nextMonth" circle_show="{{true}}"/>
 
 <view style="position:relative;">
-  <van-icon class="" style="position:absolute;left:5%;top:0;" color="red"  size="50rpx" info="火" name="flag-o" bindtap="showHTML"/>
+  <van-icon class="" style="position:absolute;left:5%;top:0;display:none;" color="red"  size="50rpx" info="火" name="flag-o" bindtap="showHTML"/>
   <view class="bmiInfo" bindtap="changeHeight">BMI指数：<text style="{{ bmiStyle }}" >{{bmiInfo}}</text></view>
 </view>
 
 <view class="canvasTitle">
   <text>体重与BMI曲线</text>
   
-  <van-icon class="iconClass" size="50rpx" bindtap="openFeedback"  name="phone-circle-o" />
+  <van-icon class="iconClass hide" size="50rpx" bindtap="openFeedback"  name="phone-circle-o" />
   <van-icon class="iconClass" size="50rpx" bindtap="save"  name="share" />
-  <van-icon class="iconClass" size="50rpx"  bindtap="showBmiTip"  name="info-o" />
+  <van-icon class="iconClass " size="50rpx"  bindtap="showBmiTip"  name="info-o" />
   <van-icon class="iconClass hide" size="50rpx" bindtap="clockSet"  name="clock-o" />
 </view>
 
@@ -41,7 +41,6 @@
 <van-dialog use-slot title="请输入身高信息" show="{{ visibleHeight }}" bind:close="handleInsertHeight" show-cancel-button zIndex="100000">
   <van-cell-group>
     <van-field type="number" label="身高" value="{{ height }}" placeholder="请输入身高信息（cm）" border="{{ true }}" bind:change="onChangeHeight" />
-    <van-switch-cell title="体重单位（KG）" checked="{{ kgFlag }}" bind:change="onChange" />
   </van-cell-group>
 </van-dialog>
 

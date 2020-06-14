@@ -134,7 +134,6 @@ Page({
     text: false, // 记录点击日期的体重
     records:[],
     bmiStyle:"",
-    kgFlag: true,
     showImage:false,
     fileid: "",
     mystatus:[],
@@ -229,9 +228,10 @@ Page({
         break
       }
     }
-    var unit = App.globalData.userInfo.kgFlag ? "KG" : "斤";
+    var reduce = ((max - min) / 2 ).toFixed(2)
+    var unit = "KG";
     
-    data.views[2].content = "在【" + this.data.currentMonth + "】期间体重减少" + (max - min).toFixed(2) + unit + "！" 
+    data.views[2].content = "在【" + this.data.currentMonth + "】期间体重减少" + reduce + unit + "！" 
     data.views[3].url = this.data.canvasImagePath 
     this.setData({
       painting: data,
@@ -307,10 +307,6 @@ Page({
     })
 
   },
-  onChange(event) {
-    // 需要手动对 checked 状态进行更新
-    this.setData({ kgFlag: event.detail });
-  },
   onClockOpenChange(event) {
     // 需要手动对 clockOpen 状态进行更新
     this.setData({ clockOpen: event.detail });
@@ -379,8 +375,7 @@ Page({
   },
   onLoad: function(){
     this.setData({
-      height: App.globalData.userInfo.height || "",
-      kgFlag: App.globalData.userInfo.kgFlag || false
+      height: App.globalData.userInfo.height || ""
     })
     // 查询当月记录
     this.queryRecordsByMonth(dayjs().format("YYYY-MM"))
@@ -558,8 +553,8 @@ Page({
           openId: true,
           date: date,
         }, {
-          weight: weight,
-          weightKg: weightKg
+          weight: parseFolat(weight),
+          weightKg:  parseFolat(weightKg)
         }, () => {
             this.queryRecordsByMonth(this.data.currentMonth)
         })
@@ -568,8 +563,8 @@ Page({
       console.log("insert")
       CF.insert("records", {
         date: date,
-        weight: weight,
-        weightKg: weightKg
+        weight: parseFolat(weight),
+        weightKg: parseFolat(weightKg)
       }, () => {
         this.queryRecordsByMonth(this.data.currentMonth)
       })
@@ -586,22 +581,18 @@ Page({
     if (e.detail != "confirm") {
       this.setData({
         height: App.globalData.userInfo.height,
-        kgFlag: App.globalData.userInfo.kgFlag
       })
       return;
     }
     // 输入数据
     var height = this.data.height
-    var kgFlag = this.data.kgFlag
     if (height) {
       CF.update("users", {
         openId: true
       }, {
-          height: height,
-          kgFlag: kgFlag
+          height: height
       }, () => {
         App.globalData.userInfo.height = height;
-        App.globalData.userInfo.kgFlag = kgFlag;
         this.getBMI()
       })
     }
@@ -654,9 +645,7 @@ Page({
         if(App.globalData.userInfo.height){
           var weight = record.text;
           var height = this.data.height;
-          if (!this.data.kgFlag) {
-            weight = weight / 2
-          }
+          weight = weight / 2
           var BMI = weight / (height * height / 10000);
           bmiData.push(BMI.toFixed(2));
         }

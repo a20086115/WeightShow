@@ -2,14 +2,14 @@
 
 <!-- 分类标签 -->
 <van-tabs swipeable bind:click="onClick">
-  <van-tab title="日排行榜" />
-  <van-tab title="周排行榜" />
-  <van-tab title="月排行榜" />
+  <van-tab title="打卡榜" />
+  <!-- <van-tab title="瘦身榜（周）" /> -->
+  <van-tab title="瘦身榜（月）" />
 </van-tabs>
 
 <!-- 排行榜内容 -->
 <van-cell-group>
-  <van-cell center wx:for="{{ currentUsers }}">
+  <van-cell center wx:key="_id" wx:for="{{ currentUsers }}">
     <!-- title -->
     <view slot="title" class="rankTitle">
       <view class="van-cell-text NoLabel">No.</view>
@@ -17,9 +17,10 @@
       <view class="van-cell-text usrName">{{ item.nickName}}</view>
     </view>
     <!-- value -->
-    <view slot="" class="rankInfo">
+    <view slot="" class="rankInfo" >
       <van-image round width="2rem" height="2rem" class="usrIcon" src=" {{ item.avatarUrl }}" />
-      <view class="van-cell-text lossNum">{{ item.reduceWeight }}kg</view>
+      <view class="van-cell-text lossNum" wx:if="{{ currentIndex == 0}}">{{ item.totalCount }}次</view>
+      <view class="van-cell-text lossNum" wx:else >{{ item.recordsList[0].reduce }} Kg</view>
     </view>
   </van-cell>
 </van-cell-group>

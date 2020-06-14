@@ -88,7 +88,7 @@ Page({
   addDayMeal(){
       CF.insert("meal",{
         date: this.data.currentDate,
-        count: this.data.currentCount,
+        count: parseFloat(this.data.currentCount),
         name: this.data.currentFood._id,
         type: this.data.currentType,
         calorie: parseFloat(this.data.currentFood.calorie)

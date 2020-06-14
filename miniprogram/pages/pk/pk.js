@@ -86,6 +86,7 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
+      // 如果是别人邀请近来的用户，首选获取pk信息，并查询chart数据；然后查询有没有用户信息，没有注册过的用户会提示授权；
       if (options.id) {
         var id = decodeURIComponent(options.id);
         CF.get("pk", { _id: id }, (e) => {
@@ -186,35 +187,36 @@ Page({
     });
   },
   leavePk(e){
-    // var pkID = this.data.pk._id
-    // wx.showModal({
-    //   title: '提示',
-    //   content: '确定要退出吗?',
-    //   success(res) {
-    //     if (res.confirm) {
-    //       // sql修改该pk中members数组
-    //       CF.update("pk",
-    //        {
-    //         members: _.pull({
-    //           openId: 
-    //         })
-    //        }, 
-    //        () => {
-    //         wx.switchTab({
-    //           url: '../myInfo/myInfo',
-    //           success: function (res) {
-    //             var page = getCurrentPages().pop();
-    //             if (page == undefined || page == null) return;
-    //             page.onLoad();
-    //           },
-    //           fail: function (res) {
-    //             console.log('跳转到pk列表页面失败')  // fail
-    //           }
-    //         })
-    //       })
-    //     }
-    //   }
-    // })
+    if(!App.globalData.userInfo.openId) return;
+    var pkID = this.data.pk._id
+    var that = this;
+    wx.showModal({
+      title: '提示',
+      content: '确定要退出吗?',
+      success(res) {
+        if (res.confirm) {
+          // 判断是否在组队中
+             that.data.pk.members = that.data.pk.members.filter(item => {
+              return item.openId != App.globalData.userInfo.openId
+            })
+            CF.update("pk",{_id: that.data.pk._id},{
+              members: that.data.pk.members
+            },()=>{
+              wx.switchTab({
+                url: '/pages/myInfo/myInfo',
+                success: function (res) {
+                  var page = getCurrentPages().pop();
+                  if (page == undefined || page == null) return;
+                  page.onLoad();
+                },
+                fail: function (res) {
+                  console.log('跳转到pk列表页面失败')  // fail
+                }
+              })
+            })
+          }
+      }
+    })
   },
   requestData(month){
     // 清空信息
@@ -257,8 +259,8 @@ Page({
         return;
       }
     }
-    this.data.pk.members.push(App.globalData.userInfo)
     if(e.detail == "confirm"){
+      this.data.pk.members.push(App.globalData.userInfo)
       CF.update("pk",{_id: this.data.pk._id},{
         members: this.data.pk.members
       },()=>{
@@ -269,6 +271,10 @@ Page({
           pk: this.data.pk
         })
         this.requestData()
+      })
+    }else{
+      wx.switchTab({
+        url: '/pages/index/index',
       })
     }
   },
@@ -287,24 +293,21 @@ Page({
     }
     var arr = new Array(xData.length);
     arr.fill(null);
-    var bimData = new Array(xData.length);
-    bimData.fill(null);
+    var bmiData = new Array(xData.length);
+    bmiData.fill(null);
     for (var record of records) {
       if (record.weight) {
         arr[parseInt(record.date.substr("8")) - 1] = record.weight
         if (member.height) {
           var weight = record.weight;
           var height = member.height;
-          if (!member.kgFlag) {
-            weight = weight / 2
-          }
-          var BMI = weight / (height * height / 10000);
-          bimData[parseInt(record.date.substr("8")) - 1] = BMI.toFixed(2)
+          var BMI = weight / 2 / (height * height / 10000);
+          bmiData[parseInt(record.date.substr("8")) - 1] = BMI.toFixed(2)
         }
       }
     }
     obj.data = arr;
-    bmiObj.data = bimData;
+    bmiObj.data = bmiData;
 
     seriesData.push(obj)
     seriesBmiData.push(bmiObj)
