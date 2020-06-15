@@ -106,6 +106,7 @@ Page({
           this.setData({
             visibleInviteDialog: true,
           })
+          this.setOwnerFlag();
         })
       }else{
         var data = JSON.parse(options.data)
@@ -113,8 +114,8 @@ Page({
           pk: data
         })
         this.requestData(this.data.currentYear + '-' + this.formatMonth(this.data.currentMonth));
+        this.setOwnerFlag();
       };
-      this.setOwnerFlag();
   },
   setOwnerFlag(){
     if(this.data.pk.openId == App.globalData.userInfo.openId){
