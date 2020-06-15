@@ -122,6 +122,10 @@ Page({
       this.setData({
         isPKOwner: true
       })
+    }else{
+      this.setData({
+        isPKOwner: false
+      })
     }
   },
   showPopup() {

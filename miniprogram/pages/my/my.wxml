@@ -25,6 +25,14 @@
              <view class="cuIcon-edit "></view>
             </view>
           </view>
+          <view class="cu-item" bindtap="queryLastActivity">
+            <view class="content">
+              <text class="text-grey">最新活动</text>
+            </view>
+           <view class="action text-xxl">
+             <view class="cuIcon-emoji"></view>
+            </view>
+          </view>
           <view class="cu-item" bindtap="openFeedback">
             <view class="content">
               <text class="text-grey">在线客服</text>
@@ -70,4 +78,10 @@
       <image class="coverImage"  src="{{htmlImage}}"  mode="widthFix"> </image>
     </view>
   </van-dialog>
+
+  <van-dialog cancelButtonText="取消"  confirmButtonText="确定" bind:close="closeNoticeDialog" closeOnClickOverlay="{{true}}" use-slot show="{{ visibleNoticeDialog }}" showCancelButton="{{true}}" zIndex="1000001">
+  <view style="height:750rpx;overflow:scroll">
+    <image class="coverImage"  src="{{noticeImage}}"  mode="widthFix"> </image>
+  </view>
+</van-dialog>
 </view>

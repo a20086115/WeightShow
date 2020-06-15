@@ -15,15 +15,18 @@ exports.main = async (event, context) => {
     query.openId = event.userInfo.openId;
   }
   try {
-    let res = await db.collection(tbName).where(query).update({
-      data: data
-    })
-    if(res.result.stats.updated == 0){
+    let count = await db.collection(tbName).where(query).count();
+    if(count.total == 0){
+      data.openId = event.userInfo.openId;
+      data.createdate = new Date();
       return await db.collection(tbName).add({
         data:data
       })
+    }else{
+      return await db.collection(tbName).where(query).update({
+        data: data
+      })
     }
-    return res
   } catch (e) {
     console.error(e)
   }

@@ -10,7 +10,10 @@ Page({
     visibleFeedback: false,
     visibleJoinGroup: false,
     htmlImage:"cloud://release-ba24f3.7265-release-ba24f3-1257780911/activity.png",
-    message:"有问题可随时咨询，也欢迎对小程序提出意见和建议~感谢🙇"
+    message:"有问题可随时咨询，也欢迎对小程序提出意见和建议~感谢🙇",
+    visibleNoticeDialog:false,
+    noticeImage:"",
+    noticeContent:""
   },
 
   /**
@@ -116,5 +119,27 @@ Page({
       },
       fail: console.error
     })
-  }
+  },
+  queryLastActivity(){
+    CF.get("notice", {}).then(res => {
+      if(res.result && res.result.data){
+        var notice = res.result.data[0];
+        this.setData({
+          visibleNoticeDialog:true,
+          noticeContent: notice.content,
+          noticeImage: notice.image
+        })
+      }
+    })
+  },
+  showNoticeDialog(){
+    this.setData({
+      visibleNoticeDialog:true
+    })
+  },
+  closeNoticeDialog(){
+    this.setData({
+      visibleNoticeDialog:false
+    })
+  },
 })

@@ -35,6 +35,12 @@ Page({
     }
   },
   back:function(){
-    wx.navigateBack({delta: 1})
+    wx.navigateBack({
+      complete: (res) => {
+        var page = getCurrentPages().pop();
+        if (page == undefined || page == null) return;
+        page.onLoad();
+      },
+    })
   }
 })
