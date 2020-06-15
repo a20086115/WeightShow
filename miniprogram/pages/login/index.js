@@ -12,6 +12,7 @@ Page({
     var that = this;
     if (result.detail.encryptedData) {
       CF.ajax("updateOrInsert",{ 
+        tbName: "users",
         query:{
           openId: true,
         },

@@ -15,9 +15,15 @@ exports.main = async (event, context) => {
     query.openId = event.userInfo.openId;
   }
   try {
-    return await db.collection(tbName).where(query).update({
+    let res = await db.collection(tbName).where(query).update({
       data: data
     })
+    if(res.result.stats.updated == 0){
+      return await db.collection(tbName).add({
+        data:data
+      })
+    }
+    return res
   } catch (e) {
     console.error(e)
   }

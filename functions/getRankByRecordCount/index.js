@@ -38,6 +38,14 @@ exports.main = async (event, context) => {
     .sort({
       totalCount:-1
     })
+    
+    .project({
+      _id: 1,
+      nickName: 1,
+      openId: 1,
+      avatarUrl: 1,  
+      totalCount: 1
+    })
     .limit(100)
     .end()
 

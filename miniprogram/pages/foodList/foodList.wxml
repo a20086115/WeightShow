@@ -8,7 +8,7 @@
     bind:search="onSearch"
   />
 
-<view  wx:for="{{currentFoods}}" style="margin-top:10rpx" bindtap="clickFoods" data-item="{{ item }}">
+<view  wx:for="{{currentFoods}}" wx:key="_id" style="margin-top:10rpx" bindtap="clickFoods" data-item="{{ item }}">
     <van-card
       num="100g"
       price="{{item.calorie + '千卡'}}"

@@ -50,6 +50,13 @@ exports.main = async (event, context) => {
     .sort({
       'recordsList.0.reduce': -1
     })
+    .project({
+      _id: 1,
+      nickName: 1,
+      openId: 1,
+      avatarUrl: 1,  
+      recordsList: 1
+    })
     .limit(100)
     .end()
 

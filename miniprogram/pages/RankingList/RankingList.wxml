@@ -12,7 +12,7 @@
   <van-cell center wx:key="_id" wx:for="{{ currentUsers }}">
     <!-- title -->
     <view slot="title" class="rankTitle">
-      <view class="van-cell-text NoLabel">No.</view>
+      <!-- <view class="van-cell-text NoLabel">No.</view> -->
       <van-tag type="primary" size="large">{{ index + 1 }}</van-tag>
       <view class="van-cell-text usrName">{{ item.nickName}}</view>
     </view>

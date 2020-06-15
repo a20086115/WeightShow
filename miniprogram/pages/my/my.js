@@ -74,6 +74,7 @@ Page({
       getApp().globalData.userInfo = e.detail.userInfo;
       // 执行注册
       CF.ajax("updateOrInsert",{ 
+        tbName: "users",
         query:{
           openId: true,
         },
@@ -82,7 +83,7 @@ Page({
         CF.get("users", {
           openId: true
         }).then(e => {
-          App.globalData.userInfo = e.result.data[0] || {}; 
+          getApp().globalData.userInfo = e.result.data[0] || {}; 
         })
       })
     }
