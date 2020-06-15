@@ -6,14 +6,26 @@
   <!-- <van-tab title="瘦身榜（周）" /> -->
   <van-tab title="瘦身榜（月）" />
 </van-tabs>
-
+ <!-- 通告栏 -->
+<van-notice-bar  wx:if="{{isInCountRank && currentIndex == 0}}"
+  left-icon="../../../images/laba.png"
+  text="{{'您当前排在第' + countIndex + '位，打卡' + currentUsers[countIndex-1].totalCount + '次！继续努力吧！'}}" 
+/>
+<van-notice-bar  wx:elif="{{isInReduceRank && currentIndex == 1}}"
+  left-icon="../../../mages/laba.png"
+  text="{{'您当前排在第' + reduceIndex + '位，减重' + currentUsers[reduceIndex-1].recordsList[0].reduce + 'kg！继续努力吧！'}}" 
+/>
+<van-notice-bar wx:else
+  left-icon="../../../images/laba.png"
+  text="抱歉，您未入榜，请继续努力！╭(●｀∀´●)╯"
+/>
 <!-- 排行榜内容 -->
 <van-cell-group>
   <van-cell center wx:key="_id" wx:for="{{ currentUsers }}">
     <!-- title -->
     <view slot="title" class="rankTitle">
       <view class="van-cell-text NoLabel">No.</view>
-      <van-tag type="primary" size="large">{{ index + 1 }}</van-tag>
+      <van-tag type="{{index + 1 < 4?'danger':'primary'}}" size="large">{{ index + 1 }}</van-tag>
       <view class="van-cell-text usrName">{{ item.nickName}}</view>
     </view>
     <!-- value -->
@@ -24,5 +36,6 @@
     </view>
   </van-cell>
 </van-cell-group>
+
 
 
