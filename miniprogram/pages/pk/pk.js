@@ -89,8 +89,11 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
+      if(!options){
+        return;
+      }
       // 如果是别人邀请近来的用户，首选获取pk信息，并查询chart数据；然后查询有没有用户信息，没有注册过的用户会提示授权；
-      if (options.id) {
+      if (options && options.id) {
         var id = decodeURIComponent(options.id);
         CF.get("pk", { _id: id }, (e) => {
           this.setData({
@@ -350,7 +353,7 @@ Page({
         this.setData({
           pk: this.data.pk
         })
-        this.requestData()
+        this.requestData(this.data.currentYear + '-' + this.formatMonth(this.data.currentMonth));
       })
     }else{
       wx.switchTab({

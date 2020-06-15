@@ -26,7 +26,7 @@
 			"disablePlugins": [],
 			"outputPath": ""
 		},
-		"useCompilerModule": false,
+		"useCompilerModule": true,
 		"userConfirmedUseCompilerModuleSwitch": false
 	},
 	"compileType": "miniprogram",
@@ -68,7 +68,7 @@
 					"id": 0,
 					"name": "pages/myInfo/myInfopk",
 					"pathName": "pages/pk/pk",
-					"query": "id=1111111",
+					"query": "id=ab79f8175ee714cd00158d3f57338daa",
 					"scene": null
 				}
 			]

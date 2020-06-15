@@ -26,6 +26,35 @@ Page({
         avatarUrl: getApp().globalData.userInfo.avatarUrl,
         userInfo: getApp().globalData.userInfo
       })
+      // 获取用户信息更新
+      this.updateUserPhoto();
+    }
+
+  },
+  // 静默更新头像
+  updateUserPhoto(){
+    var that = this;
+    wx.getSetting({
+      success (res){
+        if (res.authSetting['scope.userInfo']) {
+          // 已经授权，可以直接调用 getUserInfo 获取头像昵称
+          wx.getUserInfo({
+            success: function(res) {
+              console.log(res.userInfo)
+              CF.update("users",{openId: true}, {avatarUrl: res.userInfo.avatarUrl})
+            }
+          })
+        }
+      }
+    })
+  },
+  onShow(){
+    // 获取用户信息
+    if(getApp().globalData && getApp().globalData.userInfo.avatarUrl){
+      this.setData({
+        avatarUrl: getApp().globalData.userInfo.avatarUrl,
+        userInfo: getApp().globalData.userInfo
+      })
     }
   },
 
