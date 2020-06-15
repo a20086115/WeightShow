@@ -30,7 +30,7 @@
               <text class="text-grey">在线客服</text>
             </view>
            <view class="action text-xxl">
-             <view class="cuIcon-like "></view>
+             <view class="cuIcon-phone "></view>
             </view>
           </view>
           <view class="cu-item" bindtap="openJoinGroupDialog">
@@ -38,7 +38,7 @@
               <text class="text-grey">加群交流</text>
             </view>
              <view class="action text-xxl">
-             <view class="cuIcon-phone"></view>
+             <view class="cuIcon-like"></view>
             </view>
           </view>
           <view class="cu-item" bindtap="navToLinkusPage">
@@ -54,7 +54,7 @@
   </view>
 
   <van-dialog
-    title="意见反馈"
+    title="在线客服"
     message="有问题可随时咨询，也欢迎对小程序提出意见和建议~感谢🙇‍"
     show="{{ visibleFeedback }}"
     cancel="true"

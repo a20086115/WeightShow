@@ -1,3 +1,4 @@
+import { cloud as CF } from '../../utils/cloudFunctionPromise.js'
 Page({
   /**
    * 页面的初始数据
@@ -70,7 +71,20 @@ Page({
         avatarUrl: e.detail.userInfo.avatarUrl,
         userInfo: e.detail.userInfo
       })
-      getApp().globalData.userInfo = e.detail.userInfo
+      getApp().globalData.userInfo = e.detail.userInfo;
+      // 执行注册
+      CF.ajax("updateOrInsert",{ 
+        query:{
+          openId: true,
+        },
+        data: e.detail.userInfo 
+      }).then(e=>{
+        CF.get("users", {
+          openId: true
+        }).then(e => {
+          App.globalData.userInfo = e.result.data[0] || {}; 
+        })
+      })
     }
   },
   openFeedback(){

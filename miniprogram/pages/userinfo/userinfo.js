@@ -42,10 +42,10 @@ Page({
       // 更新的查询条件
       CF.update("users", {openId: true}, {
         nickName: this.data.currentUser.nickName,
-        age: this.data.currentUser.age,
-        height: this.data.currentUser.height,
-        aimWeight: this.data.currentUser.aimWeight,
-        aimWeightKg: this.data.currentUser.aimWeightKg
+        age: parseInt(this.data.currentUser.age),
+        height: parseFloat(this.data.currentUser.height),
+        aimWeight: parseFloat(this.data.currentUser.aimWeight),
+        aimWeightKg: parseFloat(this.data.currentUser.aimWeightKg)
       }, (data) => {
         Toast.success('更新成功');
         getApp().globalData.userInfo = this.data.currentUser

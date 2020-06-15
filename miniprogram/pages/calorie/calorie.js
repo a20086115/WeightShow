@@ -105,7 +105,7 @@ Page({
   },
   onShow: function(){
     // 查询当月记录
-    this.queryRecordsByMonth(dayjs().format("YYYY-MM"));
+    this.queryRecordsByMonth(this.data.currentMonth);
 
     // 计算所需卡路里
     this.calNeedCalorie();
@@ -270,7 +270,7 @@ Page({
 
     }else{
       // 跳转到UserInfo 设置界面
-      wx.redirectTo({
+      wx.navigateTo({
         url: '/pages/userinfo/userinfo',
       })
     }

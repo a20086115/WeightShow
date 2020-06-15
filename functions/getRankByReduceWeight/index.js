@@ -27,12 +27,16 @@ exports.main = async (event, context) => {
         ))
         .project({
           _id: 1,
-          weight: 1
+          weight: 1,  
+          date: 1
+        })
+        .sort({
+          date: 1
         })
         .group({
           _id: '$alias',
-          max: $.max('$weight'),
-          min: $.min('$weight'),
+          max: $.first('$weight'),
+          min: $.last('$weight'),
         })
         .addFields({
           reduce: $.subtract(['$max', '$min'])

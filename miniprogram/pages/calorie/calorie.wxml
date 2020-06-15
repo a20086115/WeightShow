@@ -19,7 +19,7 @@
   </view>
 
   <van-row wx:else>
-    <van-col span="24" bindtap="toUserInfo">{{ needCalorieTip}}</van-col>
+    <van-col span="24" style="text-align:center;color:#188be4" bindtap="toUserInfo">{{ needCalorieTip}}</van-col>
   </van-row>
 
   <view class="container" style=" height: 650rpx; position:relative">

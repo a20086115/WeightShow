@@ -91,6 +91,9 @@ function setOption(chart) {
 let chart = null
 Page({
   data: {
+    visibleNoticeDialog:false,
+    visibleNoticeBar:false,
+    noticeContent:"",
     multiArray:[HOUR, MIN],
     multiIndex:[10,0],
     visibleBmi:false,
@@ -164,6 +167,16 @@ Page({
     confirmButtonText:"保存本地",
     visibleHtml: false,
     htmlImage:"cloud://release-ba24f3.7265-release-ba24f3-1257780911/activity.png"
+  },
+  showNoticeDialog(){
+    this.setData({
+      visibleNoticeDialog:true
+    })
+  },
+  closeNoticeDialog(){
+    this.setData({
+      visibleNoticeDialog:false
+    })
   },
   handleClockCancel(e) {
     this.setData({
@@ -379,7 +392,33 @@ Page({
       height: App.globalData.userInfo.height || ""
     })
     // 查询当月记录
-    this.queryRecordsByMonth(dayjs().format("YYYY-MM"))
+    this.queryRecordsByMonth(this.data.currentMonth)
+
+    // 查询最新活动
+
+    this.queryLastActivity();
+  },
+  // 关闭noticeBar
+  onNotiveCloseIcon(){
+    console.log("onCloseNotice")
+    CF.update("users",{openId: true},{
+      cuurentNoticeVersion:this.data.noticeVersion
+    })
+  },
+  queryLastActivity(){
+    CF.get("notice", {}, (res) => {
+      if(res.result && res.result.data){
+        var notice = res.result.data[0];
+        if(!App.globalData.userInfo || !App.globalData.userInfo.cuurentNoticeVersion  ||  App.globalData.userInfo.cuurentNoticeVersion <notice.version ){
+          this.data.noticeVersion = notice.version;
+          this.setData({
+            visibleNoticeBar:true,
+            noticeContent: notice.content,
+            noticeImage: notice.image
+          })
+        }
+      }
+    })
   },
   showBmiInfo: function(){
     wx.showModal({
@@ -435,7 +474,8 @@ Page({
       currentdate: date,
       visible: true,
       text: text,
-      weight: text || "",
+      weight: parseFloat(text|| 0) ,
+      weightKg: parseFloat(text|| 0) / 2 ,
       refreshFlag: false
     })
   },
@@ -591,7 +631,7 @@ Page({
       CF.update("users", {
         openId: true
       }, {
-          height: height
+          height: parseFloat(height)
       }, () => {
         App.globalData.userInfo.height = height;
         this.getBMI()

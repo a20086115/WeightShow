@@ -16,10 +16,10 @@ Page({
           openId: true,
         },
         data: result.detail.userInfo 
-      },(e)=>{
+      }).then(e=>{
         CF.get("users", {
           openId: true
-        }, (e) => {
+        }).then(e => {
           App.globalData.userInfo = e.result.data[0] || {}; 
           this.back()
         })

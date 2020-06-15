@@ -20,7 +20,7 @@
     />
   </van-popup>
   <view style="text-align:center; color: #37A2DA;margin-top:10px;margin-bottom:0px" bindtap="clickTitle">{{ titleFlag ? "体重曲线" : "BMI曲线"}}</view>
-  <view class="container" hidden="{{ visibleInviteDialog && !show }}">
+  <view class="container" hidden="{{ visibleInviteDialog || show }}">
     <ec-canvas  id="mychart-dom-line" canvas-id="mychart-line" ec="{{ ec }}" force-use-old-canvas="true"></ec-canvas>
   </view>
 

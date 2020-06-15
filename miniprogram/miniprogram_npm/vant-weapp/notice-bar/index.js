@@ -120,6 +120,7 @@ VantComponent({
             this.timer && clearTimeout(this.timer);
             this.timer = null;
             this.setData({ show: false });
+            this.$emit('clickIcon', null);
         },
         onClick(event) {
             this.$emit('click', event);
