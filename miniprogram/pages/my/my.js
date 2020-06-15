@@ -9,7 +9,8 @@ Page({
     app:getApp(),
     visibleFeedback: false,
     visibleJoinGroup: false,
-    htmlImage:"cloud://release-ba24f3.7265-release-ba24f3-1257780911/activity.png"
+    htmlImage:"cloud://release-ba24f3.7265-release-ba24f3-1257780911/activity.png",
+    message:"有问题可随时咨询，也欢迎对小程序提出意见和建议~感谢🙇"
   },
 
   /**
@@ -90,6 +91,7 @@ Page({
   },
   openFeedback(){
     this.setData({
+      message:"有问题可随时咨询，也欢迎对小程序提出意见和建议~感谢🙇",
       visibleFeedback: true
     })
   },
@@ -100,7 +102,8 @@ Page({
   },
   openJoinGroupDialog(){
     this.setData({
-      visibleJoinGroup: true
+      message:"发送【加群】给客服，客服会回复群聊二维码~欢迎加群一起交流哦🙇",
+      visibleFeedback: true
     })
   },
   closeJoinGroup(e){

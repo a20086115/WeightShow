@@ -55,7 +55,7 @@
 
   <van-dialog
     title="在线客服"
-    message="有问题可随时咨询，也欢迎对小程序提出意见和建议~感谢🙇‍"
+    message="{{message}}‍"
     show="{{ visibleFeedback }}"
     cancel="true"
     show-cancel-button
