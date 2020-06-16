@@ -1,49 +1,53 @@
 <!--miniprogram/pages/food/foodList.wxml-->
-<import src="../template-cart/template-cart.wxml" />
 <view class="container">
-  <van-search
-    value="{{ search }}"
-    placeholder="请输入搜索关键词"
-    bind:change="onChange"
-    bind:search="onSearch"
-  />
+	<van-search value="{{ search }}" placeholder="请输入搜索关键词" bind:change="onChange" use-right-icon-slot="true" right-icon="photo-o" bind:search="onSearch">
+    <van-icon slot="right-icon" bind:tap="uploadPhoto" name="photo-o" />
+  </van-search>
+	<view wx:if="{{ currentFoods.length == 0}}" style="text-align:center">
+		<image class="no-goods-icon" src="/images/nofood.png"></image>
+		<view class="title-box">
+			空空如也～什么都没有搜索到
+		</view>
+		<view class="to-index-btn" bindtap="uploadPhoto">
+			试试拍照搜索
+		</view>
+	</view>
+	<view wx:else>
+		<view wx:for="{{currentFoods}}" wx:key="_id" style="margin-top:10rpx" bindtap="clickFoods" data-item="{{ item }}">
+			<van-card num="100g" price="{{item.calorie + '千卡'}}" title="{{item._id}}" thumb="{{ item.img || FOOD_IMAGE_DEFAULT }}" currency="" desc=" {{item.desc || ''}}" lazy-load="true" />
+		</view>
+	</view>
 
-<view  wx:for="{{currentFoods}}" wx:key="_id" style="margin-top:10rpx" bindtap="clickFoods" data-item="{{ item }}">
-    <van-card
-      num="100g"
-      price="{{item.calorie + '千卡'}}"
-      title="{{item._id}}"
-      thumb="{{ item.img }}"
-      currency=""
-      desc=" {{item.categories == null ? '' : item.categories}}"
-      lazy-load="true"
-      />
-</view>
-<van-action-sheet show="{{ show }}" title="标题" bind:close="onClose">
-<view>
- <view class="sku-container">
-   <view class="sku">
-      <view class="t">{{currentFood._id}}</view>
-      <view class="items">
-        <text class="{{index == currentType? 'active' : ''}}" wx:for="{{properties}}"  data-index="{{ index }}" bindtap="selectType">{{item}}</text>
-      </view>
-      <view class="t">{{currentFood.calorie}} 千卡 / 100g</view>
-    </view>
+	<van-action-sheet show="{{ show }}" title="标题" bind:close="onClose">
+		<view>
+			<view class="sku-container">
+				<view class="sku">
+					<view class="t">{{currentFood._id}}</view>
+					<view class="items">
+						<text class="{{index == currentType? 'active' : ''}}" wx:for="{{properties}}"  data-index="{{ index }}" bindtap="selectType">{{item}}</text>
+					</view>
+					<view class="t">{{currentFood.calorie}} 千卡 / 100g</view>
+				</view>
 
-    
-    <view class="num">
-      <view class="t">添加数量</view>
-      <view class="num-box">
-        <text class="a" bindtap="modCount">-</text>
-        <input type="digit" class="b" value="{{currentCount}}" bindinput="onCountChange"></input>
-        <text class="a" bindtap="addCount">+</text>
-      </view>
-    </view>
-  </view>
-  <view class="sku-btn" bindtap="addDayMeal">添加</view>
-</view>
- 
-</van-action-sheet>
+
+				<view class="num">
+					<view class="t">添加数量</view>
+					<view class="num-box">
+						<text class="a" bindtap="modCount">-</text>
+						<input type="digit" class="b" value="{{currentCount}}" bindinput="onCountChange"></input>
+						<text class="a" bindtap="addCount">+</text>
+					</view>
+				</view>
+			</view>
+			<view class="sku-btn" bindtap="addDayMeal">添加</view>
+		</view>
+
+	</van-action-sheet>
 
 </view>
 <van-toast id="van-toast" />
+<van-dialog use-slot title="请输入要添加的食物" show="{{ visibleUserFoodDialog }}" bind:close="handleInsertUserFood" zIndex="100000" show-cancel-button>
+  <van-cell-group>
+    <van-field label="食物名称" value="{{ userFoodName }}" right-icon="photo-o" bind:click-icon="uploadPhoto"  placeholder="请输入食物名称或拍照" border="{{ true }}" bind:change="onInputValueChange" />
+  </van-cell-group>
+</van-dialog>

@@ -2,18 +2,24 @@
 const app = getApp();
 import dayjs from './dayjs.min.js'
 
-var ajax = function (name, data) {
+var ajax = function (name, data, hideLoading) {
   return new Promise(function (resolve, reject) {
     data.env = app.globalData.CLOUD_ENV;
-    wx.showLoading({ title: '加载中...' })
+    if(!hideLoading){
+      wx.showLoading({ title: '加载中...' })
+    }
     wx.cloud.callFunction({
       name: name,
       data: data
     }).then(function (e) {
-      wx.hideLoading();
+      if(!hideLoading){      
+        wx.hideLoading();
+      }
       resolve(e);
     }).catch((e) => {
-      wx.hideLoading();
+      if(!hideLoading){      
+        wx.hideLoading();
+      }
       wx.showToast({
         icon: 'none',
         title: '网络出小差了,请稍后再试...'
