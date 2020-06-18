@@ -189,7 +189,7 @@ Page({
         image: imageBase64,
         baike_num: 10,
         top_num: 10,
-        filter_threshold:0.95
+        filter_threshold:0.9
       },
       success:res=>{
         // 调用成功
