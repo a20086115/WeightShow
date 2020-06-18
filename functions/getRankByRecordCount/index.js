@@ -46,7 +46,7 @@ exports.main = async (event, context) => {
       avatarUrl: 1,  
       totalCount: 1
     })
-    .limit(100)
+    .limit(50)
     .end()
 
   } catch (e) {
