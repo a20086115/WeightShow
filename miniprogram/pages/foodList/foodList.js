@@ -187,8 +187,8 @@ Page({
       },
       data:{
         image: imageBase64,
-        baike_num: 5,
-        top_num: 5,
+        baike_num: 10,
+        top_num: 10,
         filter_threshold:0.95
       },
       success:res=>{
