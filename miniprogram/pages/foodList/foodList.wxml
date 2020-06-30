@@ -5,8 +5,11 @@
   </van-search>
 	<view wx:if="{{ currentFoods.length == 0}}" style="text-align:center">
 		<image class="no-goods-icon" src="/images/nofood.png"></image>
-		<view class="title-box">
+		<view  wx:if="{{ search}}" class="title-box">
 			空空如也～什么都没有搜索到
+		</view>
+		<view wx:else class="title-box">
+			请在搜索框输入关键词搜索
 		</view>
 		<view class="to-index-btn" bindtap="uploadPhoto">
 			试试拍照搜索

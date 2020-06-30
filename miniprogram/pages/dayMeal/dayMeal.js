@@ -8,6 +8,7 @@ Page({
    * 页面的初始数据
    */
   data: {
+    FOOD_IMAGE_DEFAULT:"/images/default_image.png",
     sidebars: [{
       name: "早餐",
       totalCalorie:0

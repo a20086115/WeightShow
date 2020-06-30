@@ -12,13 +12,17 @@
         <van-sidebar-item title="{{ item.name }}" wx:for="{{ sidebars }}" info="{{ item.totalCalorie}}" bindtap="onClickNav" data-index="{{ index }}"/>
       </van-sidebar>
       <view style="width:80%">
-          <view wx:if="{{!currentFoods.length}}" class="no-data">
-            <view class="line"></view>
-            <view class="txt">暂无用餐记录</view>
-            <view class="line"></view>
+          <view wx:if="{{ currentFoods.length == 0}}" style="text-align:center">
+            <image class="no-goods-icon" src="/images/nofood.png"></image>
+            <view class="title-box">
+              暂无用餐记录
+            </view>
+            <view class="to-index-btn" bindtap="onSearch">
+              去添加
+            </view>
           </view>
           <view  wx:for="{{currentFoods}}" wx:key="_id" style="margin-top:10rpx" bindtap="clickFoods" data-item="{{ item }}">
-              <van-card num="{{ item.count }}" price="{{item.calorie + '千卡'}} "  title="{{item.foodsList[0]._id}}" thumb="{{ item.foodsList[0].img }}"
+              <van-card num="{{ item.count }}" price="{{item.calorie + '千卡'}} "  title="{{item.foodsList[0]._id}}" thumb="{{ item.foodsList[0].img || FOOD_IMAGE_DEFAULT}}"
                 currency="" desc="100g" />
           </view>
       </view>
