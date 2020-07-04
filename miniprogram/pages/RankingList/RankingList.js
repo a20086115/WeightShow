@@ -32,38 +32,42 @@ Page({
       // tab0 查询总共的打卡次数
       CF.ajax("getRankByRecordCount", { }
       ).then(res =>{
-        this.setData({ 
-          currentUsers: res.result.list
-         })
-         for(var usr of res.result.list){
-          if(usr.openId == getApp().globalData.userInfo.openId){
-            this.setData({ 
-              isInCountRank: true,
-              countIndex: res.result.list.indexOf(usr) + 1
-            })
-            return
-          }
-         }
-        })
+        if(res.result){
+          this.setData({ 
+            currentUsers: res.result.list
+           })
+           for(var usr of res.result.list){
+            if(usr.openId == getApp().globalData.userInfo.openId){
+              this.setData({ 
+                isInCountRank: true,
+                countIndex: res.result.list.indexOf(usr) + 1
+              })
+              return
+            }
+           }
+        }
+      })
     }else if(this.data.currentIndex == 1){
       // tab1 查询排行榜
       CF.ajax("getRankByReduceWeight", {
         beginDay: dayjs().startOf('month').format("YYYY-MM-DD"),
         endDay: dayjs().format("YYYY-MM-DD")
       }).then(res =>{
-        for(var user of res.result.list){
-          user.recordsList[0].reduce = (user.recordsList[0].reduce / 2).toFixed(2)
-        }
-        this.setData({ 
-          currentUsers: res.result.list
-        })
-        for(var usr of res.result.list){
-          if(usr.openId == getApp().globalData.userInfo.openId){
-            this.setData({ 
-              isInReduceRank: true,
-              reduceIndex: res.result.list.indexOf(usr) + 1
-            })
-            return
+        if(res.result){
+          for(var user of res.result.list){
+            user.recordsList[0].reduce = (user.recordsList[0].reduce / 2).toFixed(2)
+          }
+          this.setData({ 
+            currentUsers: res.result.list
+          })
+          for(var usr of res.result.list){
+            if(usr.openId == getApp().globalData.userInfo.openId){
+              this.setData({ 
+                isInReduceRank: true,
+                reduceIndex: res.result.list.indexOf(usr) + 1
+              })
+              return
+            }
           }
         }
       })

@@ -22,6 +22,7 @@ exports.main = async (event, context) => {
         .match({
           date: _.and(_.gte(beginDay), _.lte(endDay)),
           weight: _.neq(0),
+          weight:  _.neq("")
         })
         .match(_.expr( $.eq(['$openId', '$$openId']),
         ))

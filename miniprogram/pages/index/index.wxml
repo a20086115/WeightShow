@@ -48,7 +48,8 @@
     <van-field label="日期" value="{{ currentdate }}" placeholder="" border="{{ true }}" disabled bind:change="onChangeTime" />
     <van-field label="体重(千克)" value="{{ weightKg }}" right-icon="photo-o" bind:click-icon="uploadPhoto" type="digit" placeholder="请输入体重" border="{{ true }}" bind:change="onChangeWeightKg" />
     <van-field label="体重(斤）" value="{{ weight }}" right-icon="photo-o" bind:click-icon="uploadPhoto" type="digit" placeholder="请输入体重" border="{{ true }}" bind:change="onChangeWeight" />
-  </van-cell-group>
+    <van-checkbox custom-class="padding" value="{{ subscribeChecked }}" bind:change="onSubscribeCheckboxChange">明天这时候提醒我打卡</van-checkbox>
+</van-cell-group>
 </van-dialog>
 
 <van-dialog use-slot title="请输入身高信息" show="{{ visibleHeight }}" bind:close="handleInsertHeight" show-cancel-button zIndex="100000">

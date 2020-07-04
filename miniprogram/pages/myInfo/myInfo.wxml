@@ -26,6 +26,10 @@
    />
   </van-cell-group>
   
+  <!-- 广告 -->
+  <view style="margin-top:50rpx">
+   <ad unit-id="adunit-992b3cf68c4b720f"></ad>
+  </view>
 </view>
 
 <van-dialog use-slot title="发起Pk组队赛" show="{{ visible_name }}" bind:close="handleInsertPk" zIndex="100000" show-cancel-button>

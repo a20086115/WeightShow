@@ -1,4 +1,5 @@
 import { cloud as CF } from '../../utils/cloudFunction.js'
+import { cloud as CF1 } from '../../utils/cloudFunctionPromise.js'
 import dayjs from '../../utils/dayjs.min.js'
 import * as echarts from '../../ec-canvas/echarts';
 import Notify from '../../miniprogram_npm/vant-weapp/notify/notify';
@@ -91,10 +92,11 @@ function setOption(chart) {
 let chart = null
 Page({
   data: {
-    visibleNoticeDialog:false,
-    visibleNoticeBar:false,
-    noticeContent:"",
-    multiArray:[HOUR, MIN],
+    subscribeChecked: true, // 提醒打卡，默认为true
+    visibleNoticeDialog:false, // 通告弹框
+    visibleNoticeBar:false, // 通告 上方 通知栏
+    noticeContent:"", // 通告内容
+    multiArray:[HOUR, MIN], 
     multiIndex:[10,0],
     visibleBmi:false,
     ec: {
@@ -545,6 +547,14 @@ Page({
     })
   },
   /**
+   * 是否选中推送提醒
+   */
+  onSubscribeCheckboxChange(event){
+    this.setData({
+      subscribeChecked: event.detail,
+    });
+  },
+  /**
    * 点击提交体重
    */
   handleInsertWeight: function (e) {
@@ -557,6 +567,33 @@ Page({
       }
       return;
     }
+
+    // 如果选中了提醒，请求推送
+    if(this.data.subscribeChecked){
+      wx.requestSubscribeMessage({
+        tmplIds: ['-ejtsE73bMY5DzlafJoQvPxhkOUklQUP_hZGIMLWzXA'],
+        success (res) {
+          if(res.errMsg == "requestSubscribeMessage:ok"){
+            // 插入一条推送记录
+            wx.cloud.callFunction({
+              name: "updateOrInsert",
+              data: {
+                tbName: "subscribe",
+                query:{
+                  openId: true,
+                  day: dayjs().add(1,"day").format("YYYY-MM-DD")
+                },
+                data:{
+                  day: dayjs().add(1,"day").format("YYYY-MM-DD"),
+                  subscribeDate: dayjs().add(1,"day").format("YYYY-MM-DD HH:mm")
+                }
+              }
+            })
+          }
+        }
+      })
+    }
+
     var date = this.data.currentdate;
     var weight = this.data.weight;
     var weightKg = this.data.weightKg;
