@@ -30,6 +30,7 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
+    wx.showShareMenu({  menus: ['shareAppMessage', 'shareTimeline']})
     this.setData({
       date: options.date,
     })
@@ -108,5 +109,17 @@ Page({
       // on cancel
     });
   },
-
+  onShareTimeline() {
+    return {
+      title: '瘦身打卡助手，记录每日饮食和体重变化',
+      query: ''
+    }
+  },
+  onShareAppMessage(options){
+    // 来自页面内的按钮的转发
+　　if (options.from != 'button') {
+      shareObj.title = "快来和我一起打卡，记录每日饮食和体重变化吧";
+　　}
+　　return shareObj;
+  },
 })

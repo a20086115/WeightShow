@@ -112,11 +112,11 @@ Page({
       left: "分类",
       right: "BMI 范围"
     }, {
-        color: "#0066CC",
+        color: "#29d",
         left: "偏瘦",
         right: " <= 18.4"
       }, {
-        color: "#01814A",
+        color: "#07c160",
         left: "正常",
         right: "18.5 ~ 23.9"
       }, {
@@ -124,7 +124,7 @@ Page({
         left: "过重",
         right: "24.0 ~27.9"
       }, {
-        color: "#AE0000",
+        color: "#fa5151",
         left: "肥胖",
         right: ">= 28.0 "
       }],
@@ -390,6 +390,7 @@ Page({
     });
   },
   onLoad: function(){
+    wx.showShareMenu({  menus: ['shareAppMessage', 'shareTimeline']})
     this.setData({
       height: App.globalData.userInfo.height || ""
     })
@@ -697,7 +698,7 @@ Page({
       console.log("queryRecordsByMonth failed")
       wx.hideLoading();
       wx.showToast({ title: '网络出小差了,请稍后再试...', icon: 'none' })
-      this.queryRecordsByMonth(month)
+      // this.queryRecordsByMonth(month)
     })
   },
   /**
@@ -1077,6 +1078,7 @@ Page({
         visibleClock: true
       });
     }
-  }
+  },
+ 
 })
 

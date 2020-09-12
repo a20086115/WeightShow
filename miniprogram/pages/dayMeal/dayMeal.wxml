@@ -6,10 +6,13 @@
       placeholder="请输入搜索关键词"
       bind:change="onSearchChange"
       bind:search="onSearch"
-    />
+      use-action-slot
+    >
+     <view slot="action" bind:tap="onSearch">搜索</view>
+    </van-search>
     <view style="display:flex">
       <van-sidebar active-key="{{ activeKey }}" style="width:20%">
-        <van-sidebar-item title="{{ item.name }}" wx:for="{{ sidebars }}" info="{{ item.totalCalorie}}" bindtap="onClickNav" data-index="{{ index }}"/>
+        <van-sidebar-item :key="name"  title="{{ item.name }}" wx:for="{{ sidebars }}" info="{{ item.totalCalorie}}" bindtap="onClickNav" data-index="{{ index }}"/>
       </van-sidebar>
       <view style="width:80%">
           <view wx:if="{{ currentFoods.length == 0}}" style="text-align:center">

@@ -78,15 +78,6 @@
   bind:select="onSelect"
 />
 
-<van-dialog use-slot title="设置定时推送提醒" show="{{ visibleClock }}" bind:close="handleClockSet" showCancelButton="{{true}}"  zIndex="100000">
-    <van-cell-group>
-      <picker mode="multiSelector" bindchange="onClockDateConfirm" value="{{multiIndex}}" range="{{multiArray}}">
-        <van-cell title="定时时间" value="{{clockDate}}" bindtap=""/>
-      </picker>
-
-      <van-switch-cell title="定时开关" checked="{{ clockOpen }}" bind:change="onClockOpenChange" />
-    </van-cell-group>
-</van-dialog>
 
 <van-dialog cancelButtonText="取消"  confirmButtonText="保存" bind:close="closeHtml" closeOnClickOverlay="{{true}}" use-slot show="{{ visibleHtml }}" showCancelButton="{{true}}" zIndex="1000001">
   <view style="height:1000rpx;overflow:scroll">

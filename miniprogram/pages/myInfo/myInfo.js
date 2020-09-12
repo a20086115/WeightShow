@@ -70,6 +70,7 @@ Page({
   },
   clickPk(e){
     var data = JSON.stringify(this.data.pkList[e.target.id]);
+    App.globalData.currentPk = this.data.pkList[e.target.id]
     wx.navigateTo({
       url: '/pages/pk/pk?data=' + data,
     })

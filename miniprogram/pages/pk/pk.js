@@ -112,9 +112,9 @@ Page({
           this.setOwnerFlag();
         })
       }else{
-        var data = JSON.parse(options.data)
+        var data =  App.globalData.currentPk
         this.setData({
-          pk: data
+          pk: App.globalData.currentPk
         })
         this.requestData(this.data.currentYear + '-' + this.formatMonth(this.data.currentMonth));
         this.setOwnerFlag();
