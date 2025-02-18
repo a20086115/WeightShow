@@ -88,6 +88,19 @@ Page({
       url: '/pages/aboutUs/about',
     })
   },
+  /**
+   * 
+   * @param {*} e 
+   */
+  navToEle:function(){
+    wx.navigateToMiniProgram({
+      appId: 'wxece3a9a4c82f58c9',
+      path: 'ele-recommend-price/pages/guest-fire/index?inviterId=595443fa&actId=1',
+      success(res) {
+        // 打开成功
+      }
+    })
+  },
   onGetUserInfo: function (e) {
     if (!this.data.logged && e.detail.userInfo) {
       this.setData({

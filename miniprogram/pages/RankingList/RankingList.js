@@ -28,6 +28,7 @@ Page({
      this.getRankData();
   },
   getRankData: function(){
+      console.log(111)
     if(this.data.currentIndex == 0){
       // tab0 查询总共的打卡次数
       CF.ajax("getRankByRecordCount", { }

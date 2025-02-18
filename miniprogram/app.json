@@ -1,6 +1,5 @@
 {
   "pages": [
-    
     "pages/start/index",
     "pages/foodList/foodList",
     "pages/dayMeal/dayMeal",

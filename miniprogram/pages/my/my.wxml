@@ -57,6 +57,14 @@
              <view class="cuIcon-question "></view>
             </view>
           </view>
+          <!-- <view class="cu-item" bindtap="navToEle">
+            <view class="content">
+              <text class="text-grey">外卖大红包</text>
+            </view>
+             <view class="action text-xxl">
+             <view class="cuIcon-question "></view>
+            </view>
+          </view> -->
         </view>
 
   </view>

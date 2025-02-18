@@ -21,8 +21,20 @@ Page({
       CF.get("users", {
         openId: true
       }, (e) => {
+        console.log("eeeee", e)
         App.globalData.userInfo = e.result.data[0] || {};
-        that.goIndex();
+        // 如果为空，执行一次注册
+        if(!App.globalData.userInfo.openId){
+            CF.insert( "users",{
+                nickName: '微信用户',
+                avatarUrl: 'http://cdnjson.com/images/2025/02/19/132.jpg'
+            },(res)=>{
+                console.log('res', res)
+                this.goIndex()
+            })
+        }else{
+         that.goIndex();
+        }
       }, () => {
         that.goIndex();
       })

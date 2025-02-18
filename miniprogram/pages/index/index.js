@@ -964,8 +964,7 @@ Page({
         fileid: id,
         date: date
       }
-      CF.insert("records", obj, (res) => {
-        console.log("修改成功", res)
+      CF.insert("records", obj, () => {
         wx.showToast({
           title: '上传成功',
           icon: 'success',
