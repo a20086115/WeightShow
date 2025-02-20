@@ -155,7 +155,7 @@ Page({
             this.loadSponsorCount()
             
             wx.showToast({
-                title: '感谢支持，后台已完成标记，请联系客户获取！',
+                title: '感谢支持，后台已登记，请联系客服获取！',
                 icon: 'success'
             })
         })
