@@ -1,14 +1,5 @@
 import { VantComponent } from '../common/component';
+import { safeArea } from '../mixins/safe-area';
 VantComponent({
-    relation: {
-        type: 'descendant',
-        name: 'goods-action-button',
-        current: 'goods-action',
-    },
-    props: {
-        safeAreaInsetBottom: {
-            type: Boolean,
-            value: true
-        }
-    }
+    mixins: [safeArea()]
 });

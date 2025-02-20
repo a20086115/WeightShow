@@ -21,15 +21,12 @@ VantComponent({
         password: Boolean,
         iconClass: String,
         clearable: Boolean,
-        clickable: Boolean,
         inputAlign: String,
-        placeholder: String,
         customStyle: String,
         confirmType: String,
         confirmHold: Boolean,
-        holdKeyboard: Boolean,
         errorMessage: String,
-        arrowDirection: String,
+        placeholder: String,
         placeholderStyle: String,
         errorMessageAlign: String,
         selectionEnd: {
@@ -76,25 +73,23 @@ VantComponent({
     methods: {
         onInput(event) {
             const { value = '' } = event.detail || {};
-            this.setData({ value });
-            wx.nextTick(() => {
+            this.set({ value }, () => {
                 this.emitChange(value);
             });
         },
         onFocus(event) {
-            this.setData({ focused: true });
+            this.set({ focused: true });
             this.$emit('focus', event.detail);
         },
         onBlur(event) {
-            this.setData({ focused: false });
+            this.set({ focused: false });
             this.$emit('blur', event.detail);
         },
         onClickIcon() {
             this.$emit('click-icon');
         },
         onClear() {
-            this.setData({ value: '' });
-            wx.nextTick(() => {
+            this.set({ value: '' }, () => {
                 this.emitChange('');
                 this.$emit('clear', '');
             });
@@ -105,7 +100,6 @@ VantComponent({
         emitChange(value) {
             this.$emit('input', value);
             this.$emit('change', value);
-        },
-        noop() { }
+        }
     }
 });

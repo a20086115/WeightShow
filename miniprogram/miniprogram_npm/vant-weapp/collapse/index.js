@@ -3,7 +3,12 @@ VantComponent({
     relation: {
         name: 'collapse-item',
         type: 'descendant',
-        current: 'collapse',
+        linked(child) {
+            this.children.push(child);
+        },
+        unlinked(child) {
+            this.children = this.children.filter((item) => item !== child);
+        }
     },
     props: {
         value: {
@@ -18,6 +23,9 @@ VantComponent({
             type: Boolean,
             value: true
         }
+    },
+    beforeCreate() {
+        this.children = [];
     },
     methods: {
         updateExpanded() {

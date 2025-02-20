@@ -10,8 +10,7 @@
 
     <van-field
       type="search"
-      left-icon="{{ !useLeftIconSlot ? leftIcon : '' }}"
-      right-icon="{{ !useRightIconSlot ? rightIcon : '' }}"
+      left-icon="search"
       focus="{{ focus }}"
       error="{{ error }}"
       border="{{ false }}"
@@ -32,10 +31,7 @@
       bind:change="onChange"
       bind:confirm="onSearch"
       bind:clear="onClear"
-    >
-      <slot wx:if="{{ useLeftIconSlot }}" name="left-icon" slot="left-icon" />
-      <slot wx:if="{{ useRightIconSlot }}" name="right-icon" slot="right-icon" />
-    </van-field>
+    />
   </view>
 
   <view
@@ -45,6 +41,6 @@
     hover-stay-time="70"
   >
     <slot wx:if="{{ useActionSlot }}" name="action" />
-    <view wx:else bind:tap="onCancel" class="cancel-class">{{ actionText }}</view>
+    <view wx:else bind:tap="onCancel" class="cancel-class">取消</view>
   </view>
 </view>

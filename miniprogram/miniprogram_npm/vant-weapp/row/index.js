@@ -3,7 +3,6 @@ VantComponent({
     relation: {
         name: 'col',
         type: 'descendant',
-        current: 'row',
         linked(target) {
             if (this.data.gutter) {
                 target.setGutter(this.data.gutter);
@@ -11,13 +10,10 @@ VantComponent({
         }
     },
     props: {
-        gutter: {
-            type: Number,
-            observer: 'setGutter'
-        }
+        gutter: Number
     },
-    data: {
-        viewStyle: '',
+    watch: {
+        gutter: 'setGutter'
     },
     mounted() {
         if (this.data.gutter) {
@@ -28,10 +24,10 @@ VantComponent({
         setGutter() {
             const { gutter } = this.data;
             const margin = `-${Number(gutter) / 2}px`;
-            const viewStyle = gutter
+            const style = gutter
                 ? `margin-right: ${margin}; margin-left: ${margin};`
                 : '';
-            this.setData({ viewStyle });
+            this.set({ style });
             this.getRelationNodes('../col/index').forEach(col => {
                 col.setGutter(this.data.gutter);
             });

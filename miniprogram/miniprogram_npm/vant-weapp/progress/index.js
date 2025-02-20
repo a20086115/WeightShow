@@ -6,7 +6,6 @@ VantComponent({
         percentage: Number,
         pivotText: String,
         pivotColor: String,
-        trackColor: String,
         showPivot: {
             type: Boolean,
             value: true
@@ -18,10 +17,6 @@ VantComponent({
         textColor: {
             type: String,
             value: '#fff'
-        },
-        strokeWidth: {
-            type: null,
-            value: 4
         }
     }
 });

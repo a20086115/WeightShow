@@ -4,10 +4,14 @@ VantComponent({
     relation: {
         name: 'radio',
         type: 'descendant',
-        current: 'radio-group',
         linked(target) {
+            this.children = this.children || [];
+            this.children.push(target);
             this.updateChild(target);
         },
+        unlinked(target) {
+            this.children = this.children.filter((child) => child !== target);
+        }
     },
     props: {
         value: {
@@ -25,7 +29,7 @@ VantComponent({
         },
         updateChild(child) {
             const { value, disabled } = this.data;
-            child.setData({
+            child.set({
                 value,
                 disabled: disabled || child.data.disabled
             });

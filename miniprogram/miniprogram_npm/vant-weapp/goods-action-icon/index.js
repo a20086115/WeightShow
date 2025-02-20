@@ -7,7 +7,6 @@ VantComponent({
     mixins: [link, button, openType],
     props: {
         text: String,
-        dot: Boolean,
         info: String,
         icon: String,
         disabled: Boolean,

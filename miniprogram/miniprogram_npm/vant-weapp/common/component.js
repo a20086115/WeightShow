@@ -1,57 +1,9 @@
 import { basic } from '../mixins/basic';
-const relationFunctions = {
-    ancestor: {
-        linked(parent) {
-            this.parent = parent;
-        },
-        unlinked() {
-            this.parent = null;
-        },
-    },
-    descendant: {
-        linked(child) {
-            this.children = this.children || [];
-            this.children.push(child);
-        },
-        unlinked(child) {
-            this.children = (this.children || []).filter(it => it !== child);
-        },
-    },
-};
+import { observe } from '../mixins/observer/index';
 function mapKeys(source, target, map) {
     Object.keys(map).forEach(key => {
         if (source[key]) {
             target[map[key]] = source[key];
-        }
-    });
-}
-function makeRelation(options, vantOptions, relation) {
-    const { type, name, linked, unlinked, linkChanged } = relation;
-    const { beforeCreate, destroyed } = vantOptions;
-    if (type === 'descendant') {
-        options.created = function () {
-            beforeCreate && beforeCreate.bind(this)();
-            this.children = this.children || [];
-        };
-        options.detached = function () {
-            this.children = [];
-            destroyed && destroyed.bind(this)();
-        };
-    }
-    options.relations = Object.assign(options.relations || {}, {
-        [`../${name}/index`]: {
-            type,
-            linked(node) {
-                relationFunctions[type].linked.bind(this)(node);
-                linked && linked.bind(this)(node);
-            },
-            linkChanged(node) {
-                linkChanged && linkChanged.bind(this)(node);
-            },
-            unlinked(node) {
-                relationFunctions[type].unlinked.bind(this)(node);
-                unlinked && unlinked.bind(this)(node);
-            },
         }
     });
 }
@@ -71,7 +23,9 @@ function VantComponent(vantOptions = {}) {
     });
     const { relation } = vantOptions;
     if (relation) {
-        makeRelation(options, vantOptions, relation);
+        options.relations = Object.assign(options.relations || {}, {
+            [`../${relation.name}/index`]: relation
+        });
     }
     // add default externalClasses
     options.externalClasses = options.externalClasses || [];
@@ -88,6 +42,7 @@ function VantComponent(vantOptions = {}) {
         multipleSlots: true,
         addGlobalClass: true
     };
+    observe(vantOptions, options);
     Component(options);
 }
 export { VantComponent };

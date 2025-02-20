@@ -1,6 +1,5 @@
 import { VantComponent } from '../common/component';
 import { touch } from '../mixins/touch';
-import { addUnit } from '../common/utils';
 VantComponent({
     mixins: [touch],
     props: {
@@ -22,14 +21,16 @@ VantComponent({
         },
         value: {
             type: Number,
-            value: 0,
-            observer(value) {
-                this.updateValue(value, false);
-            }
+            value: 0
         },
         barHeight: {
-            type: null,
+            type: String,
             value: '2px'
+        }
+    },
+    watch: {
+        value(value) {
+            this.updateValue(value, false);
         }
     },
     created() {
@@ -41,18 +42,13 @@ VantComponent({
                 return;
             this.touchStart(event);
             this.startValue = this.format(this.data.value);
-            this.dragStatus = 'start';
         },
         onTouchMove(event) {
             if (this.data.disabled)
                 return;
-            if (this.dragStatus === 'start') {
-                this.$emit('drag-start');
-            }
             this.touchMove(event);
-            this.dragStatus = 'draging';
             this.getRect('.van-slider').then((rect) => {
-                const diff = (this.deltaX / rect.width) * 100;
+                const diff = this.deltaX / rect.width * 100;
                 this.newValue = this.startValue + diff;
                 this.updateValue(this.newValue, false, true);
             });
@@ -60,31 +56,21 @@ VantComponent({
         onTouchEnd() {
             if (this.data.disabled)
                 return;
-            if (this.dragStatus === 'draging') {
-                this.updateValue(this.newValue, true);
-                this.$emit('drag-end');
-            }
+            this.updateValue(this.newValue, true);
         },
         onClick(event) {
             if (this.data.disabled)
                 return;
-            const { min } = this.data;
             this.getRect('.van-slider').then((rect) => {
-                const value = ((event.detail.x - rect.left) / rect.width) * this.getRange() + min;
+                const value = (event.detail.x - rect.left) / rect.width * 100;
                 this.updateValue(value, true);
             });
         },
         updateValue(value, end, drag) {
             value = this.format(value);
-            const { barHeight, min } = this.data;
-            const width = `${((value - min) * 100) / this.getRange()}%`;
-            this.setData({
+            this.set({
                 value,
-                barStyle: `
-          width: ${width};
-          height: ${addUnit(barHeight)};
-          ${drag ? 'transition: none;' : ''}
-        `,
+                barStyle: `width: ${value}%; height: ${this.data.barHeight};`
             });
             if (drag) {
                 this.$emit('drag', { value });
@@ -92,10 +78,6 @@ VantComponent({
             if (end) {
                 this.$emit('change', value);
             }
-        },
-        getRange() {
-            const { max, min } = this.data;
-            return max - min;
         },
         format(value) {
             const { max, min, step } = this.data;

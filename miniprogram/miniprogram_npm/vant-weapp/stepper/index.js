@@ -1,53 +1,18 @@
 import { VantComponent } from '../common/component';
-import { addUnit, isDef } from '../common/utils';
-const LONG_PRESS_START_TIME = 600;
-const LONG_PRESS_INTERVAL = 200;
-// add num and avoid float number
-function add(num1, num2) {
-    const cardinal = Math.pow(10, 10);
-    return Math.round((num1 + num2) * cardinal) / cardinal;
-}
 VantComponent({
     field: true,
-    classes: ['input-class', 'plus-class', 'minus-class'],
+    classes: [
+        'input-class',
+        'plus-class',
+        'minus-class'
+    ],
     props: {
-        value: {
-            type: null,
-            observer(value) {
-                if (value === '') {
-                    return;
-                }
-                const newValue = this.range(value);
-                if (typeof newValue === 'number' && +this.data.value !== newValue) {
-                    this.setData({ value: newValue });
-                }
-            },
-        },
+        value: null,
         integer: Boolean,
         disabled: Boolean,
-        inputWidth: {
-            type: null,
-            observer() {
-                this.setData({
-                    inputStyle: this.computeInputStyle()
-                });
-            },
-        },
-        buttonSize: {
-            type: null,
-            observer() {
-                this.setData({
-                    inputStyle: this.computeInputStyle(),
-                    buttonStyle: this.computeButtonStyle()
-                });
-            }
-        },
+        inputWidth: String,
         asyncChange: Boolean,
         disableInput: Boolean,
-        decimalLength: {
-            type: Number,
-            value: null
-        },
         min: {
             type: null,
             value: 1
@@ -69,28 +34,43 @@ VantComponent({
             value: true
         },
         disablePlus: Boolean,
-        disableMinus: Boolean,
-        longPress: {
-            type: Boolean,
-            value: true
+        disableMinus: Boolean
+    },
+    computed: {
+        minusDisabled() {
+            return this.data.disabled || this.data.disableMinus || this.data.value <= this.data.min;
         },
+        plusDisabled() {
+            return this.data.disabled || this.data.disablePlus || this.data.value >= this.data.max;
+        }
+    },
+    watch: {
+        value(value) {
+            if (value === '') {
+                return;
+            }
+            const newValue = this.range(value);
+            if (typeof newValue === 'number' && +this.data.value !== newValue) {
+                this.set({ value: newValue });
+            }
+        },
+        max: 'check',
+        min: 'check',
     },
     data: {
-        focus: false,
-        inputStyle: '',
-        buttonStyle: ''
+        focus: false
     },
     created() {
-        this.setData({
+        this.set({
             value: this.range(this.data.value)
         });
     },
     methods: {
-        isDisabled(type) {
-            if (type === 'plus') {
-                return this.data.disabled || this.data.disablePlus || this.data.value >= this.data.max;
+        check() {
+            const newValue = this.range(this.data.value);
+            if (typeof newValue === 'number' && +this.data.value !== newValue) {
+                this.set({ value: newValue });
             }
-            return this.data.disabled || this.data.disableMinus || this.data.value <= this.data.min;
         },
         onFocus(event) {
             this.$emit('focus', event.detail);
@@ -103,84 +83,33 @@ VantComponent({
         // limit value range
         range(value) {
             value = String(value).replace(/[^0-9.-]/g, '');
-            // format range
-            value = value === '' ? 0 : +value;
-            value = Math.max(Math.min(this.data.max, value), this.data.min);
-            // format decimal
-            if (isDef(this.data.decimalLength)) {
-                value = value.toFixed(this.data.decimalLength);
-            }
-            return value;
+            return Math.max(Math.min(this.data.max, value), this.data.min);
         },
         onInput(event) {
             const { value = '' } = event.detail || {};
             this.triggerInput(value);
         },
-        onChange() {
-            const { type } = this;
-            if (this.isDisabled(type)) {
+        onChange(type) {
+            if (this.data[`${type}Disabled`]) {
                 this.$emit('overlimit', type);
                 return;
             }
             const diff = type === 'minus' ? -this.data.step : +this.data.step;
-            const value = add(+this.data.value, diff);
+            const value = Math.round((+this.data.value + diff) * 100) / 100;
             this.triggerInput(this.range(value));
             this.$emit(type);
         },
-        longPressStep() {
-            this.longPressTimer = setTimeout(() => {
-                this.onChange();
-                this.longPressStep();
-            }, LONG_PRESS_INTERVAL);
+        onMinus() {
+            this.onChange('minus');
         },
-        onTap(event) {
-            const { type } = event.currentTarget.dataset;
-            this.type = type;
-            this.onChange();
-        },
-        onTouchStart(event) {
-            if (!this.data.longPress) {
-                return;
-            }
-            clearTimeout(this.longPressTimer);
-            const { type } = event.currentTarget.dataset;
-            this.type = type;
-            this.isLongPress = false;
-            this.longPressTimer = setTimeout(() => {
-                this.isLongPress = true;
-                this.onChange();
-                this.longPressStep();
-            }, LONG_PRESS_START_TIME);
-        },
-        onTouchEnd() {
-            if (!this.data.longPress) {
-                return;
-            }
-            clearTimeout(this.longPressTimer);
+        onPlus() {
+            this.onChange('plus');
         },
         triggerInput(value) {
-            this.setData({
+            this.set({
                 value: this.data.asyncChange ? this.data.value : value
             });
             this.$emit('change', value);
-        },
-        computeInputStyle() {
-            let style = '';
-            if (this.data.inputWidth) {
-                style = `width: ${addUnit(this.data.inputWidth)};`;
-            }
-            if (this.data.buttonSize) {
-                style += `height: ${addUnit(this.data.buttonSize)};`;
-            }
-            return style;
-        },
-        computeButtonStyle() {
-            let style = '';
-            const size = addUnit(this.data.buttonSize);
-            if (this.data.buttonSize) {
-                style = `width: ${size};height: ${size};`;
-            }
-            return style;
         }
     }
 });

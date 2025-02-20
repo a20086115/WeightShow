@@ -12,7 +12,6 @@
     name="{{ leftIcon }}"
     class="van-notice-bar__left-icon"
   />
-  <slot wx:else name="left-icon" />
 
   <view class="van-notice-bar__wrap">
     <view class="van-notice-bar__content {{ !scrollable && !wrapable ? 'van-ellipsis' : '' }}" animation="{{ animationData }}">
@@ -24,14 +23,13 @@
     wx:if="{{ mode === 'closeable' }}"
     class="van-notice-bar__right-icon"
     name="cross"
-    catch:tap="onClickIcon"
+    bind:tap="onClickIcon"
   />
   <navigator
-    wx:elif="{{ mode === 'link' }}"
+    wx:if="{{ mode === 'link' }}"
     url="{{ url }}"
     open-type="{{ openType }}"
   >
     <van-icon class="van-notice-bar__right-icon" name="arrow" />
   </navigator>
-  <slot wx:else name="right-icon" />
 </view>

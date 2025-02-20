@@ -18,7 +18,7 @@ export const transition = function (showDefaultValue) {
             },
             // @ts-ignore
             duration: {
-                type: null,
+                type: [Number, Object],
                 value: 300,
                 observer: 'observeDuration'
             },
@@ -32,25 +32,30 @@ export const transition = function (showDefaultValue) {
             inited: false,
             display: false
         },
+        attached() {
+            if (this.data.show) {
+                this.enter();
+            }
+        },
         methods: {
-            observeShow(value, old) {
-                if (value === old) {
-                    return;
+            observeShow(value) {
+                if (value) {
+                    this.enter();
                 }
-                value ? this.enter() : this.leave();
+                else {
+                    this.leave();
+                }
             },
             enter() {
                 const { duration, name } = this.data;
                 const classNames = getClassNames(name);
                 const currentDuration = isObj(duration) ? duration.enter : duration;
                 this.status = 'enter';
-                this.$emit('before-enter');
                 Promise.resolve()
                     .then(nextTick)
                     .then(() => {
                     this.checkStatus('enter');
-                    this.$emit('enter');
-                    this.setData({
+                    this.set({
                         inited: true,
                         display: true,
                         classes: classNames.enter,
@@ -60,38 +65,31 @@ export const transition = function (showDefaultValue) {
                     .then(nextTick)
                     .then(() => {
                     this.checkStatus('enter');
-                    this.transitionEnded = false;
-                    this.setData({
+                    this.set({
                         classes: classNames['enter-to']
                     });
                 })
                     .catch(() => { });
             },
             leave() {
-                if (!this.data.display) {
-                    return;
-                }
                 const { duration, name } = this.data;
                 const classNames = getClassNames(name);
                 const currentDuration = isObj(duration) ? duration.leave : duration;
                 this.status = 'leave';
-                this.$emit('before-leave');
                 Promise.resolve()
                     .then(nextTick)
                     .then(() => {
                     this.checkStatus('leave');
-                    this.$emit('leave');
-                    this.setData({
+                    this.set({
                         classes: classNames.leave,
                         currentDuration
                     });
                 })
+                    .then(() => setTimeout(() => this.onTransitionEnd(), currentDuration))
                     .then(nextTick)
                     .then(() => {
                     this.checkStatus('leave');
-                    this.transitionEnded = false;
-                    setTimeout(() => this.onTransitionEnd(), currentDuration);
-                    this.setData({
+                    this.set({
                         classes: classNames['leave-to']
                     });
                 })
@@ -103,14 +101,9 @@ export const transition = function (showDefaultValue) {
                 }
             },
             onTransitionEnd() {
-                if (this.transitionEnded) {
-                    return;
-                }
-                this.transitionEnded = true;
-                this.$emit(`after-${this.status}`);
-                const { show, display } = this.data;
-                if (!show && display) {
-                    this.setData({ display: false });
+                if (!this.data.show) {
+                    this.set({ display: false });
+                    this.$emit('transitionEnd');
                 }
             }
         }

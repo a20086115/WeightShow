@@ -3,10 +3,10 @@
 <button
   id="{{ id }}"
   class="custom-class {{ utils.bem('button', [type, size, { block, round, plain, square, loading, disabled, hairline, unclickable: disabled || loading }]) }} {{ hairline ? 'van-hairline--surround' : '' }}"
-  hover-class="van-button--active hover-class"
-  lang="{{ lang }}"
-  style="{{ baseStyle }} {{ customStyle }}"
   open-type="{{ openType }}"
+  hover-class="van-button--active hover-class"
+  style="{{ color ? 'border-color: ' + color + ';' + (plain ? 'color: ' + color : 'color: #fff; background-color: ' + color) : '' }}"
+  lang="{{ lang }}"
   business-id="{{ businessId }}"
   session-from="{{ sessionFrom }}"
   send-message-title="{{ sendMessageTitle }}"
@@ -27,8 +27,7 @@
     <van-loading
       custom-class="loading-class"
       size="{{ loadingSize }}"
-      type="{{ loadingType }}"
-      color="{{ loadingColor(type,color,plain) }}"
+      color="{{ type === 'default' ? '#c9c9c9' : '' }}"
     />
     <view
       wx:if="{{ loadingText }}"
@@ -50,19 +49,3 @@
     </view>
   </block>
 </button>
-
-
-<wxs module="loadingColor">
-function get(type, color,plain) {
-  if(plain) {
-    return color ? color: '#c9c9c9';
-  }
-
-  if(type === 'default') {
-    return '#c9c9c9';
-  }
-  return 'white';
-}
-
-module.exports = get;
-</wxs>

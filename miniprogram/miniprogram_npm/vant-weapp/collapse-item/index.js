@@ -5,7 +5,9 @@ VantComponent({
     relation: {
         name: 'collapse',
         type: 'ancestor',
-        current: 'collapse-item',
+        linked(parent) {
+            this.parent = parent;
+        }
     },
     props: {
         name: null,
@@ -37,7 +39,7 @@ VantComponent({
             if (this.data.expanded) {
                 data.contentHeight = 'auto';
             }
-            this.setData(data);
+            this.set(data);
         });
     },
     methods: {
@@ -85,7 +87,7 @@ VantComponent({
         },
         onTransitionEnd() {
             if (this.data.expanded) {
-                this.setData({
+                this.set({
                     contentHeight: 'auto'
                 });
             }
