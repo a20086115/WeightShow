@@ -73,6 +73,12 @@ Page({
         }
       })
     }
+  },
+  onShareAppMessage() {
+    return {
+        title: '看看谁是最努力的减重达人！',
+        path: '/pages/RankingList/RankingList',
+        imageUrl: '/images/share-rank.png'
+    }
   }
- 
 })

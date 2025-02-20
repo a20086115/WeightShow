@@ -1,3 +1,9 @@
+/*
+ * @Author: YuWenqiang
+ * @Date: 2021-06-16 18:36:43
+ * @Description: 
+ * 
+ */
 // miniprogram/pages/myInfo/myInfo.js
 import { cloud as CF } from '../../utils/cloudFunction.js'
 const App = getApp();

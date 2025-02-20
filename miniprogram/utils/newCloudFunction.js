@@ -141,5 +141,36 @@ var cloud = {
       }
     })
   },
+  // 新增count方法
+  count: function(tbName, query, cb, errcb) {
+    wx.showLoading({
+      title: '加载中...',
+    })
+    // 如果openId为true, 则把本人openId添加到查询条件
+    if(query.openId === true){
+      query.openId = wx.getStorageSync('openid')
+    }
+    wx.cloud.callFunction({
+      name: 'count',
+      data: {
+        tbName: tbName, // 数据库表名
+        query: query // 查询条件
+      }
+    }).then(function (e) {
+      wx.hideLoading();
+      if (typeof cb == "function") {
+        cb(e);
+      }
+    }).catch(() => {
+      wx.hideLoading();
+      wx.showToast({
+        icon: 'none',
+        title: '网络出小差了,请稍后再试...'
+      })
+      if (typeof errcb == "function") {
+        errcb();
+      }
+    })
+  }
 }
 export {cloud};

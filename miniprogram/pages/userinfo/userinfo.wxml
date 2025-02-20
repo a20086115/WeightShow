@@ -1,7 +1,11 @@
 <!--miniprogram/pages/addPlace/addPlace.wxml-->
 <view class="pageContainer">
+  <button class="avatar-wrapper" open-type="chooseAvatar" bind:chooseavatar="onChooseAvatar">
+    <image class="avatar" src="{{ currentUser.avatarUrl }}"></image>
+  </button> 
   <van-cell-group>
-    <van-field title-width="120px" id="nickName" value="{{ currentUser.nickName }}" bind:change="onValueChange" clearable label="昵称" placeholder="昵称" />
+
+    <van-field title-width="120px" type="nickname" id="nickName" value="{{ currentUser.nickName }}" bind:change="onValueChange" clearable label="昵称" placeholder="昵称" />
     <van-field title-width="120px" id="age" value="{{ currentUser.age }}" clearable label="年龄" placeholder="请输入年龄" bind:change="onValueChange"/>
     <van-field title-width="120px" id="height" value="{{ currentUser.height }}" clearable label="身高（厘米）" placeholder="请输入身高（厘米）" bind:change="onValueChange"/>
   

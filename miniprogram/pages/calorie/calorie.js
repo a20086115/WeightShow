@@ -274,6 +274,13 @@ Page({
         url: '/pages/userinfo/userinfo',
       })
     }
+  },
+  onShareAppMessage() {
+    return {
+        title: '科学计算卡路里，健康饮食每一天',
+        path: '/pages/calorie/calorie',
+        imageUrl: '/images/share-calorie.png'
+    }
   }
 })
 

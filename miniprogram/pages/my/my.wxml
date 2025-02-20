@@ -1,14 +1,7 @@
 <view class="">
   <!-- 头部信息 -->
   <view class="head container bg-gradual-blue margin shadow" style="align-items: center;">
-    <button 
-      open-type="getUserInfo" 
-      bindgetuserinfo="onGetUserInfo"
-      class="cu-avatar xl round margin-top-xl"
-      style="background-image: url({{avatarUrl}})"
-      size="default"
-    ></button>
-
+    <image bindtap="navToUserInfoPage" class="cu-avatar xl round margin-top-xl" src="{{ avatarUrl }}"></image>
     <view class="text-center margin-top margin-bottom-xl">
       {{userInfo.nickName?userInfo.nickName:'点击头像登录'}}
     </view>
@@ -47,6 +40,14 @@
             </view>
              <view class="action text-xxl">
              <view class="cuIcon-like"></view>
+            </view>
+          </view>
+          <view class="cu-item" bindtap="navToSponsorPage">
+            <view class="content">
+              <text class="text-grey">赞助一下</text>
+            </view>
+             <view class="action text-xxl">
+             <view class="cuIcon-appreciate"></view>
             </view>
           </view>
           <view class="cu-item" bindtap="navToLinkusPage">

@@ -1,6 +1,7 @@
 // miniprogram/pages/peopleInfo/peopleInfo.js
 import { cloud as CF } from '../../utils/newCloudFunction.js'
 import Toast from "../../miniprogram_npm/vant-weapp/toast/toast";
+
 Page({
 
   /**
@@ -8,11 +9,42 @@ Page({
    */
   data: {
     currentUser: {
+      avatarUrl: "",
       nickName: "",
       height: "",
       aimWeight: "",
       aimWeightKg: ""
     }
+  },
+  onChooseAvatar(e) {
+    const { avatarUrl } = e.detail 
+    this.setData({
+      'currentUser.avatarUrl': avatarUrl,
+    })
+    console.log("xxxx", e)
+    const cloudPath = 'avatar/' +  getApp().globalData.userInfo.openId
+    wx.showLoading({
+      title: '上传中',
+    })
+    wx.cloud.uploadFile({
+      cloudPath,
+      filePath: avatarUrl,
+      success: res => {
+        wx.hideLoading()
+        console.log('[上传文件] 成功：', cloudPath, res)
+        // 保存到记录中去
+        this.setData({
+          'currentUser.avatarUrl':  res.fileID,
+        })
+      },
+      fail: e => {
+        wx.hideLoading()
+        wx.showToast({
+          icon: 'none',
+          title: '上传失败',
+        })
+      }
+    })
   },
   onLoad: function (options) {
     // 获取 USERINFO　信息, 拷贝一下
@@ -41,6 +73,7 @@ Page({
     if (currentUser.age && currentUser.nickName && currentUser.height && currentUser.aimWeight) {
       // 更新的查询条件
       CF.update("users", {openId: true}, {
+        avatarUrl: this.data.currentUser.avatarUrl,
         nickName: this.data.currentUser.nickName,
         age: parseInt(this.data.currentUser.age),
         height: parseFloat(this.data.currentUser.height),

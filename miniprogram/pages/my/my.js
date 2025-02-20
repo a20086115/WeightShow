@@ -27,26 +27,9 @@ Page({
         userInfo: getApp().globalData.userInfo
       })
       // 获取用户信息更新
-      this.updateUserPhoto();
+      // this.updateUserPhoto();
     }
 
-  },
-  // 静默更新头像
-  updateUserPhoto(){
-    var that = this;
-    wx.getSetting({
-      success (res){
-        if (res.authSetting['scope.userInfo']) {
-          // 已经授权，可以直接调用 getUserInfo 获取头像昵称
-          wx.getUserInfo({
-            success: function(res) {
-              console.log(res.userInfo)
-              CF.update("users",{openId: true}, {avatarUrl: res.userInfo.avatarUrl})
-            }
-          })
-        }
-      }
-    })
   },
   onShow(){
     // 获取用户信息
@@ -62,23 +45,10 @@ Page({
    *  跳转到完善信息页面
    */
   navToUserInfoPage:function () {
-    if(!getApp().globalData.userInfo.openId){
-      // 如果用户没有授权 或 没有查询到用户信息。 提示先授权。
-      // 请先授权
-      wx.showToast({
-        icon: 'none',
-        title: '请先授权',
-      })
-      wx.navigateTo({
-        url: '/pages/login/index'
-      })
-      return;
-    }else{
-      // 跳转到UserInfo 设置界面
-      wx.navigateTo({
-        url: '/pages/userinfo/userinfo',
-      })
-    }
+    // 跳转到UserInfo 设置界面
+    wx.navigateTo({
+      url: '/pages/userinfo/userinfo',
+    })
   },
   /**
    *  跳转到关于我们页面
@@ -86,6 +56,14 @@ Page({
   navToLinkusPage:function(){
     wx.navigateTo({
       url: '/pages/aboutUs/about',
+    })
+  },
+  /**
+   *  跳转到赞助页面
+   */
+  navToSponsorPage:function(){
+    wx.navigateTo({
+      url: '/pages/my/sponsor',
     })
   },
   /**
@@ -100,30 +78,6 @@ Page({
         // 打开成功
       }
     })
-  },
-  onGetUserInfo: function (e) {
-    if (!this.data.logged && e.detail.userInfo) {
-      this.setData({
-        logged: true,
-        avatarUrl: e.detail.userInfo.avatarUrl,
-        userInfo: e.detail.userInfo
-      })
-      getApp().globalData.userInfo = e.detail.userInfo;
-      // 执行注册
-      CF.ajax("updateOrInsert",{ 
-        tbName: "users",
-        query:{
-          openId: true,
-        },
-        data: e.detail.userInfo 
-      }).then(e=>{
-        CF.get("users", {
-          openId: true
-        }).then(e => {
-          getApp().globalData.userInfo = e.result.data[0] || {}; 
-        })
-      })
-    }
   },
   openFeedback(){
     this.setData({

@@ -1,0 +1,35 @@
+<!-- pages/sponsor/sponsor.wxml -->
+<view class="container">
+  <!-- 顶部横幅 -->
+
+  <!-- 赞助选项 -->
+  <view class="card-group">
+    <!-- 广告支持 -->
+    <view class="card">
+      <!-- <image src="/icons/ad-icon.png" class="card-icon"/> -->
+      <text class="card-title">看广告支持,谢谢亲！</text>
+      <text class="card-desc">观看30秒视频广告\n为开发者助力</text>
+      <button 
+        class="card-button" 
+        bindtap="showRewardedAd"
+        loading="{{adLoading}}"
+      >
+        {{adLoading ? '加载中...' : '立即观看'}}
+      </button>
+    </view>
+
+    <!-- 赞赏码 -->
+    <view class="card">
+      <!-- <image src="/icons/milk-tea-icon.png" class="card-icon"/> -->
+      <text class="card-title">请喝奶茶</text>
+      <text class="card-desc">扫描下方二维码赞助\n一杯奶茶暖心田</text>
+      <image class="reward-qr" src="{{rewardCode}}" mode="widthFix" show-menu-by-longpress/>
+    </view>
+  </view>
+
+  <!-- 致谢信息 -->
+  <view class="thank-msg">
+    <text>您的支持是持续更新的动力！❤️</text>
+    <text>已获得{{sponsorCount}}次赞助</text>
+  </view>
+</view>

@@ -1,3 +1,9 @@
+/*
+ * @Author: YuWenqiang
+ * @Date: 2021-06-16 18:36:43
+ * @Description: 
+ * 
+ */
 // 云函数 增删改查封装
 const app = getApp();
 import dayjs from './dayjs.min.js'
@@ -66,6 +72,12 @@ var cloud = {
         size: size,
         field: field,
         order: order
+      })
+  },
+  count: function (tbName, query) {
+    return ajax('count',{
+        tbName: tbName, // 数据库表名
+        query: query // 查询条件
       })
   },
   ajax: ajax
