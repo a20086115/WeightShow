@@ -13,9 +13,30 @@ exports.main = async (event, context) => {
   if(query.openId === true){
     query.openId = openId
   }
+  // 默认创建用户
   try {
-    return await db.collection(tbName).where(query).get()
+    let res = await db.collection(tbName).where(query).get()
+    // 如果是用户表且无数据，自动创建
+    if (tbName === 'users' && res.data.length === 0) {
+      return await createDefaultUser(openId)
+    }
+    console.log(res)
+    return res
   } catch (e) {
     console.error(e)
+  }
+}
+
+async function createDefaultUser(openId){
+  const defaultUser = {
+    openId,
+    nickName: '微信用户(默认昵称)',
+    avatarUrl: 'http://cdnjson.com/images/2025/02/19/132.jpg',
+    createdate: new Date()
+  }
+  await db.collection('users').add({ data: defaultUser })
+
+  return {
+    data: [defaultUser]
   }
 }
