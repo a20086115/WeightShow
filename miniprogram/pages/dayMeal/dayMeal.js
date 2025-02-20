@@ -1,7 +1,7 @@
 // miniprogram/pages/dayMeal/dayMeal.js
 import { cloud as CF } from '../../utils/cloudFunctionPromise.js'
-import Dialog  from '../../miniprogram_npm/vant-weapp/dialog/dialog';
-import Toast from "../../miniprogram_npm/vant-weapp/toast/toast";
+import Dialog  from '../../miniprogram_npm/@vant/weapp/dialog/dialog';
+import Toast from "../../miniprogram_npm/@vant/weapp/toast/toast";
 Page({
 
   /**

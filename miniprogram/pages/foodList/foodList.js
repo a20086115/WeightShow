@@ -1,6 +1,6 @@
 // miniprogram/pages/food/foodList.js
 import { cloud as CF } from '../../utils/cloudFunctionPromise.js'
-import Toast from "../../miniprogram_npm/vant-weapp/toast/toast";
+import Toast from "../../miniprogram_npm/@vant/weapp/toast/toast";
 Page({
 
   /**

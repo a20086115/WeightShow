@@ -1,6 +1,6 @@
 // miniprogram/pages/peopleInfo/peopleInfo.js
 import { cloud as CF } from '../../utils/newCloudFunction.js'
-import Toast from "../../miniprogram_npm/vant-weapp/toast/toast";
+import Toast from "../../miniprogram_npm/@vant/weapp/toast/toast";
 
 Page({
 

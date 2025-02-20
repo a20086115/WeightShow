@@ -88,7 +88,7 @@
 
 <van-dialog cancelButtonText="取消"  confirmButtonText="确定" bind:close="closeNoticeDialog" closeOnClickOverlay="{{true}}" use-slot show="{{ visibleNoticeDialog }}" showCancelButton="{{true}}" zIndex="1000001">
   <view style="height:750rpx;overflow:scroll">
-    <image class="coverImage"  src="{{noticeImage}}"  mode="widthFix"> </image>
+    <image class="coverImage"  src="{{noticeImage}}" show-menu-by-longpress  mode="widthFix"> </image>
   </view>
 </van-dialog>
 

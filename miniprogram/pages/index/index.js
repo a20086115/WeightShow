@@ -2,7 +2,7 @@ import { cloud as CF } from '../../utils/cloudFunction.js'
 import { cloud as CF1 } from '../../utils/cloudFunctionPromise.js'
 import dayjs from '../../utils/dayjs.min.js'
 import * as echarts from '../../ec-canvas/echarts';
-import Notify from '../../miniprogram_npm/vant-weapp/notify/notify';
+import Notify from '../../miniprogram_npm/@vant/weapp/notify/notify';
 import data from './data'
 import dataHappy from './dataHappy'
 

@@ -3,7 +3,7 @@ wx.cloud.init({
   //env: "ceshi-206e10"
   env: "release-ba24f3" 
 })
-import Toast from "./miniprogram_npm/vant-weapp/toast/toast";
+import Toast from "./miniprogram_npm/@vant/weapp/toast/toast";
 App({
   onLaunch: function () {
   
