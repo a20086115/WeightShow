@@ -10,7 +10,8 @@ Page({
         sponsorCount: 0,
         adLoading: false,
         rewardCode: 'cloud://release-ba24f3.7265-release-ba24f3-1257780911/notice/赞赏码.jpeg', // 替换成你的赞赏码图片云存储地址
-        adUnitId: 'adunit-42ef7f63ebc5c35f' // 替换成你的广告单元ID
+        adUnitId: 'adunit-42ef7f63ebc5c35f', // 替换成你的广告单元ID
+        showSponsor: false // 是否显示赞赏码
     },
     
 
@@ -19,6 +20,7 @@ Page({
      */
     onLoad(options) {
         this.loadSponsorCount()
+        this.checkSponsorStatus()
     },
 
     /**
@@ -92,10 +94,16 @@ Page({
     showRewardedAd() {
         this.setData({ adLoading: true })
         
+        // 创建广告实例
         const videoAd = wx.createRewardedVideoAd({
             adUnitId: this.data.adUnitId
         })
 
+        // 清除可能存在的旧事件监听
+        videoAd.offClose()
+        videoAd.offError()
+
+        // 绑定新的事件监听
         videoAd.onClose(res => {
             this.setData({ adLoading: false })
             if (res && res.isEnded) {
@@ -111,6 +119,7 @@ Page({
             })
         })
 
+        // 加载并显示广告
         videoAd.load()
             .then(() => videoAd.show())
             .catch(() => {
@@ -148,6 +157,19 @@ Page({
                 title: '感谢支持！',
                 icon: 'success'
             })
+        })
+    },
+
+    // 检查赞赏码显示状态
+    checkSponsorStatus() {
+        CF.get("params", {
+            code: "sponsor"
+        }).then(res => {
+            if(res.result && res.result.data && res.result.data.length > 0) {
+                this.setData({
+                    showSponsor: res.result.data[0].value === "1"
+                })
+            }
         })
     }
 })

@@ -19,7 +19,7 @@
     </view>
 
     <!-- 赞赏码 -->
-    <view class="card">
+    <view class="card" wx:if="{{showSponsor}}">
       <!-- <image src="/icons/milk-tea-icon.png" class="card-icon"/> -->
       <text class="card-title">请喝奶茶</text>
       <text class="card-desc">扫描下方二维码赞助\n一杯奶茶暖心田</text>
@@ -30,6 +30,6 @@
   <!-- 致谢信息 -->
   <view class="thank-msg">
     <text>您的支持是持续更新的动力！❤️</text>
-    <text>已获得{{sponsorCount}}次赞助</text>
+    <text>已获得{{sponsorCount}}次支持</text>
   </view>
 </view>
