@@ -80,9 +80,7 @@ Page({
     // 加载总赞助次数
     loadSponsorCount() {
         // 获取所有赞助记录数量
-        CF.count("sponsor", {
-            openId: true
-        }).then((res) => {
+        CF.count("sponsor", {}).then((res) => {
             if(res.result && res.result.total) {
                 this.setData({
                     sponsorCount: res.result.total
@@ -153,10 +151,11 @@ Page({
         }).then(() => {
             // 重新获取总数
             this.loadSponsorCount()
-            
-            wx.showToast({
-                title: '感谢支持，后台已登记，请联系客服获取！',
-                icon: 'success'
+            wx.showModal({
+                title: '奖励提示',
+                content: '感谢您的观看，积分+1，系统已登记，请联系客服获取资料！',
+                showCancel: false,
+                confirmText: '确定'
             })
         })
     },
