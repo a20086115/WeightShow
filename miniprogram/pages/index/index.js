@@ -555,13 +555,20 @@ Page({
       subscribeChecked: event.detail,
     });
   },
-  /**
-   * 点击提交体重
-   */
-  handleInsertWeight: function (e) {
+  handleCloseWeight(){
     this.setData({
       visible: false
     })
+  },
+  /**
+   * 点击提交体重
+   */
+  
+  handleInsertWeight: function (e = {}) {
+    this.setData({
+      visible: false
+    })
+    e.detail = "confirm"
     if (e.detail != "confirm") { // 点击取消
       if(this.data.refreshFlag){  // 如果上传了图片，即使点击取消，图片依然上传了， 需要刷新
         this.queryRecordsByMonth(this.data.currentMonth)
@@ -570,10 +577,13 @@ Page({
     }
 
     // 如果选中了提醒，请求推送
+    console.log('如果选中了提醒，请求推送')
     if(this.data.subscribeChecked){
+      console.log('如果选中了提醒，请求推送')
       wx.requestSubscribeMessage({
         tmplIds: ['-ejtsE73bMY5DzlafJoQvPxhkOUklQUP_hZGIMLWzXA'],
         success (res) {
+          console.log("dingyue")
           if(res.errMsg == "requestSubscribeMessage:ok"){
             // 插入一条推送记录
             wx.cloud.callFunction({
@@ -591,6 +601,9 @@ Page({
               }
             })
           }
+        },
+        fail(err){
+          console.log("err: ", err)
         }
       })
     }

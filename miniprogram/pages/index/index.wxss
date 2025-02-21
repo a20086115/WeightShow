@@ -104,3 +104,17 @@ ec-canvas {
   float:right;
   margin-right:20rpx;
 }
+
+.button-container {
+  display: flex;
+  justify-content: space-between;
+  padding: 20rpx;
+  width: 100%;
+  box-sizing: border-box;
+  border-top: 1px solid #f0f0f0;
+}
+
+.action-btn {
+  flex: 1 !important;
+  margin: 0 10rpx !important;
+}

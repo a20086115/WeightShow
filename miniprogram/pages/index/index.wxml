@@ -43,13 +43,17 @@
   </view>
 </van-dialog>
 
-<van-dialog use-slot title="请录入信息" show="{{ visible }}" bind:close="handleInsertWeight" zIndex="100000" show-cancel-button>
+<van-dialog use-slot title="请录入信息" show="{{ visible }}" bind:close="handleInsertWeight" zIndex="100000"  showConfirmButton="{{false}}">
   <van-cell-group>
     <van-field label="日期" value="{{ currentdate }}" placeholder="" border="{{ true }}" disabled bind:change="onChangeTime" />
     <van-field label="体重(千克)" value="{{ weightKg }}" right-icon="photo-o" bind:click-icon="uploadPhoto" type="digit" placeholder="请输入体重" border="{{ true }}" bind:change="onChangeWeightKg" />
     <van-field label="体重(斤）" value="{{ weight }}" right-icon="photo-o" bind:click-icon="uploadPhoto" type="digit" placeholder="请输入体重" border="{{ true }}" bind:change="onChangeWeight" />
     <van-checkbox custom-class="padding" value="{{ subscribeChecked }}" bind:change="onSubscribeCheckboxChange">明天这时候提醒我打卡</van-checkbox>
-</van-cell-group>
+    <view class="button-container">
+      <van-button block class="action-btn" plain bind:tap="handleCloseWeight" type="default">取消</van-button>
+      <van-button block class="action-btn" plain bind:tap="handleInsertWeight"  type="info">确定</van-button>
+    </view>
+  </van-cell-group>
 </van-dialog>
 
 <van-dialog use-slot title="请输入身高信息" show="{{ visibleHeight }}" bind:close="handleInsertHeight" show-cancel-button zIndex="100000">

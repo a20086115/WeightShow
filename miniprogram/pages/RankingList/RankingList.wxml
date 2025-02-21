@@ -29,11 +29,11 @@
     <view slot="title" class="rankTitle">
       <!-- <view class="van-cell-text NoLabel">No.</view> -->
       <van-tag type="{{index + 1 < 4?'danger':'primary'}}" size="large">{{ index + 1 }}</van-tag>
-      <view class="van-cell-text usrName">{{ item.nickName}}</view>
+      <view class="van-cell-text usrName">{{ item.nickName}}"</view>
     </view>
     <!-- value -->
     <view slot="" class="rankInfo" >
-      <van-image round width="2rem" height="2rem" class="usrIcon" src=" {{ item.avatarUrl }}" />
+      <van-image round width="2rem" height="2rem" class="usrIcon" src="{{ item.avatarUrl }}" ></van-image>
       <view class="van-cell-text lossNum" wx:if="{{ currentIndex == 0}}">{{ item.totalCount }}次</view>
       <view class="van-cell-text lossNum" wx:else >{{ item.recordsList[0].reduce }} Kg</view>
     </view>
