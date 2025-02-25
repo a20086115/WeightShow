@@ -1,0 +1,12 @@
+[
+  {
+    "name": "get",
+    "value": {
+      "userInfo": "value",
+      "tbName": "pk",
+      "query": {
+        "_id": "!23"
+      }
+    }
+  }
+]

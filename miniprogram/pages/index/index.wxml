@@ -43,7 +43,7 @@
   </view>
 </van-dialog>
 
-<van-dialog use-slot title="请录入信息" show="{{ visible }}" bind:close="handleInsertWeight" zIndex="100000"  showConfirmButton="{{false}}">
+<van-dialog use-slot title="请录入信息" show="{{ visible }}"  zIndex="100000"  showConfirmButton="{{false}}">
   <van-cell-group>
     <van-field label="日期" value="{{ currentdate }}" placeholder="" border="{{ true }}" disabled bind:change="onChangeTime" />
     <van-field label="体重(千克)" value="{{ weightKg }}" right-icon="photo-o" bind:click-icon="uploadPhoto" type="digit" placeholder="请输入体重" border="{{ true }}" bind:change="onChangeWeightKg" />

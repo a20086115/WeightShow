@@ -130,7 +130,8 @@ var cloud = {
         console.log(cb)
         console.log("不是正确的回调函数" + typeof cb)
       }
-    }).catch(() => {
+    }).catch((err) => {
+      console.log(err)
       wx.hideLoading();
       if (!hideError){
         wx.showToast({

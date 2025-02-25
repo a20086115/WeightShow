@@ -112,12 +112,14 @@ Page({
           this.setOwnerFlag();
         })
       }else{
-        var data =  App.globalData.currentPk
-        this.setData({
-          pk: App.globalData.currentPk
-        })
-        this.requestData(this.data.currentYear + '-' + this.formatMonth(this.data.currentMonth));
-        this.setOwnerFlag();
+        CF.get("pk", { _id: App.globalData.currentPk._id }, (e) => {
+          console.log("pk = ", e)
+          this.setData({
+            pk: e.result.data[0]
+          })
+          this.requestData(this.data.currentYear + '-' + this.formatMonth(this.data.currentMonth));
+          this.setOwnerFlag();
+        });
       };
   },
   setOwnerFlag(){

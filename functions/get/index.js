@@ -1,3 +1,9 @@
+/*
+ * @Author: YuWenqiang
+ * @Date: 2021-06-16 18:36:43
+ * @Description: 
+ * 
+ */
 const cloud = require('wx-server-sdk')
 // cloud.init({
 //   env: cloud.DYNAMIC_CURRENT_ENV
@@ -20,6 +26,19 @@ exports.main = async (event, context) => {
     if (tbName === 'users' && res.data.length === 0) {
       return await createDefaultUser(openId)
     }
+
+    // 如果是查询pk 更换members信息从user表获取
+    if (tbName === 'pk' && query._id && res.data[0]){
+      let members = res.data[0].members; // 假设成员信息在'members'字段中
+      const openIds = members.map(member => member.openId);
+      // 批量查询用户信息
+      const userResults = await db.collection('users').where({
+        openId: db.command.in(openIds)
+      }).get();
+      // 将用户信息与成员信息合并
+      res.data[0].members = userResults.data
+    }
+
     console.log(res)
     return res
   } catch (e) {
