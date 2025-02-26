@@ -29,7 +29,7 @@
     <view slot="title" class="rankTitle">
       <!-- <view class="van-cell-text NoLabel">No.</view> -->
       <van-tag type="{{index + 1 < 4?'danger':'primary'}}" size="large">{{ index + 1 }}</van-tag>
-      <view class="van-cell-text usrName">{{ item.nickName}}</view>
+      <view class="van-cell-text usrName">{{ item.nickName }}</view>
     </view>
     <!-- value -->
     <view slot="" class="rankInfo" >
