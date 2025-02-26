@@ -13,6 +13,16 @@ const db = cloud.database()
 // 云函数入口函数
 exports.main = async (event, context) => {
   const { pkId = 'c69c6e4c67bc6929033282c0167851e5' } = event; // 从事件中获取PK赛ID
+  
+  // 解析 event.body
+  const bodyParams = {};
+  if (event.body) {
+    event.body.split('&').forEach(pair => {
+      const [key, value] = pair.split('=');
+      bodyParams[key] = decodeURIComponent(value || '');
+    });
+  }
+  console.log('解析后的body参数：', bodyParams);
 
   try {
     // 获取当前日期和小时
@@ -34,10 +44,9 @@ exports.main = async (event, context) => {
     } else if (currentHour >= 20) {
       messageType = 'daily_report';
     }
-    messageType = 'daily_report';
 
     // 如果不在任何消息时间段内，返回空消息
-    if (!messageType) {
+    if (!messageType && !bodyParams.content) {
       return JSON.stringify({
         rs: 1,
         tip: "",
@@ -46,20 +55,23 @@ exports.main = async (event, context) => {
     }
 
     // 检查今天该类型的消息是否已推送
-    const pushRecord = await db.collection('pushRecords').where({
-      pkId: pkId,
-      pushDate: today,
-      messageType: messageType
-    }).get();
+    // 只有在没有 content 参数时才检查推送记录
+    if (!bodyParams.content) {
+      const pushRecord = await db.collection('pushRecords').where({
+        pkId: pkId,
+        pushDate: today,
+        messageType: messageType
+      }).get();
 
-    // 如果已经推送过，返回空消息
-    // if (pushRecord.data.length > 0) {
-    //   return JSON.stringify({
-    //     rs: 1,
-    //     tip: "",
-    //     end: 0
-    //   });
-    // }
+      // 如果已经推送过，返回空消息
+      if (pushRecord.data.length > 0) {
+        return JSON.stringify({
+          rs: 1,
+          tip: "",
+          end: 0
+        });
+      }
+    }
 
     // 查询PK集合，获取比赛成员的openid
     const pkRes = await db.collection('pk').where({
@@ -121,7 +133,7 @@ exports.main = async (event, context) => {
       const targetWeight = member.aimWeight || '未知'; // 假设目标体重存储在成员信息中
 
       if (currentWeight === '未知' || targetWeight === '未知' || records.length === 0) {
-        return `姓名 ${member.nickName} 无打卡数据 `;
+        return `姓名 ${member.nickName} 当月打卡数据 `;
       }
 
       const initialWeight = records[0].weight; // 1号的体重
