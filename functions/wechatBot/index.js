@@ -4,6 +4,35 @@
  * @Description: 
  * 
  */
+
+// 在 Node.js 项目的根目录下，使用 npm 或 yarn 安装所需的包：
+// npm i @cloudbase/js-sdk@next
+// npm i @cloudbase/adapter-node
+
+// 引入 SDK，这里我们引入了完整的 clousebase-js-sdk，也支持分模块引入
+const cloudbase = require("@cloudbase/js-sdk");
+// 引入 node.js 端的适配器，详情请参考 https://docs.cloudbase.net/api-reference/webv3/adapter#%E4%B8%80%E5%A5%97%E4%BB%A3%E7%A0%81%E5%A4%9A%E7%AB%AF%E9%80%82%E9%85%8D
+const adapter = require("@cloudbase/adapter-node");
+
+
+const { sessionStorage } = adapter.genAdapter();
+
+cloudbase.useAdapters(adapter);
+const app = cloudbase.init({
+  env: "your-env", // 需替换为实际使用环境 id
+});
+/**
+ * auth 初始化的时候要传入storage 和 captchaOptions.openURIWithCallback
+ * 否则会用默认的，依赖于平台，在 nodejs 环境报错
+ */
+const auth = app.auth({
+  storage: sessionStorage,
+  captchaOptions: {
+    openURIWithCallback: () =>
+      console.log("open uri with callback"),
+  },
+});
+
 // 云函数入口文件
 const cloud = require('wx-server-sdk')
 
@@ -23,7 +52,7 @@ exports.main = async (event, context) => {
     });
   }
   console.log('解析后的body参数：', bodyParams);
-
+  bodyParams.content = '口号';
   try {
     // 获取当前日期和小时
     const now = new Date();
@@ -44,6 +73,18 @@ exports.main = async (event, context) => {
     } else if (currentHour >= 20) {
       messageType = 'daily_report';
     }
+
+    if(bodyParams.content){
+      // 判断content内容， 如果是统计，则发送统计结果daily_report，如果是以解答开头，则调用AI解答
+      if(bodyParams.content.startsWith('统计')){
+        messageType = 'daily_report';
+      }else if(bodyParams.content.startsWith('口号')){
+        messageType = 'morning';
+      }else if(bodyParams.content.startsWith('解答')){
+        messageType = 'ai_answer';
+      }
+    }
+      
 
     // 如果不在任何消息时间段内，返回空消息
     if (!messageType && !bodyParams.content) {
@@ -149,11 +190,28 @@ exports.main = async (event, context) => {
 
     let message = '';
     if (messageType === 'morning') {
-      message = {
-        rs: 1,
-        tip: "🌞【今日战队宣言】\n早起一杯温水！今日目标：拒绝零食！\n👉 跟贴回复你的今日小目标！",
-        end: 0
-      };
+      // 如果今天已经生成过战队宣言，则发送今天生成的战队宣言
+      const todayMessage = await db.collection('pushRecords').where({
+        pkId: pkId,
+        pushDate: today,
+        messageType: 'morning'
+      }).get();
+
+      if(todayMessage.data.length > 0){
+        message = {
+          rs: 1,
+          tip: todayMessage.data[0].messageContent,
+          end: 0
+        };
+      }else{
+        // AI 生成今日战队宣言
+        const aiMessage = await callAi('生成今日减肥战队宣言');
+        message = {
+          rs: 1,
+          tip: "🌞【今日战队宣言】\n" + aiMessage,
+          end: 0
+        };
+      }
     } else if (messageType === 'daytime') {
       message = {
         rs: 1,
@@ -178,18 +236,28 @@ exports.main = async (event, context) => {
         tip: `📊【战队战报】\n🔥今日打卡率${completionRate.toFixed(2)}%！\n今日打卡明细\n${details}`,
         end: 0
       };
+    } else if (messageType === 'ai_answer') {
+      // 调用AI解答
+      const aiAnswer = await callAi(bodyParams.content);
+      message = {
+        rs: 1,
+        tip: `💡【AI解答】\n${aiAnswer}`,
+        end: 0
+      };
     }
 
-    // 保存推送记录
-    await db.collection('pushRecords').add({
-      data: {
-        pkId: pkId,
-        pushDate: today,
-        messageType: messageType,
-        messageContent: message.tip,
-        createdAt: db.serverDate()
-      }
-    });
+    // 如果不是content有值，则保存推送记录
+    if(!bodyParams.content){
+      await db.collection('pushRecords').add({
+        data: {
+          pkId: pkId,
+          pushDate: today,
+          messageType: messageType,
+          messageContent: message.tip,
+          createdAt: db.serverDate()
+        }
+      })
+    }
 
     return JSON.stringify(message);
 
@@ -199,5 +267,32 @@ exports.main = async (event, context) => {
       tip: `错误：${error.message}`,
       end: 0
     });
+  }
+}
+
+async function callAi(content) {
+  try {
+    await auth.signInAnonymously(); // 或者使用其他登录方式
+    const ai = await app.ai();
+    // 接下来就可以调用 ai 模块提供的方法了
+    // 调用AI机器人接口
+    const res = await ai.bot.sendMessage({
+      data: {
+        botId: "app-er4p84fo", // 替换为实际的Agent唯一标识
+        msg: content, // 用户的输入内容
+        history: [], // 历史对话内容，首次对话可以为空
+      },
+    });
+
+    // 收集AI的回答
+    let aiResponse = '';
+    for await (let x of res.textStream) {
+      aiResponse += x;
+    }
+    console.log('AI回答：', aiResponse);
+    return aiResponse;
+  } catch (error) {
+    console.error("调用AI接口出错：", error);
+    throw new Error("AI服务暂时不可用，请稍后再试。");
   }
 } 

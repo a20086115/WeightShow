@@ -9,6 +9,8 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
+        "@cloudbase/adapter-node": "^1.0.2",
+        "@cloudbase/js-sdk": "^2.9.3",
         "wx-server-sdk": "~3.0.1"
     }
 }
