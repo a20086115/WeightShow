@@ -38,7 +38,7 @@ const db = cloud.database()
 
 // 云函数入口函数
 exports.main = async (event, context) => {
-  const { pkId = 'c69c6e4c67bc6929033282c0167851e5' } = event;
+  const { pkId = 'ef34384667c180d7001c7e9b0beb8475' } = event;
   
   // 解析 event.body
   const bodyParams = {};
