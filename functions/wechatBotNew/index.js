@@ -78,6 +78,8 @@ exports.main = async (event, context) => {
         messageType = 'total_report';
       } else if (bodyParams.content.startsWith('口号')) {
         messageType = 'morning';
+      } else if (bodyParams.content.startsWith('技巧')) {
+        messageType = 'daytime';
       } else if (bodyParams.content.startsWith('解答')) {
         messageType = 'ai_answer';
       } else if (bodyParams.content.startsWith('日报')) {
@@ -158,22 +160,24 @@ exports.main = async (event, context) => {
 
     let message = '';
     if (messageType === 'morning') {
-      const aiMessage = await callAi('生成今日减肥战队宣言');
+      const aiMessage = await callAi('生成1条今日减肥口号，30字以内，亲切有活力，直接返回内容');
       message = {
         rs: 1,
-        tip: "\UE04A【今日战队宣言】\n" + aiMessage,
+        tip: "\\UE04A【今日战队宣言】\n" + aiMessage,
         end: 0
       };
     } else if (messageType === 'daytime') {
+      
+      const aiMessage = await callAi('生成减肥小知识，50字左右即可');
       message = {
         rs: 1,
-        tip: "\UE315【科学减脂小课堂】\n饿的时候先喝水！\n❗️研究发现：67%的'饥饿感'实为脱水！",
+        tip: "\\UE315【减肥技巧】\n" + aiMessage + "\n注意：午餐不要吃多哦~八分饱更健康。",
         end: 0
       };
     } else if (messageType === 'evening_reminder') {
       message = {
         rs: 1,
-        tip: `\UE02D【数据录入倒计时】\n今日还剩5小时记录体重！\n \UE032 当前${completedMembers}/${totalMembers}人已完成，达${completionRate.toFixed(2)}%解锁明日团队壁纸！`,
+        tip: `\\UE02D【数据录入倒计时】\n今日还剩5小时记录体重！\n \UE032 当前${completedMembers}/${totalMembers}人已完成，达${completionRate.toFixed(2)}%解锁明日团队壁纸！`,
         end: 0
       };
     } else if (messageType === 'daily_report') {
@@ -230,14 +234,14 @@ exports.main = async (event, context) => {
 
       message = {
         rs: 1,
-        tip: `📊【战队战报】\n🔥今日打卡率${completionRate.toFixed(2)}%\n\n${details}`,
+        tip: `\\UE11D【战队战报】\n \\UE11D今日打卡率${completionRate.toFixed(2)}%\n\n${details}`,
         end: 0
       };
     } else if (messageType === 'ai_answer') {
       const aiAnswer = await callAi(bodyParams.content);
       message = {
         rs: 1,
-        tip: `💡【AI解答】\n${aiAnswer}`,
+        tip: `\\UE11D【AI解答】\n${aiAnswer}`,
         end: 0
       };
     }
@@ -276,11 +280,9 @@ async function callAi(content) {
     const ai = await app.ai();
     
     const res = await ai.bot.sendMessage({
-      data: {
-        botId: "app-er4p84fo",
+        botId: "bot-8accb6d8",
         msg: content,
         history: [],
-      },
     });
 
     let aiResponse = '';
