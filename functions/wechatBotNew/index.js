@@ -238,7 +238,7 @@ exports.main = async (event, context) => {
         end: 0
       };
     } else if (messageType === 'ai_answer') {
-      const aiAnswer = await callAi(bodyParams.content);
+      const aiAnswer = await callAi(bodyParams.content) + '【60秒内回复完】【不要markdown格式】';
       message = {
         rs: 1,
         tip: `\\UE11D【AI解答】\n${aiAnswer}`,
