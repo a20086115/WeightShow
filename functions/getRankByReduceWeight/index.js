@@ -10,13 +10,13 @@ const _ = db.command
 // 根据表名和query对象查询数据
 exports.main = async (event, context) => {
 //   let openId = event.userInfo.openId; // 调用人的openid
-  let { beginDay = '2025-01-01', endDay = '2025-01-31' } = event; // 要查询的类型 0-day, 1-周， 2-月
+  let { beginDay = '2025-03-01', endDay = '2025-03-31' } = event; // 要查询的类型 0-day, 1-周， 2-月
   try {
     let datas =  await db.collection('records').aggregate()
       // 阶段1：筛选有效记录
       .match({
         date: _.and(_.gte(beginDay), _.lte(endDay)),
-        weight: _.and(_.neq(0), _.exists(true))
+        weight: _.and(_.neq(0), _.neq(''),  _.exists(true))
       })
       // 阶段2：按用户分组处理
       .group({
