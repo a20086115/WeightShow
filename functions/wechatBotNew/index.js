@@ -59,9 +59,9 @@ exports.main = async (event, context) => {
 
     let messageType = '';
     // 根据时间段确定消息类型
-    if (currentHour >= 8 && currentHour < 10) {
+    if (currentHour >= 8 && currentHour < 9) {
       messageType = 'morning';
-    } else if (currentHour >= 10 && currentHour < 18) {
+    } else if (currentHour >= 11 && currentHour < 12) {
       messageType = 'daytime';
     } else if (currentHour >= 20 && currentHour < 21) {
       messageType = 'evening_reminder';
@@ -177,7 +177,7 @@ exports.main = async (event, context) => {
     } else if (messageType === 'evening_reminder') {
       message = {
         rs: 1,
-        tip: `\\UE02D【数据录入倒计时】\n今日还剩5小时记录体重！\n \UE032 当前${completedMembers}/${totalMembers}人已完成，达${completionRate.toFixed(2)}%解锁明日团队壁纸！`,
+        tip: `\\UE02D【数据录入倒计时】\n今日还剩1小时记录体重！\n \UE032 当前${completedMembers}/${totalMembers}人已完成，达${completionRate.toFixed(2)}%！`,
         end: 0
       };
     } else if (messageType === 'daily_report') {
@@ -207,14 +207,20 @@ exports.main = async (event, context) => {
       const weightResults = await Promise.all(weightPromises);
       console.log('体重记录查询结果：', weightResults);
 
-      // 生成详细统计
-      const details = members.map((member, index) => {
+      // 生成 Markdown 格式的表格
+      let markdownContent = `# 战队${currentMonth}月度报告\n\n`;
+      markdownContent += `## 今日打卡率：${completionRate.toFixed(2)}%\n\n (${completedMembers}/${totalMembers})`;
+      markdownContent += '| 姓名 | 当前体重 | 月初体重 | 目标体重 | 累计减重 | 目标完成率 | 进度 |\n';
+      markdownContent += '|------|----------|-----------|-----------|-----------|------------|--------|\n';
+
+      members.forEach((member, index) => {
         const records = weightResults[index].data;
         const currentWeight = records.length > 0 ? records[records.length - 1].weight : '未知';
         const targetWeight = member.aimWeight || '未知';
 
         if (currentWeight === '未知' || targetWeight === '未知' || records.length === 0) {
-          return `姓名 ${member.nickName} 当月打卡数据 `;
+          markdownContent += `| ${member.nickName} | 未打卡 | - | - | - | - | - | - |\n`;
+          return;
         }
 
         const initialWeight = records[0].weight;
@@ -224,17 +230,40 @@ exports.main = async (event, context) => {
         const totalWeightLossNeeded = initialWeight - targetWeight;
         const completionPercentage = ((initialWeight - currentWeight) / totalWeightLossNeeded * 100).toFixed(2);
 
-        // 获取当月天数
+        // 计算进度
         const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
         const currentDayOfMonth = now.getDate();
         const progress = currentWeight <= (initialWeight - (totalWeightLossNeeded / daysInMonth) * currentDayOfMonth) ? '超越' : '滞后';
 
-        return `姓名 ${member.nickName} 当前体重${currentWeight} 今日变化${weightChange} 月初体重${initialWeight} 目标体重${targetWeight} 累计减重${totalWeightLoss} 目标完成率${completionPercentage}% 目标完成进度【${progress}】`;
-      }).join('\n');
+        markdownContent += `| ${member.nickName} | ${currentWeight} | ${initialWeight} | ${targetWeight} | ${totalWeightLoss} | ${completionPercentage}% | ${progress} |\n`;
+      });
 
+      console.log('生成的Markdown内容：', markdownContent);
+
+      // 调用 Markdown 转图片接口
+      const imageBuffer = await convertMarkdownToImage(markdownContent);
+      console.log('Markdown转图片完成');
+
+      // 上传图片到云存储
+      const uploadResult = await cloud.uploadFile({
+        cloudPath: `reports/${currentMonth}/${today}_report.png`,
+        fileContent: imageBuffer,
+      });
+      console.log('图片上传结果：', uploadResult);
+
+      // 获取图片访问链接
+      const fileList = [uploadResult.fileID];
+      const result = await cloud.getTempFileURL({
+        fileList: fileList,
+      });
+      console.log('获取图片链接结果：', result);
+
+      const imageUrl = result.fileList[0].tempFileURL;
+
+      // 返回图片消息
       message = {
         rs: 1,
-        tip: `\\UE11D【战队战报】\n \\UE11D今日打卡率${completionRate.toFixed(2)}%\n\n${details}`,
+        tip: `\\UE11D【战队战报】\n[img]${imageUrl}`,
         end: 0
       };
     } else if (messageType === 'ai_answer') {
@@ -308,4 +337,33 @@ function decodeUnicode(str) {
   );
 
   return decoded2; // 两种方法结果一致
+}
+
+// 修改 Markdown 转图片函数
+async function convertMarkdownToImage(markdown) {
+  console.log('开始转换Markdown为图片，内容：', markdown);
+  try {
+    // 构建URL和参数
+    const params = new URLSearchParams({
+        content: markdown,
+    });
+    const url = `https://oiapi.net/API/MarkdownToImage?${params.toString()}`;
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const buffer = await response.arrayBuffer();
+    console.log('Markdown转图片成功，状态码：', response.status);
+    return Buffer.from(buffer);
+  } catch (error) {
+    console.error('Markdown转图片失败：', error);
+    if (error instanceof Response) {
+      console.error('错误响应：', {
+        status: error.status,
+        statusText: error.statusText
+      });
+    }
+    throw new Error('Markdown转图片服务暂不可用，请稍后再试');
+  }
 }
