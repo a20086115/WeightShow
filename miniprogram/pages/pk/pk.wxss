@@ -75,6 +75,20 @@ ec-canvas {
   margin-bottom: 10rpx;
 }
 
+.checkinBadge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: #4caf50;
+  color: white;
+  border-radius: 50%;
+  width: 20rpx;
+  height: 20rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 16rpx;
+}
 .scroll-view {
   white-space: nowrap;
   overflow: auto;

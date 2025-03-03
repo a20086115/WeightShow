@@ -303,6 +303,7 @@ Page({
     wx.showLoading({ title: '加载中...', icon: 'loading' });
     Promise.all(ajaxArray).then((res) => {
       wx.hideLoading();
+      const today = dayjs().format('YYYY-MM-DD');
       res.forEach((item, index) => {
         const records = item.result.data;
         if (records.length > 0) {
@@ -321,6 +322,8 @@ Page({
           } else {
             member[index].completionRate = '未知';
           }
+          // 检查今日是否已打卡
+          member[index].checkedInToday = records.some(record => record.date === today);
         } else {
           member[index].initialWeight = '未知';
           member[index].currentWeight = '未知';

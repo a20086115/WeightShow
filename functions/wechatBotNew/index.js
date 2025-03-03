@@ -160,7 +160,7 @@ exports.main = async (event, context) => {
 
     let message = '';
     if (messageType === 'morning') {
-      const aiMessage = await callAi('生成1条今日减肥口号，30字以内，亲切有活力，直接返回内容');
+      const aiMessage = await callAi('生成1条今日减肥口号，30字以内，亲切有活力，有号召力');
       message = {
         rs: 1,
         tip: "\\UE04A【今日战队宣言】\n" + aiMessage,
@@ -209,7 +209,7 @@ exports.main = async (event, context) => {
 
       // 生成 Markdown 格式的表格
       let markdownContent = `# 战队${currentMonth}月度报告\n\n`;
-      markdownContent += `## 今日打卡率：${completionRate.toFixed(2)}%\n\n (${completedMembers}/${totalMembers})`;
+      markdownContent += `## 今日打卡率：${completionRate.toFixed(2)}% (${completedMembers}/${totalMembers})\n\n`;
       markdownContent += '| 姓名 | 当前体重 | 月初体重 | 目标体重 | 累计减重 | 目标完成率 | 进度 |\n';
       markdownContent += '|------|----------|-----------|-----------|-----------|------------|--------|\n';
 
@@ -219,7 +219,7 @@ exports.main = async (event, context) => {
         const targetWeight = member.aimWeight || '未知';
 
         if (currentWeight === '未知' || targetWeight === '未知' || records.length === 0) {
-          markdownContent += `| ${member.nickName} | 未打卡 | - | - | - | - | - | - |\n`;
+          markdownContent += `| ${member.nickName} | 未打卡 | - | - | - | - | - |\n`;
           return;
         }
 
@@ -267,7 +267,7 @@ exports.main = async (event, context) => {
         end: 0
       };
     } else if (messageType === 'ai_answer') {
-      const aiAnswer = await callAi(bodyParams.content) + '【60秒内回复完】【不要markdown格式】';
+      const aiAnswer = await callAi(bodyParams.content + '【60秒内回复完】【不要markdown格式】') ;
       message = {
         rs: 1,
         tip: `\\UE11D【AI解答】\n${aiAnswer}`,

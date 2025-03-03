@@ -11,6 +11,10 @@
 <calendar header-style='header-style' weekheight="100" speciallist="{{speciallist}}" txt_style='{{txt_style}}' bindselectDate='selectDate' bindnextMonth='nextMonth' bindprevMonth='prevMonth'  mystatus='{{mystatus}}' 
   isClick="{{true}}" bindchooseDate="nextMonth" circle_show="{{true}}"/>
 
+<view wx:if="{{ showTodayPunchButton }}" style="display:flex;justify-content:center;align-items:center;height: 50rpx;width:100%;margin-bottom:20rpx;">
+  <van-button  style="width:50%" block size="small" round  type="info"  bindtap="handleTodayPunch">  今日打卡  </van-button>
+</view>
+
 <view style="position:relative;height: 50rpx;">
   <van-icon class="" style="position:absolute;left:5%;top:0;display:none;" color="red"  size="50rpx" info="火" name="flag-o" bindtap="showHTML"/>
   <view class="bmiInfo" bindtap="changeHeight">
@@ -30,6 +34,7 @@
   <van-icon class="iconClass " size="50rpx"  bindtap="showBmiTip"  name="info-o" />
   <van-icon class="iconClass hide" size="50rpx" bindtap="clockSet"  name="clock-o" />
 </view> -->
+
 
 <view class="container" hidden="{{ visible || visibleBmi || visibleHeight || visibleFeedback || hiddenChart || showImage || visibleClock || visibleHtml || visibleNoticeDialog}}">
   <ec-canvas  id="mychart-dom-line" canvas-id="mychart-line" ec="{{ ec }}" force-use-old-canvas="true"></ec-canvas>

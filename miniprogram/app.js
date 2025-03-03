@@ -1,17 +1,36 @@
+/*
+ * @Author: YuWenqiang
+ * @Date: 2021-06-16 18:36:43
+ * @Description: 
+ * 
+ */
 //app.js
 wx.cloud.init({
   //env: "ceshi-206e10"
   env: "release-ba24f3" 
 })
+import { cloud as CF } from './utils/cloudFunction.js'
 import Toast from "./miniprogram_npm/@vant/weapp/toast/toast";
 App({
-  onLaunch: function () {
-  
-  },
+  onLaunch: function () {},
   Toast:Toast,
   globalData: {
     userInfo: {},
     data: {},
+  },
+  initUserInfo(cb){
+    if(this.globalData.userInfo.openId){
+      cb && cb();
+      return;
+    }
+    CF.get("users", {
+      openId: true
+    }, (e) => {
+      this.globalData.userInfo = e.result.data[0] || {};
+      cb && cb();
+    }, () => {
+      cb && cb();
+    })
   },
   getBmi(weight, height){
     var tips = [{

@@ -9,30 +9,9 @@ Page({
   onShow() {
   },
   getUserInfoFun(result) {
-    var that = this;
-    if (result.detail.encryptedData) {
-      CF.ajax("updateOrInsert",{ 
-        tbName: "users",
-        query:{
-          openId: true,
-        },
-        data: result.detail.userInfo 
-      }).then(e=>{
-        CF.get("users", {
-          openId: true
-        }).then(e => {
-          App.globalData.userInfo = e.result.data[0] || {}; 
-          this.back()
-        })
-      })
-    } else {
-      wx.showModal({
-        title: '提示',
-        content: '您取消了授权，可能会造成使用受限',
-        showCancel: false,
-      })
-      return false
-    }
+    App.initUserInfo(() => {
+      this.back()
+    })
   },
   back:function(){
     wx.navigateBack({

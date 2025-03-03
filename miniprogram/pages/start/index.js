@@ -15,18 +15,9 @@ Page({
 
   },
   onShow() { 
-    var that = this;
-    setTimeout(function(){
-      // 若用户授权过小程序
-      CF.get("users", {
-        openId: true
-      }, (e) => {
-        App.globalData.userInfo = e.result.data[0] || {};
-        that.goIndex();
-      }, () => {
-        that.goIndex();
-      })
-    }, 1000)
+    App.initUserInfo(() => {
+      this.goIndex();
+    })
   },
   goIndex() {
     wx.switchTab({ url: '/pages/index/index' })

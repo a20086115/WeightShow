@@ -108,23 +108,23 @@ Page({
     speciallist:[],
     txt_style: "txt_style",
     tips: [{
-      color:"RGB(141,216,248)",
+      color: "#8DD8F8",
       left: "分类",
       right: "BMI 范围"
     }, {
-        color: "#29d",
+        color: "#4A90E2",
         left: "偏瘦",
         right: " <= 18.4"
       }, {
-        color: "#07c160",
+        color: "#34C759",
         left: "正常",
         right: "18.5 ~ 23.9"
       }, {
-        color: "#C6A300",
+        color: "#FFCC00",
         left: "过重",
         right: "24.0 ~27.9"
       }, {
-        color: "#fa5151",
+        color: "#FF3B30",
         left: "肥胖",
         right: ">= 28.0 "
       }],
@@ -391,15 +391,15 @@ Page({
   },
   onLoad: function(){
     wx.showShareMenu({  menus: ['shareAppMessage', 'shareTimeline']})
-    this.setData({
-      height: App.globalData.userInfo.height || ""
+    App.initUserInfo(() => {
+      this.setData({
+        height: App.globalData.userInfo.height || ""
+      })
+      // 查询当月记录
+      this.queryRecordsByMonth(this.data.currentMonth)
+      // 查询最新活动
+      this.queryLastActivity();
     })
-    // 查询当月记录
-    this.queryRecordsByMonth(this.data.currentMonth)
-
-    // 查询最新活动
-
-    this.queryLastActivity();
   },
   // 关闭noticeBar
   onNotiveCloseIcon(){
@@ -709,6 +709,7 @@ Page({
       console.log("queryRecordsByMonth success")
       wx.hideLoading();
       this.showWeightRecords(e.result.data)
+      this.updateTodayPunchButton();
       // 查询最新体重
       this.queryLastRecord();
     }).catch(() => {
@@ -716,6 +717,21 @@ Page({
       wx.hideLoading();
       wx.showToast({ title: '网络出小差了,请稍后再试...', icon: 'none' })
       // this.queryRecordsByMonth(month)
+    })
+  },
+  updateTodayPunchButton: function() {
+    const today = dayjs().format("YYYY-MM-DD");
+    const isCurrentMonth = this.data.currentMonth === dayjs().format("YYYY-MM");
+    const hasTodayRecord = !!this.data.days[today];
+    this.setData({
+      showTodayPunchButton: isCurrentMonth && !hasTodayRecord
+    });
+  },
+  handleTodayPunch: function() {
+    this.selectDate({
+      detail: {
+        date: dayjs().format("YYYY-MM-DD")
+      }
     })
   },
   /**
