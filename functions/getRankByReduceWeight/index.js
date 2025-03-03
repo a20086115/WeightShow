@@ -1,7 +1,7 @@
 // 云函数入口文件
 const cloud = require('wx-server-sdk')
 cloud.init({
-  env: cloud.DYNAMIC_CURRENT_ENV
+    env: "release-ba24f3", // 需替换为实际使用环境 id
 })
 cloud.init()
 const db = cloud.database()
@@ -10,13 +10,13 @@ const _ = db.command
 // 根据表名和query对象查询数据
 exports.main = async (event, context) => {
 //   let openId = event.userInfo.openId; // 调用人的openid
-  let { beginDay = '2025-01-01', endDay = '2025-01-31' } = event; // 要查询的类型 0-day, 1-周， 2-月
+  let { beginDay = '2025-03-01', endDay = '2025-03-31' } = event; // 要查询的类型 0-day, 1-周， 2-月
   try {
     let datas =  await db.collection('records').aggregate()
       // 阶段1：筛选有效记录
       .match({
         date: _.and(_.gte(beginDay), _.lte(endDay)),
-        weight: _.and(_.neq(0), _.exists(true))
+        weight: _.and(_.neq(0), _.neq(''),  _.exists(true))
       })
       // 阶段2：按用户分组处理
       .group({
@@ -39,15 +39,7 @@ exports.main = async (event, context) => {
       .match({
         reduce: _.and( _.gt(0), _.lte(30)), // 只显示减重成功的  减重大于30的忽略
       })
-      // 阶段5：关联用户信息
-     .lookup({
-        from: 'users',
-        localField: '_id',
-        foreignField: 'openId',
-        as: 'userInfo'
-      })
-      
-      .unwind('$userInfo') 
+
 //       .lookup({
 //         from: 'users',
 //         let: { userId: '$_id' },
@@ -76,6 +68,15 @@ exports.main = async (event, context) => {
 //       })
       // 阶段7：最终排序和过滤
       .sort({ 'reduce': -1 })
+      // 阶段5：关联用户信息
+     .lookup({
+        from: 'users',
+        localField: '_id',
+        foreignField: 'openId',
+        as: 'userInfo'
+      })
+      
+      .unwind('$userInfo') 
       .project({
         _id: 1,
         openId: 1,
