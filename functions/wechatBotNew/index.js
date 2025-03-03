@@ -189,7 +189,7 @@ exports.main = async (event, context) => {
 
       message = {
         rs: 1,
-        tip: `\\UE11D【今日战报】\n 今日打卡率${completionRate.toFixed(2)}%\n\n${simpleDetails}`,
+        tip: `\\UE11D【今日战报】\n 今日打卡率${completionRate.toFixed(2)}%(${completedMembers}/${totalMembers})\n\n${simpleDetails}`,
         end: 0
       };
     } else if (messageType === 'total_report') {
@@ -209,7 +209,7 @@ exports.main = async (event, context) => {
 
       // 生成 Markdown 格式的表格
       let markdownContent = `# 战队${currentMonth}月度报告\n\n`;
-      markdownContent += `## 今日打卡率：${completionRate.toFixed(2)}% (${completedMembers}/${totalMembers})\n\n`;
+      markdownContent += `## 今日打卡率：${completionRate.toFixed(2)}%\n\n`;
       markdownContent += '| 姓名 | 当前体重 | 月初体重 | 目标体重 | 累计减重 | 目标完成率 | 进度 |\n';
       markdownContent += '|------|----------|-----------|-----------|-----------|------------|--------|\n';
 
