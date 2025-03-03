@@ -467,9 +467,13 @@ Page({
   selectDate: function(e) {
     console.log(e)
     const date = e.detail.date;
+   
+    // 如果userInfo.clockClose为true，则忽略此限制
     if(dayjs().isBefore(dayjs(date))){
-      wx.showToast({ title: '不可以选择未来的日期噢...', icon: 'none' })
-      return;
+      if(!App.globalData.userInfo.clockClose){  
+        wx.showToast({ title: '不可以选择未来的日期噢...', icon: 'none' })
+        return;
+      }
     }
     const text = e.detail.text;
     const week = e.detail.week;

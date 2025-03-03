@@ -291,28 +291,52 @@ Page({
       }
     })
   },
-  requestData(month){
+  requestData(month) {
     // 清空信息
     seriesData.length = 0;
     seriesBmiData.length = 0;
     var member = this.data.pk.members;
     var ajaxArray = [];
     for (let m of member) {
-      ajaxArray.push(this.queryRecordsByMonth(month, m.openId))
+      ajaxArray.push(this.queryRecordsByMonth(month, m.openId));
     }
-    wx.showLoading({ title: '加载中...', icon: 'loading' })
+    wx.showLoading({ title: '加载中...', icon: 'loading' });
     Promise.all(ajaxArray).then((res) => {
       wx.hideLoading();
       res.forEach((item, index) => {
-        this.prepareSeriesData(item.result.data, member[index])
-      })
+        const records = item.result.data;
+        if (records.length > 0) {
+          const initialWeight = records[0].weight; // 月初体重
+          const currentWeight = records[records.length - 1].weight; // 最新体重
+          const targetWeight = member[index].aimWeight || '未知'; // 目标体重
+
+          member[index].initialWeight = initialWeight;
+          member[index].currentWeight = currentWeight;
+          member[index].weightLostThisMonth = (currentWeight - initialWeight).toFixed(2); // 本月已减
+          // weightLostThisMonth 转成汉字 带+-号
+          member[index].weightLostThisMonth = member[index].weightLostThisMonth > 0 ? '+' + member[index].weightLostThisMonth : member[index].weightLostThisMonth;
+          if (targetWeight !== '未知') {
+            const totalWeightLossNeeded = initialWeight - targetWeight;
+            member[index].completionRate = ((initialWeight - currentWeight) / totalWeightLossNeeded * 100).toFixed(2) + '%'; // 目标完成率
+          } else {
+            member[index].completionRate = '未知';
+          }
+        } else {
+          member[index].initialWeight = '未知';
+          member[index].currentWeight = '未知';
+          member[index].weightLostThisMonth = '未知';
+          member[index].completionRate = '未知';
+        }
+        this.prepareSeriesData(records, member[index]);
+      });
+      this.setData({ members: member });
       this.initXdata();
-      this.init()
+      this.init();
     }).catch((e) => {
-      console.log("queryRecordsByMonth failed", e)
+      console.log("queryRecordsByMonth failed", e);
       wx.hideLoading();
-      wx.showToast({ title: '网络出小差了,请稍后再试...', icon: 'none' })
-    })
+      wx.showToast({ title: '网络出小差了,请稍后再试...', icon: 'none' });
+    });
   },
   initXdata(){
     xData = []
