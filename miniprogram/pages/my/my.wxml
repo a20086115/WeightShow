@@ -26,6 +26,14 @@
              <view class="cuIcon-emoji"></view>
             </view>
           </view>
+          <view class="cu-item" wx:if="{{showYearlyReportEntry}}" bindtap="goToYearlyReport">
+            <view class="content">
+              <text class="text-grey">2025年度报告</text>
+            </view>
+           <view class="action text-xxl">
+             <view class="cuIcon-appreciate"></view>
+            </view>
+          </view>
           <view class="cu-item" bindtap="openFeedback">
             <view class="content">
               <text class="text-grey">在线客服</text>

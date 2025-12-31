@@ -7,11 +7,42 @@ cloud.init()
 const db = cloud.database()
 const $ = db.command.aggregate
 const _ = db.command
+
+// 缓存相关配置
+const CACHE_CODE_PREFIX = 'rank_reduce_weight_'
+const CACHE_HOURS = 2 // 瘦身榜缓存2小时
+
 // 根据表名和query对象查询数据
 exports.main = async (event, context) => {
 //   let openId = event.userInfo.openId; // 调用人的openid
   let { beginDay = '2025-03-01', endDay = '2025-03-31' } = event; // 要查询的类型 0-day, 1-周， 2-月
+  
+  // 生成缓存key（基于时间范围）
+  const cacheCode = CACHE_CODE_PREFIX + beginDay + '_' + endDay
+  
   try {
+    // 先查询缓存
+    const cacheData = await db.collection('params').where({
+      code: cacheCode
+    }).get()
+
+    // 如果有缓存且未过期，直接返回缓存数据
+    if (cacheData.data.length > 0) {
+      const cache = cacheData.data[0]
+      const now = new Date().getTime()
+      const cacheTime = new Date(cache.updateTime).getTime()
+      
+      // 判断缓存是否在有效期内
+      if (now - cacheTime < CACHE_HOURS * 60 * 60 * 1000) {
+        console.log('返回缓存数据')
+        return {
+          list: cache.value
+        }
+      }
+    }
+
+    // 缓存不存在或已过期，重新查询
+    console.log('重新查询瘦身榜')
     let datas =  await db.collection('records').aggregate()
       // 阶段1：筛选有效记录
       .match({
@@ -98,9 +129,39 @@ exports.main = async (event, context) => {
       }]
     })
 
-    return datas
+    // 更新缓存
+    const rankList = datas.list
+    if (cacheData.data.length > 0) {
+      // 更新已存在的缓存
+      await db.collection('params').where({
+        code: cacheCode
+      }).update({
+        data: {
+          value: rankList,
+          updateTime: db.serverDate()
+        }
+      })
+    } else {
+      // 创建新的缓存
+      await db.collection('params').add({
+        data: {
+          code: cacheCode,
+          value: rankList,
+          desc: `瘦身榜缓存(${beginDay}至${endDay})`,
+          updateTime: db.serverDate()
+        }
+      })
+    }
+
+    return {
+      list: rankList
+    }
 
   } catch (e) {
     console.error(e)
+    return {
+      code: -1,
+      msg: e.message || '查询失败'
+    }
   }
 }

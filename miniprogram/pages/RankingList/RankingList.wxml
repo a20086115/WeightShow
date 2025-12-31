@@ -1,44 +1,155 @@
 <!--miniprogram/pages/RankingList.wxml-->
 
 <!-- 分类标签 -->
-<van-tabs swipeable bind:click="onClick">
+<van-tabs swipeable bind:click="onClick" active="{{ currentIndex }}" color="#188be4">
   <van-tab title="打卡榜" />
-  <!-- <van-tab title="瘦身榜（周）" /> -->
   <van-tab title="瘦身榜（月）" />
+  <van-tab title="连续打卡榜" />
 </van-tabs>
- <!-- 通告栏 -->
-<van-notice-bar  wx:if="{{isInCountRank && currentIndex == 0}}"
+
+<!-- 通告栏 -->
+<van-notice-bar wx:if="{{isInCountRank && currentIndex == 0}}"
   left-icon="../../../images/laba.png"
-    mode="closeable"
+  mode="closeable"
+  background="#ecf9ff"
+  color="#188be4"
   text="{{'您当前排在第' + countIndex + '位，打卡' + currentUsers[countIndex-1].totalCount + '次！继续努力吧！'}}" 
 />
-<van-notice-bar  wx:elif="{{isInReduceRank && currentIndex == 1}}"
+<van-notice-bar wx:elif="{{isInReduceRank && currentIndex == 1}}"
   left-icon="../../../images/laba.png"
-    mode="closeable"
+  mode="closeable"
+  background="#ecf9ff"
+  color="#188be4"
   text="{{'您当前排在第' + reduceIndex + '位，减重' + currentUsers[reduceIndex-1].recordsList[0].reduce + 'kg！继续努力吧！'}}" 
+/>
+<van-notice-bar wx:elif="{{isInContinuousRank && currentIndex == 2}}"
+  left-icon="../../../images/laba.png"
+  mode="closeable"
+  background="#ecf9ff"
+  color="#188be4"
+  text="{{'您当前排在第' + continuousIndex + '位，连续打卡' + currentUsers[continuousIndex-1].continuousDays + '天！继续努力吧！'}}" 
 />
 <van-notice-bar wx:else
   left-icon="../../../images/laba.png"
-    mode="closeable"
+  mode="closeable"
+  background="#fff7e6"
+  color="#ff9800"
   text="抱歉，您未入榜，请继续努力！╭(●｀∀´●)╯"
 />
+
+<!-- 加载状态 -->
+<view wx:if="{{ loading }}" class="loading-container">
+  <van-loading type="spinner" size="24px" color="#188be4">加载中...</van-loading>
+</view>
+
 <!-- 排行榜内容 -->
-<van-cell-group>
-  <van-cell center wx:key="_id" wx:for="{{ currentUsers }}">
-    <!-- title -->
-    <view slot="title" class="rankTitle">
-      <!-- <view class="van-cell-text NoLabel">No.</view> -->
-      <van-tag type="{{index + 1 < 4?'danger':'primary'}}" size="large">{{ index + 1 }}</van-tag>
-      <view class="van-cell-text usrName">{{ item.nickName }}</view>
+<view wx:else class="rank-container">
+  <!-- 前三名特殊展示 -->
+  <view wx:if="{{ currentUsers.length > 0 }}" class="top-three">
+    <!-- 第二名 -->
+    <view wx:if="{{ currentUsers.length > 1 }}" class="rank-item rank-second" data-index="1">
+      <view class="rank-medal">
+        <text class="medal-icon">🥈</text>
+      </view>
+      <view class="rank-avatar-wrapper">
+        <van-image 
+          round 
+          width="60rpx" 
+          height="60rpx" 
+          class="rank-avatar" 
+          src="{{ currentUsers[1].avatarUrl }}"
+        />
+      </view>
+      <view class="rank-info">
+        <view class="rank-name">{{ currentUsers[1].nickName }}</view>
+        <view class="rank-value">
+          <text wx:if="{{ currentIndex == 0 }}">{{ currentUsers[1].totalCount }}</text>
+          <text wx:elif="{{ currentIndex == 1 }}">{{ currentUsers[1].recordsList[0].reduce }}</text>
+          <text wx:else>{{ currentUsers[1].continuousDays }}</text>
+          <text class="rank-unit">{{ currentIndex == 0 ? '次' : currentIndex == 1 ? 'kg' : '天' }}</text>
+        </view>
+      </view>
     </view>
-    <!-- value -->
-    <view slot="" class="rankInfo" >
-      <van-image round width="2rem" height="2rem" class="usrIcon" src="{{ item.avatarUrl }}" ></van-image>
-      <view class="van-cell-text lossNum" wx:if="{{ currentIndex == 0}}">{{ item.totalCount }}次</view>
-      <view class="van-cell-text lossNum" wx:else >{{ item.recordsList[0].reduce }} Kg</view>
+
+    <!-- 第一名 -->
+    <view wx:if="{{ currentUsers.length > 0 }}" class="rank-item rank-first" data-index="0">
+      <view class="rank-medal">
+        <text class="medal-icon">🥇</text>
+      </view>
+      <view class="rank-avatar-wrapper">
+        <van-image 
+          round 
+          width="80rpx" 
+          height="80rpx" 
+          class="rank-avatar" 
+          src="{{ currentUsers[0].avatarUrl }}"
+        />
+      </view>
+      <view class="rank-info">
+        <view class="rank-name">{{ currentUsers[0].nickName }}</view>
+        <view class="rank-value">
+          <text wx:if="{{ currentIndex == 0 }}">{{ currentUsers[0].totalCount }}</text>
+          <text wx:elif="{{ currentIndex == 1 }}">{{ currentUsers[0].recordsList[0].reduce }}</text>
+          <text wx:else>{{ currentUsers[0].continuousDays }}</text>
+          <text class="rank-unit">{{ currentIndex == 0 ? '次' : currentIndex == 1 ? 'kg' : '天' }}</text>
+        </view>
+      </view>
     </view>
-  </van-cell>
-</van-cell-group>
+
+    <!-- 第三名 -->
+    <view wx:if="{{ currentUsers.length > 2 }}" class="rank-item rank-third" data-index="2">
+      <view class="rank-medal">
+        <text class="medal-icon">🥉</text>
+      </view>
+      <view class="rank-avatar-wrapper">
+        <van-image 
+          round 
+          width="60rpx" 
+          height="60rpx" 
+          class="rank-avatar" 
+          src="{{ currentUsers[2].avatarUrl }}"
+        />
+      </view>
+      <view class="rank-info">
+        <view class="rank-name">{{ currentUsers[2].nickName }}</view>
+        <view class="rank-value">
+          <text wx:if="{{ currentIndex == 0 }}">{{ currentUsers[2].totalCount }}</text>
+          <text wx:elif="{{ currentIndex == 1 }}">{{ currentUsers[2].recordsList[0].reduce }}</text>
+          <text wx:else>{{ currentUsers[2].continuousDays }}</text>
+          <text class="rank-unit">{{ currentIndex == 0 ? '次' : currentIndex == 1 ? 'kg' : '天' }}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 其他排名列表 -->
+  <view class="rank-list">
+    <view 
+      wx:key="_id" 
+      wx:for="{{ currentUsers }}" 
+      wx:for-index="idx"
+      class="rank-item rank-normal {{ idx < 3 ? 'hidden' : '' }}"
+    >
+      <view class="rank-number">{{ idx + 1 }}</view>
+      <van-image 
+        round 
+        width="64rpx" 
+        height="64rpx" 
+        class="rank-avatar-small" 
+        src="{{ item.avatarUrl }}"
+      />
+      <view class="rank-info-normal">
+        <view class="rank-name-normal">{{ item.nickName }}</view>
+        <view class="rank-value-normal">
+          <text wx:if="{{ currentIndex == 0 }}">{{ item.totalCount }}</text>
+          <text wx:elif="{{ currentIndex == 1 }}">{{ item.recordsList[0].reduce }}</text>
+          <text wx:else>{{ item.continuousDays }}</text>
+          <text class="rank-unit-small">{{ currentIndex == 0 ? '次' : currentIndex == 1 ? 'kg' : '天' }}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>
 
 
 

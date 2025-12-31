@@ -1,9 +1,14 @@
 {
+  "navigationStyle": "default",
+  "navigationBarBackgroundColor": "#188be4",
+  "navigationBarTitleText": "瘦身打卡助手",
+  "navigationBarTextStyle": "white",
   "usingComponents": {
     "calendar": "plugin://calendar/calendar",
     "ec-canvas": "../../ec-canvas/ec-canvas",
     "canvasdrawer": "/components/canvasdrawer/canvasdrawer",
-    "layout": "/components/formLayout/formLayout"
+    "layout": "/components/formLayout/formLayout",
+    "van-datetime-picker": "../../miniprogram_npm/@vant/weapp/datetime-picker/index"
   }
 }
 

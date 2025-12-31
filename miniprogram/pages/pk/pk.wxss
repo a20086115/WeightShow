@@ -1,18 +1,290 @@
 /* miniprogram/pages/pk/pk.wxss */
 
-.memberTitle{
+.page_container {
+  background: #f5f7fa;
+  min-height: 100vh;
+  padding-bottom: 40rpx;
+}
+
+/* 月份选择器 */
+.month-selector {
+  background: linear-gradient(135deg, #188be4 0%, #4a90e2 100%);
+  box-shadow: 0 4rpx 12rpx rgba(24, 139, 228, 0.3);
+  position: relative;
+  z-index: 10;
+}
+
+.month-selector-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 30rpx 40rpx;
+  height: 100rpx;
+}
+
+.month-arrow {
+  font-size: 40rpx;
+  color: #fff;
+  opacity: 0.9;
+  transition: opacity 0.3s;
+}
+
+.month-arrow:active {
+  opacity: 0.6;
+}
+
+.month-text {
+  display: flex;
+  align-items: baseline;
+  color: #fff;
+  font-size: 36rpx;
+  font-weight: 600;
+  letter-spacing: 2rpx;
+}
+
+.month-year {
+  margin-right: 8rpx;
+}
+
+.month-month {
+  font-size: 42rpx;
+  font-weight: bold;
+}
+
+/* 图表标题切换 */
+.chart-title-wrapper {
+  padding: 30rpx 30rpx 20rpx;
+}
+
+.chart-title-card {
+  background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+  border-radius: 16rpx;
+  padding: 24rpx 30rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.08);
+  transition: all 0.3s;
+  border: 2rpx solid transparent;
+}
+
+.chart-title-card:active {
+  transform: scale(0.98);
+  box-shadow: 0 1rpx 4rpx rgba(0, 0, 0, 0.12);
+}
+
+.chart-title-text {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #37A2DA;
+  margin-right: 12rpx;
+}
+
+.chart-title-icon {
+  font-size: 28rpx;
+  color: #37A2DA;
+  opacity: 0.7;
+}
+
+/* 图表容器 */
+.chart-container {
+  margin: 0 30rpx 30rpx;
+  background: #fff;
+  border-radius: 20rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  position: relative;
+}
+
+.chart-wrapper {
+  position: relative;
+  width: 100%;
+  height: 750rpx;
+  padding: 20rpx;
+  box-sizing: border-box;
+}
+
+ec-canvas {
+  position: absolute;
+  top: 20rpx;
+  bottom: 20rpx;
+  left: 20rpx;
+  right: 20rpx;
+  width: calc(100% - 40rpx);
+  height: calc(100% - 40rpx);
+}
+
+/* 操作按钮区域 */
+.action-buttons {
+  display: flex;
+  justify-content: space-around;
+  padding: 0 30rpx 30rpx;
+  gap: 20rpx;
+}
+
+.action-btn {
+  flex: 1;
+  max-width: 200rpx;
+}
+
+/* 表格容器 */
+.table-container {
+  margin: 0 30rpx;
+  background: #fff;
+  border-radius: 20rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+/* 表格头部 */
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 24rpx 20rpx;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-bottom: 2rpx solid #e0e0e0;
+  font-weight: 600;
+  font-size: 28rpx;
+  color: #333;
+}
+
+/* 表格列 */
+.table-col {
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.table-col-member {
+  flex: 0 0 180rpx;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.table-col-data {
+  flex: 0 0 90rpx;
+  font-size: 26rpx;
+  align-self: center;
+}
+
+/* 表格主体 */
+.table-body {
+  width: 100%;
+}
+
+.table-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 24rpx 20rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+  transition: background-color 0.2s;
+  min-height: 140rpx;
+}
+
+.table-row:last-child {
+  border-bottom: none;
+}
+
+.table-row:active {
+  background-color: #f8f9fa;
+}
+
+/* 成员信息 */
+.member-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  min-height: 100rpx;
+  justify-content: flex-start;
+}
+
+.member-avatar-wrapper {
+  position: relative;
+  margin-bottom: 12rpx;
+}
+
+.member-avatar {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  border: 3rpx solid #e0e0e0;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+}
+
+.member-name {
+  font-size: 24rpx;
+  color: #333;
+  font-weight: 500;
+  white-space: normal;
+  word-wrap: break-word;
+  word-break: break-all;
+  text-align: center;
+  line-height: 1.4;
+  max-width: 160rpx;
+  margin-top: 4rpx;
+}
+
+/* 打卡徽章 */
+.checkin-badge {
+  position: absolute;
+  top: -4rpx;
+  right: -4rpx;
+  background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+  color: white;
+  border-radius: 50%;
+  width: 32rpx;
+  height: 32rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 20rpx;
+  font-weight: bold;
+  box-shadow: 0 2rpx 6rpx rgba(76, 175, 80, 0.4);
+  border: 2rpx solid #fff;
+  z-index: 2;
+}
+
+/* 体重变化颜色 */
+.weight-change {
+  font-weight: 600;
+  font-size: 28rpx;
+}
+
+.weight-down {
+  color: #4caf50;
+}
+
+.weight-up {
+  color: #ff6b6b;
+}
+
+/* 完成率 */
+.completion-rate {
+  font-weight: 600;
+  color: #37A2DA;
+  font-size: 26rpx;
+}
+
+/* 兼容旧样式 */
+.memberTitle {
   text-align: center;
   font-size: 32rpx;
   margin: 20rpx 0;
   font-weight: bold;
 }
-.memberListContiner{
+
+.memberListContiner {
   display: flex;
   justify-content: center;
-  flex-wrap:wrap;
+  flex-wrap: wrap;
   padding: 20rpx;
 }
-.memberListItem{
+
+.memberListItem {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -20,76 +292,17 @@
   border-bottom: 1px solid #eaeaea;
   min-width: 800rpx;
 }
-.container {
-  position: relative;
-  width: 100%;
-  height: 750rpx;
 
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  box-sizing: border-box;
-} 
-
-ec-canvas {
-  position: absolute;
-  top: 0px;
-  bottom: 0;
-  left: 0;
-  right: 0;
-}
-
-.hideText{
+.hideText {
   text-align: center;
   white-space: normal;
   word-wrap: break-word;
 }
-.xiaoyuhao{
+
+.xiaoyuhao {
   padding-left: 20rpx;
 }
-.dayuhao{
+
+.dayuhao {
   padding-right: 20rpx;
-}
-
-.components{
-  height: 100rpx;
-  background: #188be4 ;  
-  color: #fff;
-  display: flex;
-  padding:20rpx;
-  justify-content: space-between;
-  align-items: center;
-  height: 100rpx;
-}
-
-.tableHeader {
-  font-weight: bold;
-  background-color: #f5f5f5;
-}
-
-.memberAvatar {
-  width: 80rpx;
-  height: 80rpx;
-  border-radius: 50%;
-  margin-bottom: 10rpx;
-}
-
-.checkinBadge {
-  position: absolute;
-  top: 0;
-  right: 0;
-  background-color: #4caf50;
-  color: white;
-  border-radius: 50%;
-  width: 20rpx;
-  height: 20rpx;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 16rpx;
-}
-.scroll-view {
-  white-space: nowrap;
-  overflow: auto;
 }

@@ -56,14 +56,41 @@ Component({
       return;
     }
 
+    // 延迟初始化，确保Canvas节点已创建
     if (!this.data.ec.lazyLoad) {
-      this.init();
+      setTimeout(() => {
+        this.init();
+      }, 100);
+    }
+  },
+  
+  /**
+   * Canvas 2D 初始化事件（bindinit）
+   */
+  onCanvasInit: function(e) {
+    // Canvas 2D 初始化完成，可以在这里进行额外处理
+    if (this.data.isUseNewCanvas && e.detail) {
+      // 确保使用新Canvas时正确初始化
+      if (!this._initCalled) {
+        this._initCalled = true;
+        setTimeout(() => {
+          this.init();
+        }, 50);
+      }
     }
   },
 
   methods: {
     init: function (callback) {
-      const version = wx.getSystemInfoSync().SDKVersion
+      // 使用新的API获取系统信息
+      let version = '';
+      try {
+        const systemInfo = wx.getAppBaseInfo ? wx.getAppBaseInfo() : wx.getSystemInfoSync();
+        version = systemInfo.SDKVersion || systemInfo.version || '';
+      } catch (e) {
+        // 降级使用旧API
+        version = wx.getSystemInfoSync().SDKVersion;
+      }
 
       const canUseNewCanvas = compareVersion(version, '2.9.0') >= 0;
       const forceUseOldCanvas = this.data.forceUseOldCanvas;
@@ -71,12 +98,12 @@ Component({
       this.setData({ isUseNewCanvas });
 
       if (forceUseOldCanvas && canUseNewCanvas) {
-        console.warn('开发者强制使用旧canvas,建议关闭');
+        // 使用旧版 Canvas 以解决层级问题，这是有意的选择
+        // console.warn('开发者强制使用旧canvas,建议关闭');
       }
 
       if (isUseNewCanvas) {
-        // console.log('微信基础库版本大于2.9.0，开始使用<canvas type="2d"/>');
-        // 2.9.0 可以使用 <canvas type="2d"></canvas>
+        // 2.9.0 可以使用 <canvas type="2d"></canvas>，性能更好
         this.initByNewWay(callback);
       } else {
         const isValid = compareVersion(version, '1.9.91') >= 0
@@ -86,7 +113,8 @@ Component({
             + '#%E5%BE%AE%E4%BF%A1%E7%89%88%E6%9C%AC%E8%A6%81%E6%B1%82');
           return;
         } else {
-          console.warn('建议将微信基础库调整大于等于2.9.0版本。升级后绘图将有更好性能');
+          // 使用旧版 Canvas 以解决层级问题，这是有意的选择
+          // console.warn('建议将微信基础库调整大于等于2.9.0版本。升级后绘图将有更好性能');
           this.initByOldWay(callback);
         }
       }
@@ -122,20 +150,42 @@ Component({
     },
 
     initByNewWay(callback) {
-      // version >= 2.9.0：使用新的方式初始化
+      // version >= 2.9.0：使用新的方式初始化（Canvas 2D，性能更好）
       const query = wx.createSelectorQuery().in(this)
       query
         .select('.ec-canvas')
         .fields({ node: true, size: true })
         .exec(res => {
+          if (!res || !res[0] || !res[0].node) {
+            console.error('Canvas 2D 节点获取失败');
+            // 降级到旧方式
+            this.initByOldWay(callback);
+            return;
+          }
+          
           const canvasNode = res[0].node
           this.canvasNode = canvasNode
 
-          const canvasDpr = wx.getSystemInfoSync().pixelRatio
+          // 使用新的API获取设备像素比
+          let canvasDpr = 1;
+          try {
+            const deviceInfo = wx.getDeviceInfo ? wx.getDeviceInfo() : wx.getSystemInfoSync();
+            canvasDpr = deviceInfo.pixelRatio || 1;
+          } catch (e) {
+            // 降级使用旧API
+            canvasDpr = wx.getSystemInfoSync().pixelRatio || 1;
+          }
+          
           const canvasWidth = res[0].width
           const canvasHeight = res[0].height
 
           const ctx = canvasNode.getContext('2d')
+          
+          if (!ctx) {
+            console.error('Canvas 2D 上下文获取失败');
+            this.initByOldWay(callback);
+            return;
+          }
 
           const canvas = new WxCanvas(ctx, this.data.canvasId, true, canvasNode)
           echarts.setCanvasCreator(() => {

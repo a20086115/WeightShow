@@ -1,4 +1,6 @@
 import { cloud as CF } from '../../utils/cloudFunctionPromise.js'
+import dayjs from '../../utils/dayjs.min.js';
+
 Page({
   /**
    * 页面的初始数据
@@ -13,7 +15,9 @@ Page({
     message:"有问题可随时咨询，也欢迎对小程序提出意见和建议~感谢🙇",
     visibleNoticeDialog:false,
     noticeImage:"",
-    noticeContent:""
+    noticeContent:"",
+    showYearlyReportEntry: false, // 是否显示年度报告入口
+    lastCheckTime: 0 // 上次检查年度报告的时间戳，用于避免频繁调用
   },
 
   /**
@@ -29,7 +33,8 @@ Page({
       // 获取用户信息更新
       // this.updateUserPhoto();
     }
-
+    // 检查是否显示年度报告入口
+    this.checkYearlyReportEntry();
   },
   onShow(){
     // 获取用户信息
@@ -38,6 +43,11 @@ Page({
         avatarUrl: getApp().globalData.userInfo.avatarUrl,
         userInfo: getApp().globalData.userInfo
       })
+    }
+    // 避免频繁调用接口：如果距离上次检查超过5秒才重新检查
+    const now = Date.now();
+    if (now - this.data.lastCheckTime > 5000) {
+      this.checkYearlyReportEntry();
     }
   },
 
@@ -137,5 +147,66 @@ Page({
     this.setData({
       visibleNoticeDialog:false
     })
+  },
+  
+  /**
+   * 检查是否显示年度报告入口（仅在2026年1月30日之前显示，且2025年至少有2条打卡记录）
+   */
+  checkYearlyReportEntry: function() {
+    // 更新检查时间戳
+    this.setData({
+      lastCheckTime: Date.now()
+    });
+    
+    const deadline = dayjs('2026-01-30');
+    const now = dayjs();
+    const isBeforeDeadline = now.isBefore(deadline);
+    
+    // 如果不在时间范围内，直接不显示
+    if (!isBeforeDeadline) {
+      this.setData({
+        showYearlyReportEntry: false
+      });
+      return;
+    }
+    
+    // 检查2025年是否有至少2条打卡记录
+    wx.cloud.callFunction({
+      name: 'getYearlyReport',
+      data: {
+        year: '2025'
+      }
+    }).then((res) => {
+      if (res.result.errCode) {
+        // 查询失败，不显示入口
+        this.setData({
+          showYearlyReportEntry: false
+        });
+        return;
+      }
+      
+      const records = res.result.records || [];
+      // 至少需要2条打卡记录才显示入口
+      const hasEnoughRecords = records.length >= 2;
+      
+      this.setData({
+        showYearlyReportEntry: hasEnoughRecords
+      });
+    }).catch((err) => {
+      console.error('检查年度报告入口失败:', err);
+      // 查询失败，不显示入口
+      this.setData({
+        showYearlyReportEntry: false
+      });
+    });
+  },
+  
+  /**
+   * 跳转到年度报告页面
+   */
+  goToYearlyReport: function() {
+    wx.navigateTo({
+      url: '/pages/yearlyReport/yearlyReport?year=2025'
+    });
   },
 })

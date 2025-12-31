@@ -12,20 +12,26 @@ exports.main = async (event, context) => {
      *  */
 
      // 查找推送记录(加8适应时区问题)
-    var date = dayjs().add(8, "hour").format("YYYY-MM-DD HH:mm")
-    var today = dayjs().add(8, "hour").format("YYYY-MM-DD")
-    console.log(date)
+    // 云函数运行在 UTC 时区，需要转换为中国时间（UTC+8）
+    const utcNow = dayjs();
+    const chinaTime = utcNow.add(8, "hour");
+    var date = chinaTime.format("YYYY-MM-DD HH:mm");
+    var today = chinaTime.format("YYYY-MM-DD");
+    console.log('当前UTC时间:', utcNow.format("YYYY-MM-DD HH:mm"));
+    console.log('转换后的中国时间:', date);
+    console.log('查询日期:', today);
     let res = await db.collection("subscribe").where({
       subscribeDate: date
     }).get()
     let subcribesArray = res.data;
     console.log("找到记录数量：" + subcribesArray.length)
     for(let subscribe of subcribesArray){
-        // 判断今天是否已经有数据
+      // 判断今天是否已经有数据
       let count = await db.collection("records").where({
         openId: subscribe.openId,
         date: today
       }).count()
+      
       if(count.total == 0){
         let msgData = {
           "thing4": {
@@ -39,7 +45,16 @@ exports.main = async (event, context) => {
           },
         };
         let page = "pages/start/index"
-        sendMessage(subscribe.openId, page, msgData, "-ejtsE73bMY5DzlafJoQvPxhkOUklQUP_hZGIMLWzXA")
+        // 使用 await 等待推送发送完成，并捕获错误
+        try {
+          await sendMessage(subscribe.openId, page, msgData, "-ejtsE73bMY5DzlafJoQvPxhkOUklQUP_hZGIMLWzXA")
+          console.log(`推送已发送 [${subscribe.openId}], 日期: ${today}`)
+        } catch (err) {
+          console.error(`推送发送失败 [${subscribe.openId}]:`, err)
+          // 继续处理下一个，不中断整个流程
+        }
+      } else {
+        console.log(`用户已打卡，跳过推送 [${subscribe.openId}], 日期: ${today}`)
       }
     }
   } catch (err) {
@@ -49,21 +64,15 @@ exports.main = async (event, context) => {
 
 /**
  * 发送推送
+ * @param {string} OPENID - 用户openId
+ * @param {string} PAGE - 跳转页面
+ * @param {object} DATA - 消息数据
+ * @param {string} TEMPLATE_ID - 模板ID
+ * @returns {Promise} 返回发送结果
  */
-function sendMessage(OPENID, PAGE, DATA, TEMPLATE_ID){
+async function sendMessage(OPENID, PAGE, DATA, TEMPLATE_ID){
   try {
-    cloud.openapi.subscribeMessage.send({
-      touser: OPENID,
-      page: PAGE,
-      lang: 'zh_CN',
-      data: DATA,
-      templateId: TEMPLATE_ID,
-      miniprogramState: 'formal'  // 跳转小程序类型：developer为开发版；trial为体验版；formal为正式版；默认为正式版
-    }).then(res => {
-      console.log(res)
-    })
-    console.log("发送了一条推送")
-    console.log({
+    const res = await cloud.openapi.subscribeMessage.send({
       touser: OPENID,
       page: PAGE,
       lang: 'zh_CN',
@@ -71,8 +80,16 @@ function sendMessage(OPENID, PAGE, DATA, TEMPLATE_ID){
       templateId: TEMPLATE_ID,
       miniprogramState: 'formal'  // 跳转小程序类型：developer为开发版；trial为体验版；formal为正式版；默认为正式版
     })
-    
+    console.log("推送发送成功:", {
+      openId: OPENID,
+      result: res
+    })
+    return res
   } catch (err) {
-    
+    console.error("推送发送失败:", {
+      openId: OPENID,
+      error: err
+    })
+    throw err  // 重新抛出错误，让调用者处理
   }
 }

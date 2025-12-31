@@ -1,34 +1,95 @@
-
-<view class="page_container" >
-
-  <view style="margin-top:150rpx">
-    <view class="info">
-      <view>1.可邀请好友一起组队打卡，互相PK。</view>
-      <view>2.好友之间体重曲线、打卡记录共享。</view>
+<view class="page_container">
+  <!-- 顶部说明卡片 -->
+  <view class="info-card">
+    <view class="info-header">
+      <van-icon name="friends-o" class="info-icon" />
+      <text class="info-title">组队PK</text>
     </view>
-    <van-button type="primary" custom-class="newPkBtn" bindtap="newPk">发起PK</van-button>
+    <view class="info-content">
+      <view class="info-item">
+        <van-icon name="checked" class="info-check-icon" />
+        <text>可邀请好友一起组队打卡，互相PK</text>
+      </view>
+      <view class="info-item">
+        <van-icon name="checked" class="info-check-icon" />
+        <text>好友之间体重曲线、打卡记录共享</text>
+      </view>
+    </view>
+    <van-button type="primary" custom-class="new-pk-btn" bindtap="newPk" round>
+      <van-icon name="plus" slot="icon" />
+      发起PK
+    </van-button>
   </view>
 
   <van-popup show="{{ showTipFlag }}" bind:close="onClose">       
-      1.可邀请好友一起组队打卡，互相PK。
-      2.好友之间体重曲线、打卡记录共享。
+    1.可邀请好友一起组队打卡，互相PK。
+    2.好友之间体重曲线、打卡记录共享。
   </van-popup>
   
   <!-- PK队伍列表 -->
-  <van-cell-group>
-   <van-cell 
-    is-link 
-    bind:click="clickPk"
-    wx:for="{{pkList}}" 
-    wx:key="_id"
-    title="{{item.name + ' (' + item.members.length + '人)'}}"
-    id="{{index}}"
-   />
-  </van-cell-group>
+  <view class="pk-list-container">
+    <view class="pk-list-header" wx:if="{{pkList.length > 0}}">
+      <text class="pk-list-title">我的PK队伍</text>
+      <text class="pk-list-count">({{pkList.length}})</text>
+    </view>
+    
+    <!-- 空状态 -->
+    <view class="empty-state" wx:if="{{pkList.length === 0}}">
+      <van-icon name="friends-o" class="empty-icon" />
+      <text class="empty-text">还没有加入任何PK队伍</text>
+      <text class="empty-hint">点击上方按钮发起PK吧~</text>
+    </view>
+
+    <!-- PK列表 -->
+    <view class="pk-list">
+      <view 
+        class="pk-item" 
+        wx:for="{{pkList}}" 
+        wx:key="_id"
+        bindtap="clickPk"
+        data-index="{{index}}"
+      >
+        <view class="pk-item-content">
+          <view class="pk-item-left">
+            <view class="pk-item-info">
+              <view class="pk-item-name">{{item.name}}</view>
+              <view class="pk-item-meta">
+                <van-icon name="friends-o" class="pk-meta-icon" />
+                <text class="pk-member-count">{{item.members.length}}人</text>
+              </view>
+            </view>
+          </view>
+          <view class="pk-item-right">
+            <view class="pk-members-avatars">
+              <view 
+                class="pk-member-avatar" 
+                wx:for="{{item.members}}" 
+                wx:for-item="member"
+                wx:key="openId"
+                wx:if="{{index < 3}}"
+              >
+                <van-image 
+                  round 
+                  width="48rpx" 
+                  height="48rpx" 
+                  src="{{member.avatarUrl}}" 
+                  custom-class="pk-avatar-img"
+                />
+              </view>
+              <view class="pk-more-members" wx:if="{{item.members.length > 3}}">
+                <text class="pk-more-text">+{{item.members.length - 3}}</text>
+              </view>
+            </view>
+            <van-icon name="arrow" class="pk-arrow-icon" />
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
   
   <!-- 广告 -->
-  <view style="margin-top:50rpx">
-   <ad unit-id="adunit-992b3cf68c4b720f"></ad>
+  <view class="ad-container">
+    <ad unit-id="adunit-992b3cf68c4b720f"></ad>
   </view>
 </view>
 

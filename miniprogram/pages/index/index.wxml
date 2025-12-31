@@ -8,14 +8,34 @@
     bindtap="showNoticeDialog"
     bind:close="onNotiveCloseIcon"
   />
-<calendar header-style='header-style' weekheight="100" speciallist="{{speciallist}}" txt_style='{{txt_style}}' bindselectDate='selectDate' bindnextMonth='nextMonth' bindprevMonth='prevMonth'  mystatus='{{mystatus}}' 
-  isClick="{{true}}" bindchooseDate="nextMonth" circle_show="{{true}}"/>
+<view class="calendar-wrapper">
+  <calendar header-style='header-style' weekheight="100" speciallist="{{speciallist}}" txt_style='{{txt_style}}' bindselectDate='selectDate' bindnextMonth='nextMonth' bindprevMonth='prevMonth'  mystatus='{{mystatus}}' 
+    isClick="{{true}}" bindchooseDate="nextMonth" circle_show="{{true}}"/>
+</view>
 
-<view wx:if="{{ showTodayPunchButton }}" style="display:flex;justify-content:center;align-items:center;height: 50rpx;width:100%;margin-bottom:20rpx;">
+<view wx:if="{{ showTodayPunchButton }}" class="today-punch-wrapper">
   <van-button  style="width:50%" block size="small" round  type="info"  bindtap="handleTodayPunch">  今日打卡  </van-button>
 </view>
 
-<view style="position:relative;height: 50rpx;">
+<!-- 2025年终报告悬浮入口 -->
+<view wx:if="{{ showYearlyReportEntry && !yearlyReportEntryClosed }}" 
+      class="yearly-report-float"
+      style="left: {{floatPosition.x}}rpx; top: {{floatPosition.y}}rpx;"
+      bindtouchstart="onFloatTouchStart"
+      bindtouchmove="onFloatTouchMove"
+      bindtouchend="onFloatTouchEnd">
+  <view class="yearly-report-float-content" bindtap="goToYearlyReport">
+    <view class="yearly-report-float-icon">
+      <van-icon name="award-o" size="36rpx" color="#ffffff" />
+    </view>
+    <view class="yearly-report-float-text">年度报告</view>
+  </view>
+  <view class="yearly-report-float-close" catchtap="closeYearlyReportEntry">
+    <van-icon name="cross" size="18rpx" color="#999" />
+  </view>
+</view>
+
+<view class="bmi-info-container">
   <van-icon class="" style="position:absolute;left:5%;top:0;display:none;" color="red"  size="50rpx" info="火" name="flag-o" bindtap="showHTML"/>
   <view class="bmiInfo" bindtap="changeHeight">
     BMI指数：<text style="{{ bmiStyle }}" >{{bmiInfo}}</text>
@@ -37,14 +57,50 @@
 
 
 <view class="container" hidden="{{ visible || visibleBmi || visibleHeight || visibleFeedback || hiddenChart || showImage || visibleClock || visibleHtml || visibleNoticeDialog}}">
-  <ec-canvas  id="mychart-dom-line" canvas-id="mychart-line" ec="{{ ec }}" force-use-old-canvas="true"></ec-canvas>
+  <ec-canvas id="mychart-dom-line" canvas-id="mychart-line" ec="{{ ec }}" force-use-old-canvas="true"></ec-canvas>
 </view>
 
-<van-dialog use-slot show="{{ visibleBmi }}" bind:close="handleShowBmi" zIndex="100000">
-  <view style='text-align:center;padding:5px;' bindtap='showBmiInfo'>BMI 中国标准</view>
-  <view wx:for="{{tips}}" wx:for-item="item" wx:key="index" style="display:flex;height:30px;flex-direction:row;background: {{item.color}}">
-    <view class="left ">{{item.left}}</view>
-    <view class="right">{{item.right}}</view>
+<van-dialog use-slot show="{{ visibleBmi }}" bind:close="handleShowBmi" zIndex="100000" custom-class="bmi-dialog">
+  <view class="bmi-dialog-content">
+    <!-- 标题 -->
+    <view class="bmi-dialog-title">
+      <text class="bmi-title-text">BMI 中国标准</text>
+      <view wx:if="{{currentBMI}}" class="bmi-current-value">
+        您的BMI: <text class="bmi-value-number" style="{{bmiStyle}}">{{currentBMI}}</text>
+      </view>
+    </view>
+    
+    <!-- BMI范围条 -->
+    <view wx:if="{{currentBMI}}" class="bmi-range-bar">
+      <view class="bmi-range-container">
+        <view class="bmi-range-item" style="background: {{tips[1].color}}; flex: 1">
+          <text class="bmi-range-label">偏瘦</text>
+          <text class="bmi-range-value">≤18.4</text>
+        </view>
+        <view class="bmi-range-item" style="background: {{tips[2].color}}; flex: 1">
+          <text class="bmi-range-label">正常</text>
+          <text class="bmi-range-value">18.5~23.9</text>
+        </view>
+        <view class="bmi-range-item" style="background: {{tips[3].color}}; flex: 1">
+          <text class="bmi-range-label">过重</text>
+          <text class="bmi-range-value">24.0~27.9</text>
+        </view>
+        <view class="bmi-range-item" style="background: {{tips[4].color}}; flex: 1">
+          <text class="bmi-range-label">肥胖</text>
+          <text class="bmi-range-value">≥28.0</text>
+        </view>
+      </view>
+      <!-- 用户BMI位置标记 -->
+      <view class="bmi-marker" style="left: {{bmiMarkerPosition}}%">
+        <view class="bmi-marker-dot"></view>
+        <view class="bmi-marker-line"></view>
+      </view>
+    </view>
+    
+    <!-- 说明文字 -->
+    <view class="bmi-dialog-footer">
+      <text class="bmi-footer-text" bindtap="showBmiInfo">点击查看BMI详细说明</text>
+    </view>
   </view>
 </van-dialog>
 
@@ -53,13 +109,30 @@
     <van-field label="日期" value="{{ currentdate }}" placeholder="" border="{{ true }}" disabled bind:change="onChangeTime" />
     <van-field label="体重(千克)" value="{{ weightKg }}" right-icon="photo-o" bind:click-icon="uploadPhoto" type="digit" placeholder="请输入体重" border="{{ true }}" bind:change="onChangeWeightKg" />
     <van-field label="体重(斤）" value="{{ weight }}" right-icon="photo-o" bind:click-icon="uploadPhoto" type="digit" placeholder="请输入体重" border="{{ true }}" bind:change="onChangeWeight" />
-    <van-checkbox custom-class="padding" value="{{ subscribeChecked }}" bind:change="onSubscribeCheckboxChange">明天这时候提醒我打卡</van-checkbox>
+    <view class="subscribe-reminder-container">
+      <van-checkbox custom-class="padding" value="{{ subscribeChecked }}" bind:change="onSubscribeCheckboxChange">明天提醒我打卡</van-checkbox>
+      <view wx:if="{{ subscribeChecked }}" class="reminder-time-field" bindtap="showReminderTimePicker">
+        <text class="reminder-time-label">提醒时间：</text>
+        <text class="reminder-time-value">{{ reminderTime }}</text>
+        <van-icon name="arrow" class="reminder-time-arrow" />
+      </view>
+    </view>
     <view class="button-container">
       <van-button block class="action-btn" plain bind:tap="handleCloseWeight" type="default">取消</van-button>
       <van-button block class="action-btn" plain bind:tap="handleInsertWeight"  type="info">确定</van-button>
     </view>
   </van-cell-group>
 </van-dialog>
+
+<!-- 提醒时间选择器 -->
+<van-popup show="{{ visibleReminderTimePicker }}" position="bottom" bind:close="onReminderTimeCancel" z-index="100001">
+  <van-datetime-picker
+    type="time"
+    value="{{ reminderTime }}"
+    bind:confirm="onReminderTimeConfirm"
+    bind:cancel="onReminderTimeCancel"
+  />
+</van-popup>
 
 <van-dialog use-slot title="请输入身高信息" show="{{ visibleHeight }}" bind:close="handleInsertHeight" show-cancel-button zIndex="100000">
   <van-cell-group>

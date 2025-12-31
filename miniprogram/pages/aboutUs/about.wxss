@@ -1,1 +1,9 @@
 /* miniprogram/pages/aboutUs/about.wxss */
+
+/* 优化渲染性能：使用 transform 和 will-change 来优化渐变背景和阴影的渲染 */
+.about-container {
+  will-change: transform;
+  transform: translateZ(0);
+  /* 使用硬件加速 */
+  -webkit-transform: translateZ(0);
+}

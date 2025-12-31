@@ -1,4 +1,4 @@
-<view class='margin-xl bg-gradual-blue padding-xl radius shadow-lg'>
+<view class='about-container margin-xl bg-gradual-blue padding-xl radius shadow-lg'>
   <view class='text-center margin-bottom text-lg  '>关于健康打卡小程序</view>
   <view class='text-content'>
     <view>Hi！各位关注自身健康的小伙伴们！</view>

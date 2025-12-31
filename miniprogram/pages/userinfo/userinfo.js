@@ -47,9 +47,25 @@ Page({
     })
   },
   onLoad: function (options) {
-    // 获取 USERINFO　信息, 拷贝一下
+    // 先设置默认用户信息，让页面先渲染，提升用户体验
     var userInfo = {... getApp().globalData.userInfo}
-   
+    this.setData({ currentUser: userInfo })
+  },
+  
+  /**
+   * 生命周期函数--监听页面初次渲染完成
+   * 页面渲染完成后再调用接口，避免阻塞页面切换
+   */
+  onReady: function () {
+    // 页面渲染完成后再获取最新体重信息
+    this.loadLatestWeight()
+  },
+  
+  /**
+   * 加载最新体重信息
+   */
+  loadLatestWeight: function () {
+    var userInfo = {...this.data.currentUser}
     // 获取 最新体重 信息
     CF.list("records", {openId: true}, 1, 1, "date", "desc", (res) =>{
       if(res.result.data && res.result.data.length > 0){
@@ -60,11 +76,8 @@ Page({
         let bmiObj = getApp().getBmi(userInfo.weightKg, userInfo.height)
         userInfo.bmi = bmiObj.bmi;
         this.setData({ currentUser: userInfo })
-      }else{
-        this.setData({ currentUser: userInfo })
       }
     })
-   
   },
   // 新增或编辑信息
   saveData() {

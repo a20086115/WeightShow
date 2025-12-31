@@ -1,12 +1,15 @@
 <!--miniprogram/pages/pk/pk.wxml-->
 <view class="page_container">
   <!-- 月份选择控件 -->
-  <view class="components">
-    <van-icon name="arrow-left" bindtap="prevMonth"/>
-    <view class="month" bindtap="showPopup">
-      {{currentYear + '年' + currentMonth + '月'}}
+  <view class="month-selector">
+    <view class="month-selector-content">
+      <van-icon name="arrow-left" class="month-arrow" bindtap="prevMonth"/>
+      <view class="month-text" bindtap="showPopup">
+        <text class="month-year">{{currentYear}}年</text>
+        <text class="month-month">{{currentMonth}}月</text>
+      </view>
+      <van-icon name="arrow" class="month-arrow" bindtap="nextMonth"/>
     </view>
-    <van-icon name="arrow"  bindtap="nextMonth"/>
   </view>
 
   <van-popup show="{{ show }}" bind:close="onClose" position="top">
@@ -19,43 +22,62 @@
       bind:cancel="cancel"
     />
   </van-popup>
-  <view style="text-align:center; color: #37A2DA;margin-top:10px;margin-bottom:0px" bindtap="clickTitle">{{ titleFlag ? "体重曲线" : "BMI曲线"}}</view>
-  <view class="container" hidden="{{ visibleInviteDialog || show }}">
-    <ec-canvas  id="mychart-dom-line" canvas-id="mychart-line" ec="{{ ec }}" force-use-old-canvas="true"></ec-canvas>
-  </view>
 
-  <view style="padding-bottom:10rpx;display:flex;justify-content: space-around">
-    <van-button size="small" round open-type="share" type="info">邀请好友</van-button>
-    <van-button size="small" round bindtap="goBack"  type="info">返回首页</van-button>
-    <van-button size="small" round bindtap="deletePk" type="danger" wx:if="{{isPKOwner}}">解散PK</van-button>
-    <van-button size="small" round bindtap="leavePk" type="danger" wx:else>离开PK</van-button>
-  </view>
-
-  <scroll-view scroll-x="true" style="white-space: nowrap; overflow: auto;">
-    <view class="tableHeader" style="display: flex; justify-content: space-between; padding: 10rpx 0; font-weight: bold; min-width: 750rpx">
-      <view style="width: 200rpx; text-align: center;">成员</view>
-      <view style="width: 100rpx; text-align: center;">月初</view>
-      <view style="width: 100rpx; text-align: center;">最新</view>
-      <view style="width: 100rpx; text-align: center;">目标</view>
-      <view style="width: 100rpx; text-align: center;">变化</view>
-      <view style="width: 100rpx; text-align: center;">完成率</view>
+  <!-- 图表标题切换 -->
+  <view class="chart-title-wrapper">
+    <view class="chart-title-card" bindtap="clickTitle">
+      <text class="chart-title-text">{{ titleFlag ? "体重曲线" : "BMI曲线"}}</text>
+      <van-icon name="exchange" class="chart-title-icon" />
     </view>
-    <view class="memberListItem" wx:for="{{members}}" wx:key="openId" style="display: flex; justify-content: space-between; align-items: center; padding: 10rpx 0; border-bottom: 1px solid #eaeaea; min-width: 750rpx;">
-      <view style="width: 200rpx; text-align: center; position: relative;">
-        <van-image custom-class="memberAvatar" round width="80rpx" height="80rpx" src="{{item.avatarUrl}}" style="margin-bottom: 10rpx;" />
-        <view class="hideText" style="white-space: normal; word-wrap: break-word;">{{item.nickName}}</view>
-        <view wx:if="{{item.checkedInToday}}" class="checkinBadge">✔</view>
+  </view>
+
+  <!-- 图表容器 -->
+  <view class="chart-container" hidden="{{ visibleInviteDialog || show }}">
+    <view class="chart-wrapper">
+      <ec-canvas id="mychart-dom-line" canvas-id="mychart-line" ec="{{ ec }}" force-use-old-canvas="true"></ec-canvas>
+    </view>
+  </view>
+
+  <!-- 操作按钮区域 -->
+  <view class="action-buttons">
+    <van-button size="small" round open-type="share" type="info" custom-class="action-btn">邀请好友</van-button>
+    <van-button size="small" round bindtap="goBack" type="info" custom-class="action-btn">返回首页</van-button>
+    <van-button size="small" round bindtap="deletePk" type="danger" custom-class="action-btn" wx:if="{{isPKOwner}}">解散PK</van-button>
+    <van-button size="small" round bindtap="leavePk" type="danger" custom-class="action-btn" wx:else>离开PK</van-button>
+  </view>
+
+  <!-- 成员列表表格 -->
+  <view class="table-container">
+    <view class="table-header">
+      <view class="table-col table-col-member">成员</view>
+      <view class="table-col table-col-data">月初</view>
+      <view class="table-col table-col-data">最新</view>
+      <view class="table-col table-col-data">目标</view>
+      <view class="table-col table-col-data">变化</view>
+      <view class="table-col table-col-data">完成率</view>
+    </view>
+    <view class="table-body">
+      <view class="table-row" wx:for="{{members}}" wx:key="openId">
+        <view class="table-col table-col-member">
+          <view class="member-info">
+            <view class="member-avatar-wrapper">
+              <van-image custom-class="member-avatar" round width="80rpx" height="80rpx" src="{{item.avatarUrl}}" />
+              <view wx:if="{{item.checkedInToday}}" class="checkin-badge">✓</view>
+            </view>
+            <view class="member-name">{{item.nickName}}</view>
+          </view>
+        </view>
+        <view class="table-col table-col-data">{{item.initialWeight}}</view>
+        <view class="table-col table-col-data">{{item.currentWeight}}</view>
+        <view class="table-col table-col-data">{{item.aimWeight}}</view>
+        <view class="table-col table-col-data weight-change {{item.weightLostThisMonth < 0 ? 'weight-down' : 'weight-up'}}">
+          {{item.weightLostThisMonth}}
+        </view>
+        <view class="table-col table-col-data completion-rate">{{item.completionRate}}</view>
       </view>
-      <view style="width: 100rpx; text-align: center;">{{item.initialWeight}}</view>
-      <view style="width: 100rpx; text-align: center;">{{item.currentWeight}}</view>
-      <view style="width: 100rpx; text-align: center;">{{item.aimWeight}}</view>
-      <view style="width: 100rpx; text-align: center;">{{item.weightLostThisMonth}}</view>
-      <view style="width: 100rpx; text-align: center;">{{item.completionRate}}</view>
     </view>
-  </scroll-view>
+  </view>
 
-
- 
   <van-dialog title="PK邀请" message="您的好友邀请你参与体重PK打卡~是否参加？" show="{{ visibleInviteDialog }}" show-cancel-button bind:close="onInviteClose" >
   </van-dialog>
 </view>

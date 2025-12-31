@@ -1,3 +1,11 @@
+.page_container {
+  background: #f5f7fa;
+  min-height: 100vh;
+  padding: 30rpx;
+  padding-bottom: 40rpx;
+}
+
+/* 用户信息样式 */
 .userinfo-avatar {
   width: 100rpx;
   height: 100rpx;
@@ -21,14 +29,257 @@
 .userinfo-nickname::after {
   border: none;
 }
-.newPkBtn{
+
+/* 说明卡片 */
+.info-card {
+  background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+  border-radius: 20rpx;
+  padding: 40rpx 30rpx;
+  margin-bottom: 30rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.08);
+}
+
+.info-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 30rpx;
+}
+
+.info-icon {
+  font-size: 48rpx;
+  color: #188be4;
+  margin-right: 12rpx;
+}
+
+.info-title {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: #333;
+}
+
+.info-content {
+  margin-bottom: 30rpx;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  font-size: 28rpx;
+  color: #666;
+  margin-bottom: 16rpx;
+  line-height: 1.6;
+}
+
+.info-item:last-child {
+  margin-bottom: 0;
+}
+
+.info-check-icon {
+  font-size: 28rpx;
+  color: #4caf50;
+  margin-right: 12rpx;
+  flex-shrink: 0;
+}
+
+.new-pk-btn {
+  width: 100%;
+  height: 88rpx;
+  font-size: 32rpx;
+  font-weight: 600;
+  background: linear-gradient(135deg, #188be4 0%, #4a90e2 100%);
+  box-shadow: 0 4rpx 12rpx rgba(24, 139, 228, 0.3);
+}
+
+/* PK列表容器 */
+.pk-list-container {
+  margin-top: 20rpx;
+}
+
+.pk-list-header {
+  display: flex;
+  align-items: baseline;
+  margin-bottom: 20rpx;
+  padding: 0 10rpx;
+}
+
+.pk-list-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #333;
+}
+
+.pk-list-count {
+  font-size: 24rpx;
+  color: #999;
+  margin-left: 8rpx;
+}
+
+/* 空状态 */
+.empty-state {
+  background: #fff;
+  border-radius: 20rpx;
+  padding: 100rpx 40rpx;
+  text-align: center;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.08);
+}
+
+.empty-icon {
+  font-size: 120rpx;
+  color: #e0e0e0;
+  margin-bottom: 30rpx;
+}
+
+.empty-text {
+  display: block;
+  font-size: 28rpx;
+  color: #999;
+  margin-bottom: 16rpx;
+}
+
+.empty-hint {
+  display: block;
+  font-size: 24rpx;
+  color: #bbb;
+}
+
+/* PK列表 */
+.pk-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.pk-item {
+  background: #fff;
+  border-radius: 20rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  transition: all 0.3s;
+}
+
+.pk-item:active {
+  transform: scale(0.98);
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.12);
+}
+
+.pk-item-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 30rpx;
+}
+
+.pk-item-left {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+}
+
+.pk-item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.pk-item-name {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 12rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pk-item-meta {
+  display: flex;
+  align-items: center;
+}
+
+.pk-meta-icon {
+  font-size: 24rpx;
+  color: #999;
+  margin-right: 8rpx;
+}
+
+.pk-member-count {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.pk-item-right {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+}
+
+.pk-members-avatars {
+  display: flex;
+  align-items: center;
+  gap: -10rpx;
+}
+
+.pk-member-avatar {
+  margin-left: -10rpx;
+  border: 3rpx solid #fff;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 2rpx 6rpx rgba(0, 0, 0, 0.1);
+}
+
+.pk-member-avatar:first-child {
+  margin-left: 0;
+}
+
+.pk-avatar-img {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 50%;
+}
+
+.pk-more-members {
+  width: 48rpx;
+  height: 48rpx;
+  background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3rpx solid #fff;
+  margin-left: -10rpx;
+  box-shadow: 0 2rpx 6rpx rgba(0, 0, 0, 0.1);
+}
+
+.pk-more-text {
+  font-size: 20rpx;
+  color: #666;
+  font-weight: 600;
+}
+
+.pk-arrow-icon {
+  font-size: 32rpx;
+  color: #ccc;
+  flex-shrink: 0;
+}
+
+/* 广告容器 */
+.ad-container {
+  margin-top: 50rpx;
+  padding: 0 20rpx;
+}
+
+/* 兼容旧样式 */
+.newPkBtn {
   text-align: center;
   width: 90%;
   margin: 5%;
 }
-.info{
-  text-align: center
+
+.info {
+  text-align: center;
 }
-.pkItem{
-  height:75rpx;
+
+.pkItem {
+  height: 75rpx;
 }

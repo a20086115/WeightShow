@@ -25,6 +25,14 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
+    // 先让页面渲染，避免阻塞页面切换
+  },
+  
+  /**
+   * 生命周期函数--监听页面初次渲染完成
+   * 页面渲染完成后再调用接口，避免阻塞页面切换
+   */
+  onReady: function () {
     this.queryPk()
   },
   queryPk(){
@@ -75,8 +83,9 @@ Page({
     }
   },
   clickPk(e){
-    var data = JSON.stringify(this.data.pkList[e.target.id]);
-    App.globalData.currentPk = this.data.pkList[e.target.id]
+    var index = e.currentTarget.dataset.index;
+    var data = JSON.stringify(this.data.pkList[index]);
+    App.globalData.currentPk = this.data.pkList[index]
     wx.navigateTo({
       url: '/pages/pk/pk?data=' + data,
     })

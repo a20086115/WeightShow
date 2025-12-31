@@ -19,3 +19,8 @@ page {
   flex-direction: column;
   justify-content: flex-start;
 }
+
+/* 隐藏导航栏底部边框 - 通过覆盖系统样式 */
+::after {
+  border-bottom: none !important;
+}

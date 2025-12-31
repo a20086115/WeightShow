@@ -1,8 +1,6 @@
 {
     "pages": [
         "pages/start/index",
-        "pages/foodList/foodList",
-        "pages/dayMeal/dayMeal",
         "pages/myInfo/myInfo",
         "pages/login/index",
         "pages/index/index",
@@ -12,9 +10,10 @@
         "pages/my/my",
         "pages/userinfo/userinfo",
         "pages/aboutUs/about",
-        "pages/calorie/calorie",
         "pages/RankingList/RankingList",
-        "pages/my/sponsor"
+        "pages/my/sponsor",
+        "pages/yearlyReport/yearlyReport",
+        "pages/yearlyReport/posterPage"
     ],
     "usingComponents": {
         "van-action-sheet": "./miniprogram_npm/@vant/weapp/action-sheet/index",
@@ -54,7 +53,8 @@
         "navigationBarBackgroundColor": "#188be4",
         "navigationBarTitleText": "瘦身打卡助手",
         "navigationBarTextStyle": "white",
-        "backgroundColor": "#f6f6f6"
+        "backgroundColor": "#f6f6f6",
+        "navigationStyle": "default"
     },
     "lazyCodeLoading": "requiredComponents",
     "plugins": {
@@ -81,12 +81,6 @@
                 "iconPath": "images/weight.png",
                 "pagePath": "pages/index/index",
                 "text": "体重"
-            },
-            {
-                "selectedIconPath": "images/kaluli1.png",
-                "iconPath": "images/kaluli.png",
-                "pagePath": "pages/calorie/calorie",
-                "text": "热量"
             },
             {
                 "selectedIconPath": "images/rank1.png",
