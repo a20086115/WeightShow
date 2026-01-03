@@ -1,0 +1,10 @@
+{
+  "navigationBarTitleText": "2025年度报告",
+  "usingComponents": {
+    "van-loading": "../../miniprogram_npm/@vant/weapp/loading/index",
+    "van-icon": "../../miniprogram_npm/@vant/weapp/icon/index",
+    "ec-canvas": "../../ec-canvas/ec-canvas",
+    "canvasdrawer": "/components/canvasdrawer/canvasdrawer"
+  }
+}
+

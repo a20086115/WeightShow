@@ -1,0 +1,128 @@
+/* pages/center/center.wxss */
+.userinfo-avatar {
+  width: 100rpx;
+  height: 100rpx;
+  margin: 20rpx;
+  border-radius: 50%;
+  background-size: cover;
+  background-color: white;
+  border: 4rpx solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.1);
+}
+
+.avatar-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 50%; /* 圆形头像 */
+  background: white;
+}
+
+.avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%; /* 圆形图片 */
+}
+
+/* 我的页面整体样式优化 */
+page {
+  background: linear-gradient(180deg, #f5f7fa 0%, #ffffff 100%);
+  min-height: 100vh;
+}
+
+/* 头部信息区域优化 */
+.head {
+  background: linear-gradient(180deg, #188be4 0%, #1AA7EC 100%) !important;
+  border-radius: 0 0 40rpx 40rpx;
+  padding: 60rpx 30rpx 40rpx !important;
+  box-shadow: 0 8rpx 32rpx rgba(24, 139, 228, 0.3);
+  margin: 0 !important;
+  margin-top: 0 !important;
+}
+
+.head .cu-avatar {
+  border: 6rpx solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 6rpx 20rpx rgba(0, 0, 0, 0.15);
+  transition: all 0.3s;
+}
+
+.head .cu-avatar:active {
+  transform: scale(0.95);
+}
+
+.head .text-center {
+  color: #ffffff;
+  font-size: 36rpx;
+  font-weight: 600;
+  text-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+  margin-top: 20rpx !important;
+}
+
+/* 中间信息区域优化 */
+.padding.radius.shadow {
+  margin: 30rpx;
+  border-radius: 24rpx !important;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.06) !important;
+  background: #ffffff;
+  overflow: hidden;
+}
+
+/* 列表项优化 */
+.cu-list.menu .cu-item {
+  padding: 32rpx 30rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+  transition: all 0.3s;
+  background: #ffffff;
+}
+
+.cu-list.menu .cu-item:active {
+  background: #f8f9fa;
+  transform: translateX(4rpx);
+}
+
+.cu-list.menu .cu-item:last-child {
+  border-bottom: none;
+}
+
+.cu-list.menu .cu-item .content {
+  display: flex;
+  align-items: center;
+}
+
+.cu-list.menu .cu-item .content .text-grey {
+  font-size: 30rpx;
+  color: #333;
+  font-weight: 500;
+}
+
+.cu-list.menu .cu-item .action {
+  color: #188be4;
+  transition: all 0.3s;
+}
+
+.cu-list.menu .cu-item:active .action {
+  transform: scale(1.1);
+  color: #1AA7EC;
+}
+
+/* 对话框优化 */
+.coverImage {
+  border-radius: 16rpx;
+  overflow: hidden;
+  margin-top: 20rpx;
+}
+
+/* 按钮优化 */
+.cu-btn {
+  background: linear-gradient(135deg, #188be4 0%, #1AA7EC 100%) !important;
+  border: none !important;
+  border-radius: 12rpx !important;
+  box-shadow: 0 4rpx 16rpx rgba(24, 139, 228, 0.3) !important;
+  transition: all 0.3s !important;
+}
+
+.cu-btn:active {
+  transform: scale(0.98);
+  box-shadow: 0 2rpx 8rpx rgba(24, 139, 228, 0.2) !important;
+}

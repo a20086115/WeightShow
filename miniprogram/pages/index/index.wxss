@@ -1,0 +1,343 @@
+.canvas {
+    width: 100%;
+    height: 200px;
+}
+.picker_date{
+  width: 100%;
+  height: 250rpx;
+}
+.left{
+  text-align: center;
+  width: 40%;
+}
+.right{
+  text-align: center;
+  width: 50%
+}
+.flex-wrp {display: flex;}
+
+
+.calendar-wrapper {
+  position: relative;
+  z-index: 10;
+  background: #fff;
+}
+
+.calendar--weekday_label{
+  padding: 0px !important;
+}
+.calendar--mytext{
+  margin-top: 0px !important;
+}
+.circle{
+  background: #188be4 ;  
+  color: #fff;
+}
+/* 主题面板样式  */
+.header-style{
+  background: #188be4 ;  
+  color: #fff;
+}
+.txt_style{
+  font-size: 12px;
+  color: rgb(238, 83, 83);
+  line-height: 12px;
+}
+.active-coloro {
+  color: #fff;
+  background: #188be4;
+}
+.active-colort {
+  color: #fff;
+  background: #b8d5eb;
+}
+/**app.wxss**/
+.container {
+  position: relative;
+  width: 100%;
+  height: 500rpx;
+  margin: 20rpx 0;
+  padding: 0;
+  background: #fff;
+  overflow: hidden;
+
+  display: block;
+  box-sizing: border-box;
+} 
+ec-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+.coverImage{
+  width: 100%;
+  z-index: 1000000000
+}
+/* 出勤  */
+.calendar--circle {
+    top: 45px !important;  
+}
+
+
+.buttons .canclebtn{
+  width: 50%;
+  display: inline-block;
+  background: white;
+}
+.buttons .confirmbtn{
+  width: 50%;
+  display: inline-block;
+  background: white;
+  border: 0px;
+}
+.today-punch-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50rpx;
+  width: 100%;
+  margin-bottom: 20rpx;
+  position: relative;
+  z-index: 10;
+  background: #fff;
+}
+
+.bmi-info-container {
+  position: relative;
+  height: 80rpx;
+  width: 100%;
+  margin: 20rpx 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  background: #fff;
+}
+
+.bmiInfo{
+  text-align: center;
+  padding: 10rpx;
+  margin: 0;
+  position: relative;
+  flex: 1;
+  
+}
+.canvasTitle{
+  display: block;
+  text-align: center;
+  padding-left: 200rpx;
+}
+.iconClass{
+  float:right;
+  margin-right:20rpx;
+}
+
+.button-container {
+  display: flex;
+  justify-content: space-between;
+  padding: 20rpx;
+  width: 100%;
+  box-sizing: border-box;
+  border-top: 1px solid #f0f0f0;
+}
+
+.action-btn {
+  flex: 1 !important;
+  margin: 0 10rpx !important;
+}
+
+/* BMI弹框样式优化 */
+.bmi-dialog-content {
+  padding: 40rpx 30rpx;
+  background: #fff;
+}
+
+.bmi-dialog-title {
+  text-align: center;
+  margin-bottom: 40rpx;
+}
+
+.bmi-title-text {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+  display: block;
+  margin-bottom: 20rpx;
+}
+
+.bmi-current-value {
+  font-size: 28rpx;
+  color: #666;
+  margin-top: 15rpx;
+}
+
+.bmi-value-number {
+  font-size: 36rpx;
+  font-weight: bold;
+  margin-left: 10rpx;
+}
+
+/* BMI范围条 */
+.bmi-range-bar {
+  position: relative;
+  margin: 40rpx 0 30rpx 0;
+  padding: 20rpx 0 50rpx 0;
+}
+
+.bmi-range-container {
+  display: flex;
+  height: 60rpx;
+  border-radius: 30rpx;
+  overflow: hidden;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+}
+
+.bmi-range-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: all 0.3s;
+  padding: 10rpx 5rpx;
+}
+
+.bmi-range-label {
+  font-size: 24rpx;
+  color: #fff;
+  font-weight: 500;
+  white-space: nowrap;
+  margin-bottom: 4rpx;
+}
+
+.bmi-range-value {
+  font-size: 20rpx;
+  color: #fff;
+  font-weight: 400;
+  opacity: 0.9;
+  white-space: nowrap;
+}
+
+/* BMI位置标记 */
+.bmi-marker {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  z-index: 10;
+}
+
+.bmi-marker-dot {
+  width: 24rpx;
+  height: 24rpx;
+  background: #fff;
+  border: 4rpx solid #188be4;
+  border-radius: 50%;
+  margin: 0 auto 8rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.2);
+}
+
+.bmi-marker-line {
+  width: 2rpx;
+  height: 60rpx;
+  background: #188be4;
+  margin: 0 auto;
+  box-shadow: 0 0 4rpx rgba(24, 139, 228, 0.5);
+}
+
+/* 底部说明 */
+.bmi-dialog-footer {
+  text-align: center;
+  margin-top: 30rpx;
+  padding-top: 30rpx;
+  border-top: 1rpx solid #f0f0f0;
+}
+
+.bmi-footer-text {
+  font-size: 24rpx;
+  color: #999;
+  text-decoration: underline;
+}
+
+/* 年终报告悬浮入口样式 */
+.yearly-report-float {
+  position: fixed;
+  z-index: 999;
+  width: 140rpx;
+  height: 100rpx;
+}
+
+.yearly-report-float-content {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 50rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8rpx 24rpx rgba(102, 126, 234, 0.4);
+  position: relative;
+  padding: 12rpx 20rpx;
+}
+
+.yearly-report-float-icon {
+  margin-bottom: 4rpx;
+}
+
+.yearly-report-float-text {
+  font-size: 20rpx;
+  color: #ffffff;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.yearly-report-float-close {
+  position: absolute;
+  top: -6rpx;
+  right: -6rpx;
+  width: 32rpx;
+  height: 32rpx;
+  background: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.15);
+  border: 1rpx solid #f0f0f0;
+  z-index: 1000;
+}
+
+/* 提醒打卡相关样式 */
+.subscribe-reminder-container {
+  padding: 20rpx 32rpx;
+}
+
+.reminder-time-field {
+  display: flex;
+  align-items: center;
+  margin-top: 20rpx;
+  padding: 20rpx;
+  background: #f7f8fa;
+  border-radius: 8rpx;
+  border: 1rpx solid #ebedf0;
+}
+
+.reminder-time-label {
+  font-size: 28rpx;
+  color: #646566;
+  margin-right: 20rpx;
+}
+
+.reminder-time-value {
+  flex: 1;
+  font-size: 28rpx;
+  color: #323233;
+  font-weight: 500;
+}
+
+.reminder-time-arrow {
+  font-size: 32rpx;
+  color: #969799;
+}

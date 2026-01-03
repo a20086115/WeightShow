@@ -1,0 +1,26 @@
+
+/* import colorUI */
+@import "colorui/main.wxss";
+@import "colorui/icon.wxss";
+
+
+.hide{
+  display: none !important;
+}
+.container {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+} 
+
+page {
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+/* 隐藏导航栏底部边框 - 通过覆盖系统样式 */
+::after {
+  border-bottom: none !important;
+}

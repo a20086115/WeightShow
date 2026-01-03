@@ -1,0 +1,110 @@
+<view class="">
+  <!-- 头部信息 -->
+  <view class="head container bg-gradual-blue margin shadow" style="align-items: center;">
+    <image bindtap="navToUserInfoPage" class="cu-avatar xl round margin-top-xl" src="{{ avatarUrl }}"></image>
+    <view class="text-center margin-top margin-bottom-xl">
+      {{userInfo.nickName?userInfo.nickName:'点击头像登录'}}
+    </view>
+  </view>
+  <!-- 中间信息 -->
+  <view class="padding radius shadow">
+      <view class="cu-list menu text-left solid-top">
+          
+          <view class="cu-item" bindtap="navToUserInfoPage">
+            <view class="content">
+              <text class="text-grey">个人信息</text>
+            </view>
+           <view class="action text-xxl">
+             <view class="cuIcon-edit "></view>
+            </view>
+          </view>
+          <view class="cu-item" bindtap="queryLastActivity">
+            <view class="content">
+              <text class="text-grey">最新活动</text>
+            </view>
+           <view class="action text-xxl">
+             <view class="cuIcon-emoji"></view>
+            </view>
+          </view>
+          <view class="cu-item" wx:if="{{showYearlyReportEntry}}" bindtap="goToYearlyReport">
+            <view class="content">
+              <text class="text-grey">2025年度报告</text>
+            </view>
+           <view class="action text-xxl">
+             <view class="cuIcon-appreciate"></view>
+            </view>
+          </view>
+          <view class="cu-item" bindtap="openFeedback">
+            <view class="content">
+              <text class="text-grey">在线客服</text>
+            </view>
+           <view class="action text-xxl">
+             <view class="cuIcon-phone "></view>
+            </view>
+          </view>
+          <view class="cu-item" bindtap="openJoinGroupDialog">
+            <view class="content">
+              <text class="text-grey">加群交流</text>
+            </view>
+             <view class="action text-xxl">
+             <view class="cuIcon-like"></view>
+            </view>
+          </view>
+          <view class="cu-item" bindtap="navToSponsorPage">
+            <view class="content">
+              <text class="text-grey">支持作者</text>
+            </view>
+             <view class="action text-xxl">
+             <view class="cuIcon-appreciate"></view>
+            </view>
+          </view>
+          <view class="cu-item" bindtap="navToLinkusPage">
+            <view class="content">
+              <text class="text-grey">关于我们</text>
+            </view>
+             <view class="action text-xxl">
+             <view class="cuIcon-question "></view>
+            </view>
+          </view>
+          <!-- <view class="cu-item" bindtap="navToEle">
+            <view class="content">
+              <text class="text-grey">外卖大红包</text>
+            </view>
+             <view class="action text-xxl">
+             <view class="cuIcon-question "></view>
+            </view>
+          </view> -->
+        </view>
+
+  </view>
+
+  <van-dialog
+    title="在线客服"
+    message="{{message}}‍"
+    show="{{ visibleFeedback }}"
+    cancel="true"
+    show-cancel-button="{{false}}"
+    show-confirm-button="{{false}}"
+    bind:close="onFeedbackClose"
+    use-slot
+    closeOnClickOverlay
+  >
+    <view class="text-grey margin-sm">
+        长按扫码进群，有问题可随时咨询，也欢迎对小程序提出意见和建议~感谢🙇
+        <button class="cu-btn block margin-tb-sm lg" open-type="contact">联系客服</button>
+    </view>
+    <image class="coverImage" show-menu-by-longpress  src="cloud://release-ba24f3.7265-release-ba24f3-1257780911/notice/图怪兽_暑期减肥瘦身训练班海报.jpg"  mode="widthFix"> </image>
+  </van-dialog>
+    
+  <van-dialog cancelButtonText="取消"  confirmButtonText="保存" bind:close="closeJoinGroup" closeOnClickOverlay="{{true}}" use-slot show="{{ visibleJoinGroup }}" showCancelButton="{{true}}" zIndex="1000001">
+    <view style="height:850rpx;overflow:scroll">
+      <image class="coverImage"  src="{{htmlImage}}"  show-menu-by-longpress  mode="widthFix"> </image>
+    </view>
+  </van-dialog>
+
+  <van-dialog cancelButtonText="取消"  confirmButtonText="确定" bind:close="closeNoticeDialog" closeOnClickOverlay="{{true}}" use-slot show="{{ visibleNoticeDialog }}" showCancelButton="{{true}}" zIndex="1000001">
+  <view style="height:750rpx;overflow:scroll">
+    <image class="coverImage" show-menu-by-longpress  src="{{noticeImage}}"  mode="widthFix"> </image>
+  </view>
+</van-dialog>
+</view>

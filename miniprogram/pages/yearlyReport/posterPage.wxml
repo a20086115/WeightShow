@@ -1,0 +1,127 @@
+<view class="poster-page-container">
+  <!-- 加载中 -->
+  <view wx:if="{{loading}}" class="loading-container">
+    <van-loading type="spinner" size="24px" vertical>生成海报中...</van-loading>
+  </view>
+
+  <!-- 海报内容 -->
+  <view wx:else class="poster-content">
+    <!-- 海报容器（用于测量尺寸） -->
+    <view id="poster-container" class="poster-container" wx:if="{{stats}}">
+      <!-- 背景渐变 -->
+      <view class="poster-bg"></view>
+      
+      <!-- 内容区域 -->
+      <view class="poster-main">
+        <!-- 标题 -->
+        <view class="poster-title">{{year}}年度报告</view>
+        
+        <!-- 用户昵称 -->
+        <view class="poster-nickname-wrapper">
+          <view class="poster-nickname">@{{stats.userInfo.nickName}}</view>
+          <view wx:if="{{isDefaultNickname}}" class="poster-edit-nickname" bindtap="editNickname">
+            <van-icon name="edit" size="32rpx" color="#667eea" />
+          </view>
+        </view>
+        
+        <!-- 个性标签 -->
+        <view wx:if="{{stats.personalityTags && stats.personalityTags.length > 0}}" class="poster-tags">
+          <view class="tags-list">
+            <view class="tag-item" wx:for="{{stats.personalityTags}}" wx:key="index">{{item}}</view>
+          </view>
+        </view>
+        
+        <!-- 核心数据 -->
+        <view class="poster-stats-horizontal">
+          <view class="stat-item-horizontal">
+            <view class="stat-value-horizontal">{{stats.totalDays}}</view>
+            <view class="stat-label-horizontal">打卡天数</view>
+          </view>
+          <view class="stat-item-horizontal" wx:if="{{stats.maxConsecutiveDays > 0}}">
+            <view class="stat-value-horizontal">{{stats.maxConsecutiveDays}}</view>
+            <view class="stat-label-horizontal">连续打卡</view>
+          </view>
+        </view>
+        
+        <!-- 体重变化 -->
+        <view wx:if="{{stats.startWeight && stats.endWeight}}" class="poster-weight">
+          <view class="weight-title">体重变化</view>
+          <view class="weight-comparison-horizontal">
+            <view class="weight-item-horizontal">
+              <view class="weight-label-horizontal">年初</view>
+              <view class="weight-number-horizontal">{{stats.startWeight}}<text class="weight-unit">斤</text></view>
+            </view>
+            <view class="weight-arrow-horizontal">→</view>
+            <view class="weight-item-horizontal">
+              <view class="weight-label-horizontal">年末</view>
+              <view class="weight-number-horizontal {{stats.weightChange < 0 ? 'weight-down' : stats.weightChange > 0 ? 'weight-up' : ''}}">
+                {{stats.endWeight}}<text class="weight-unit">斤</text>
+              </view>
+            </view>
+          </view>
+        </view>
+        
+        <!-- 鼓励话语 -->
+        <view wx:if="{{encouragementText}}" class="poster-encouragement">
+          <text class="encouragement-text">{{encouragementText}}</text>
+        </view>
+        
+      </view>
+    </view>
+    
+    <!-- 隐藏的canvas用于生成图片 -->
+    <canvas 
+      canvas-id="poster-canvas" 
+      id="poster-canvas" 
+      class="poster-canvas"
+      style="width: 750px; height: 1334px;">
+    </canvas>
+    
+    <!-- 操作按钮 -->
+    <view class="poster-actions">
+      <view class="share-buttons">
+        <van-button 
+          type="info" 
+          size="large" 
+          round 
+          bindtap="shareToTimeline" 
+          class="share-btn">
+          分享到朋友圈
+        </van-button>
+        <van-button 
+          plain
+          type="info" 
+          size="large" 
+          round 
+          open-type="share"
+          class="share-btn"
+          bindtap="showShareTip">
+          分享给好友
+        </van-button>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 修改昵称弹窗 -->
+  <van-dialog 
+    use-slot 
+    title="修改昵称" 
+    show="{{ showEditNicknameDialog }}" 
+    bind:close="closeEditNicknameDialog"
+    show-cancel-button
+    confirm-button-text="保存"
+    cancel-button-text="取消"
+    bind:confirm="saveNickname"
+    zIndex="100000">
+    <view class="edit-nickname-dialog">
+      <van-field 
+        type="nickname" 
+        value="{{ editNickname }}" 
+        placeholder="请输入昵称" 
+        border="{{ true }}" 
+        bind:change="onNicknameChange" 
+        maxlength="20" />
+    </view>
+  </van-dialog>
+</view>
+

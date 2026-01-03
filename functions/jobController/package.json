@@ -1,0 +1,16 @@
+{
+  "name": "jobController",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dayjs": "^1.8.16",
+    "request-promise": "latest",
+    "wx-server-sdk": "latest"
+  }
+}

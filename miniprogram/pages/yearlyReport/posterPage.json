@@ -1,0 +1,12 @@
+{
+  "navigationBarTitleText": "生成分享海报",
+  "enableShareTimeline": true,
+  "usingComponents": {
+    "van-loading": "../../miniprogram_npm/@vant/weapp/loading/index",
+    "van-button": "../../miniprogram_npm/@vant/weapp/button/index",
+    "van-icon": "../../miniprogram_npm/@vant/weapp/icon/index",
+    "van-dialog": "../../miniprogram_npm/@vant/weapp/dialog/index",
+    "van-field": "../../miniprogram_npm/@vant/weapp/field/index"
+  }
+}
+

@@ -1,0 +1,288 @@
+.poster-page-container {
+  min-height: 100vh;
+  background: #f5f7fa;
+  padding: 30rpx 20rpx 20rpx;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.poster-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* 海报容器 */
+.poster-container {
+  width: 690rpx;
+  position: relative;
+  margin-bottom: 30rpx;
+  border-radius: 20rpx;
+  overflow: hidden;
+  box-shadow: 0 8rpx 30rpx rgba(0, 0, 0, 0.15);
+}
+
+.poster-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  z-index: 0;
+}
+
+.poster-main {
+  position: relative;
+  z-index: 1;
+  background: #ffffff;
+  margin: 30rpx;
+  border-radius: 20rpx;
+  padding: 40rpx 40rpx 40rpx;
+}
+
+/* 标题 */
+.poster-title {
+  font-size: 48rpx;
+  font-weight: bold;
+  color: #333333;
+  text-align: center;
+  margin-bottom: 12rpx;
+}
+
+.poster-nickname-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 30rpx;
+  gap: 12rpx;
+}
+
+.poster-nickname {
+  font-size: 32rpx;
+  color: #666666;
+  text-align: center;
+}
+
+.poster-edit-nickname {
+  padding: 8rpx;
+  background: #f0f0f0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 核心数据（横排） */
+.poster-stats-horizontal {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin-bottom: 25rpx;
+  padding: 20rpx 0;
+  background: #f5f7fa;
+  border-radius: 12rpx;
+}
+
+.stat-item-horizontal {
+  text-align: center;
+  flex: 1;
+}
+
+.stat-value-horizontal {
+  font-size: 48rpx;
+  font-weight: bold;
+  color: #667eea;
+  margin-bottom: 8rpx;
+}
+
+.stat-label-horizontal {
+  font-size: 24rpx;
+  color: #999999;
+}
+
+/* 体重变化（优化布局） */
+.poster-weight {
+  margin-bottom: 20rpx;
+  padding: 25rpx 20rpx;
+  background: linear-gradient(135deg, #f5f7fa 0%, #ffffff 100%);
+  border-radius: 15rpx;
+}
+
+.weight-title {
+  font-size: 28rpx;
+  color: #999999;
+  text-align: center;
+  margin-bottom: 20rpx;
+}
+
+.weight-comparison-horizontal {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin-bottom: 0;
+  padding: 0 20rpx;
+}
+
+.weight-item-horizontal {
+  text-align: center;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.weight-label-horizontal {
+  font-size: 24rpx;
+  color: #999999;
+  margin-bottom: 12rpx;
+}
+
+.weight-number-horizontal {
+  font-size: 52rpx;
+  font-weight: bold;
+  color: #333333;
+  line-height: 1.2;
+}
+
+.weight-number-horizontal.weight-down {
+  color: #34C759;
+}
+
+.weight-number-horizontal.weight-up {
+  color: #FF3B30;
+}
+
+.weight-unit {
+  font-size: 28rpx;
+  font-weight: normal;
+  margin-left: 4rpx;
+}
+
+.weight-arrow-horizontal {
+  font-size: 40rpx;
+  color: #667eea;
+  margin: 0 10rpx;
+  font-weight: bold;
+}
+
+.weight-change-horizontal {
+  text-align: center;
+  padding-top: 20rpx;
+  border-top: 1rpx solid #f0f0f0;
+}
+
+.change-text-horizontal {
+  font-size: 40rpx;
+  font-weight: bold;
+}
+
+.change-down {
+  color: #34C759;
+}
+
+.change-up {
+  color: #FF3B30;
+}
+
+.change-same {
+  color: #666666;
+}
+
+/* 个性标签 */
+.poster-tags {
+  margin-bottom: 25rpx;
+  margin-top: 15rpx;
+}
+
+.tags-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12rpx;
+}
+
+.tag-item {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #ffffff;
+  padding: 8rpx 16rpx;
+  border-radius: 20rpx;
+  font-size: 24rpx;
+}
+
+/* 鼓励话语 */
+.poster-encouragement {
+  text-align: center;
+  padding: 30rpx 20rpx;
+  background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+  border-radius: 15rpx;
+  margin-bottom: 0;
+}
+
+.encouragement-text {
+  font-size: 32rpx;
+  color: #333333;
+  font-weight: 500;
+  line-height: 1.6;
+}
+
+/* 底部提示 */
+.poster-footer {
+  text-align: center;
+  padding-top: 30rpx;
+  border-top: 1rpx solid #f0f0f0;
+}
+
+.footer-text {
+  font-size: 24rpx;
+  color: #999999;
+}
+
+/* Canvas */
+.poster-canvas {
+  position: fixed;
+  top: -9999px;
+  left: -9999px;
+  z-index: -1;
+}
+
+/* 操作按钮 */
+.poster-actions {
+  width: 100%;
+  padding: 0 20rpx 20rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.action-btn {
+  width: 100%;
+}
+
+.edit-nickname-dialog {
+  padding: 20rpx;
+}
+
+.share-buttons {
+  display: flex;
+  gap: 20rpx;
+  width: 100%;
+}
+
+.share-btn {
+  flex: 1;
+}
+
+.edit-nickname-dialog {
+  padding: 20rpx;
+}
+
+.edit-nickname-actions {
+  margin-top: 20rpx;
+}
+

@@ -1,0 +1,257 @@
+<view class="yearly-report-container">
+  <!-- 加载中 -->
+  <view wx:if="{{loading}}" class="loading-container">
+    <van-loading type="spinner" size="24px" vertical>生成报告中...</van-loading>
+  </view>
+
+  <!-- 报告内容 -->
+  <view wx:else class="report-content">
+    <!-- 个性化开篇页 -->
+    <view class="report-header">
+      <view class="report-title">@{{stats.userInfo.nickName}} 的{{year}}体重蜕变报告</view>
+      <view class="report-subtitle" wx:if="{{stats.weightChange !== null && stats.weightChange < 0}}">
+        这一年，你用{{stats.totalDays}}天坚持，悄悄瘦了{{absWeightChange}}斤～
+      </view>
+      <view class="report-subtitle" wx:elif="{{stats.totalDays > 0}}">
+        这一年，你坚持打卡{{stats.totalDays}}天，记录每一天的变化～
+      </view>
+      <view class="report-subtitle" wx:else>
+        记录每一天的变化
+      </view>
+    </view>
+    
+    <!-- 个性标签 -->
+    <view wx:if="{{stats.personalityTags && stats.personalityTags.length > 0}}" class="tags-container">
+      <view class="tag-item" wx:for="{{stats.personalityTags}}" wx:key="index">{{item}}</view>
+    </view>
+
+    <!-- 核心数据卡片 -->
+    <view class="stats-card main-card">
+      <view class="main-card-bg"></view>
+      <view class="card-title">核心数据</view>
+      <view class="main-stats">
+        <view class="stat-item">
+          <view class="stat-icon-wrapper">
+            <view class="stat-icon">📅</view>
+          </view>
+          <view class="stat-value">{{stats.totalDays}}</view>
+          <view class="stat-label">打卡天数</view>
+        </view>
+        <view class="stat-item" wx:if="{{stats.weightChange !== null}}">
+          <view class="stat-icon-wrapper">
+            <view class="stat-icon {{stats.weightChange < 0 ? 'stat-icon-down' : stats.weightChange > 0 ? 'stat-icon-up' : ''}}">
+              {{stats.weightChange < 0 ? '📉' : stats.weightChange > 0 ? '📈' : '⚖️'}}
+            </view>
+          </view>
+          <view class="stat-value {{stats.weightChange < 0 ? 'stat-value-down' : stats.weightChange > 0 ? 'stat-value-up' : ''}}">
+            {{stats.weightChange > 0 ? '+' : ''}}{{stats.weightChange}}
+          </view>
+          <view class="stat-label">体重变化（斤）</view>
+        </view>
+        <view class="stat-item" wx:if="{{stats.maxConsecutiveDays > 0}}">
+          <view class="stat-icon-wrapper">
+            <view class="stat-icon">🔥</view>
+          </view>
+          <view class="stat-value">{{stats.maxConsecutiveDays}}</view>
+          <view class="stat-label">最长连续</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 体重数据卡片 -->
+    <view wx:if="{{stats.startWeight}}" class="stats-card weight-change-card">
+      <view class="card-title">体重变化</view>
+      
+      <!-- 体重对比区域 -->
+      <view class="weight-comparison-section">
+        <view class="weight-item-box">
+          <view class="weight-item-bg"></view>
+          <view class="weight-item-content">
+            <view class="weight-label">年初体重</view>
+            <view class="weight-value">{{stats.startWeight}}<text class="unit">斤</text></view>
+            <view class="weight-date">{{stats.startDate}}</view>
+          </view>
+        </view>
+        <view class="weight-arrow-container">
+          <view class="weight-arrow-line"></view>
+          <view class="weight-arrow-icon">
+            <van-icon name="arrow" size="28rpx" color="#188be4" />
+          </view>
+        </view>
+        <view class="weight-item-box weight-item-end">
+          <view class="weight-item-bg weight-item-bg-end"></view>
+          <view class="weight-item-content">
+            <view class="weight-label">年末体重</view>
+            <view class="weight-value {{stats.weightChange < 0 ? 'weight-down' : stats.weightChange > 0 ? 'weight-up' : ''}}">
+              {{stats.endWeight}}<text class="unit">斤</text>
+            </view>
+            <view class="weight-date">{{stats.endDate}}</view>
+          </view>
+        </view>
+      </view>
+      
+      <!-- BMI关联区域 -->
+      <view wx:if="{{stats.startBMI && stats.endBMI}}" class="bmi-section">
+        <view class="bmi-divider"></view>
+        <view class="bmi-comparison">
+          <view class="bmi-item-box">
+            <view class="bmi-label">年初BMI</view>
+            <view class="bmi-value-wrapper">
+              <text class="bmi-value">{{stats.startBMI}}</text>
+              <text class="bmi-category">（{{stats.startBMICategory}}）</text>
+            </view>
+          </view>
+          <view class="bmi-arrow-container">
+            <view class="bmi-arrow-line"></view>
+            <view class="bmi-arrow-icon">→</view>
+          </view>
+          <view class="bmi-item-box bmi-item-end">
+            <view class="bmi-label">年末BMI</view>
+            <view class="bmi-value-wrapper">
+              <text class="bmi-value {{stats.bmiChange < 0 ? 'bmi-down' : stats.bmiChange > 0 ? 'bmi-up' : ''}}">{{stats.endBMI}}</text>
+              <text class="bmi-category {{stats.bmiChange < 0 ? 'bmi-down' : stats.bmiChange > 0 ? 'bmi-up' : ''}}">（{{stats.endBMICategory}}）</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 体重极值卡片 -->
+    <view wx:if="{{stats.maxWeight}}" class="stats-card">
+      <view class="card-title">体重极值</view>
+      <view class="extreme-stats">
+        <view class="extreme-item">
+          <view class="extreme-label">最重</view>
+          <view class="extreme-value">{{stats.maxWeight}}<text class="unit">斤</text></view>
+          <view class="extreme-date">{{stats.maxWeightDate}}</view>
+        </view>
+        <view class="extreme-item">
+          <view class="extreme-label">最轻</view>
+          <view class="extreme-value">{{stats.minWeight}}<text class="unit">斤</text></view>
+          <view class="extreme-date">{{stats.minWeightDate}}</view>
+        </view>
+        <view class="extreme-item" wx:if="{{stats.avgWeight}}">
+          <view class="extreme-label">平均</view>
+          <view class="extreme-value">{{stats.avgWeight}}<text class="unit">斤</text></view>
+        </view>
+      </view>
+      <!-- 高光月份解读 -->
+      <view wx:if="{{stats.highlightMonth && stats.highlightMonthLoss}}" class="highlight-month">
+        <view class="highlight-text">
+          {{highlightMonthText}}月 = 你的「逆袭月」！本月瘦了{{highlightMonthLossText}}斤，这执行力太顶了～
+        </view>
+      </view>
+    </view>
+
+    <!-- 体重趋势图 -->
+    <view wx:if="{{chartData.xData.length > 0}}" class="stats-card chart-card">
+      <view class="card-title">体重趋势</view>
+      <view class="chart-container">
+        <ec-canvas id="yearly-chart" canvas-id="yearly-chart" ec="{{ ec }}"></ec-canvas>
+      </view>
+    </view>
+
+    <!-- 月度统计 -->
+    <view wx:if="{{monthlyStatsArray.length > 0}}" class="stats-card">
+      <view class="card-title">月度打卡统计</view>
+      <view class="monthly-stats">
+        <view class="month-item {{monthData.month === stats.highlightMonth ? 'highlight-month-item' : ''}} {{monthData.month === stats.maxCountMonth ? 'max-count-month-item' : ''}}" 
+              wx:for="{{monthlyStatsArray}}" wx:key="month" wx:for-item="monthData">
+          <view class="month-label">
+            {{monthData.monthText}}月
+            <text wx:if="{{monthData.month === stats.highlightMonth}}" class="month-badge highlight-badge">逆袭月</text>
+            <text wx:if="{{monthData.month === stats.maxCountMonth && monthData.count >= 28}}" class="month-badge count-badge">劳模月</text>
+          </view>
+          <view class="month-count">{{monthData.count}}次</view>
+          <view class="month-avg" wx:if="{{monthData.avgWeight}}">均重{{monthData.avgWeight}}斤</view>
+          <view class="month-loss" wx:if="{{monthData.weightLoss && monthData.weightLoss > 0}}">本月瘦了{{monthData.weightLossText}}斤</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 鼓励话语 -->
+    <view class="encouragement-card">
+      <view class="encouragement-text">{{encouragementText}}</view>
+    </view>
+    
+    <!-- 行动引导和分享（仅自己的报告显示） -->
+    <view wx:if="{{!openId}}" class="action-buttons">
+      <van-button type="primary" size="large" round bindtap="setTargetWeight" class="action-btn">
+        设置2026年理想体重
+      </van-button>
+      
+      <!-- 分享按钮 -->
+      <view class="share-buttons">
+        <van-button 
+          type="info" 
+          size="large" 
+          round 
+          bindtap="shareToTimeline" 
+          class="share-btn">
+          分享到朋友圈
+        </van-button>
+        <van-button 
+          plain
+          type="info" 
+          size="large" 
+          round 
+          open-type="share"
+          class="share-btn"
+          bindtap="showShareTip">
+          分享给好友
+        </van-button>
+      </view>
+    </view>
+    
+    <!-- 查看他人报告时的提示 -->
+    <view wx:else class="view-others-tip" bindtap="goToIndex">
+      <view class="tip-text">这是{{stats.userInfo.nickName}}的年度报告</view>
+      <view class="tip-subtext">想要生成自己的报告？快去打卡记录体重吧！</view>
+    </view>
+  </view>
+  
+  <!-- 设置目标体重弹窗 -->
+  <van-dialog 
+    use-slot 
+    title="设置2026年理想体重" 
+    show="{{ showTargetDialog }}" 
+    bind:close="closeTargetDialog"
+    show-cancel-button
+    zIndex="100000">
+    <view class="target-dialog-content">
+      <van-field 
+        type="digit" 
+        label="理想体重" 
+        value="{{ targetWeight }}" 
+        placeholder="请输入理想体重（斤）" 
+        border="{{ true }}" 
+        bind:change="onTargetWeightChange" />
+      <view wx:if="{{ targetWeight && stats.endWeight }}" class="target-info">
+        <view class="target-text">需再减：<text class="target-value">{{targetWeightLoss}}斤</text></view>
+        <view class="target-progress">
+          <view class="progress-bar">
+            <view class="progress-fill" style="width: {{targetProgress}}%"></view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </van-dialog>
+  
+  <!-- 海报图片弹窗 -->
+  <van-dialog 
+    cancelButtonText="取消" 
+    confirmButtonText="{{confirmButtonText}}" 
+    bind:close="downLoadPosterImage" 
+    closeOnClickOverlay="{{true}}" 
+    use-slot 
+    show="{{ fileid && showPosterImage }}" 
+    showCancelButton="{{true}}" 
+    showConfirmButton="{{showImageButton}}" 
+    zIndex="1000001">
+    <image class="coverImage" src="{{fileid}}" bindtap="hidePosterImage" mode="widthFix"></image>
+  </van-dialog>
+  
+  <!-- 海报生成组件 -->
+  <canvasdrawer painting="{{painting}}" class="canvasdrawer" bind:getImage="eventGetImage"/>
+</view>
+

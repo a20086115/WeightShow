@@ -1,0 +1,14 @@
+.avatar-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-radius: 50%; /* 圆形头像 */
+    background: white;
+  }
+  
+  .avatar {
+    width: 100px; /* 或其他尺寸 */
+    height: 100px; /* 或其他尺寸 */
+    border-radius: 50%; /* 圆形图片 */
+  }

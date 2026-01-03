@@ -1,0 +1,29 @@
+
+.van-info{
+  top:-10rpx !important;
+  right:-10rpx !important;
+}
+.no-goods-icon {
+  width: 100rpx;
+  height: 100rpx;
+  margin-top: 300rpx;
+}
+.title-box {
+  margin-top: 30rpx;
+  text-align: center;
+  font-size: 28rpx;
+  color: #999;
+  margin-bottom: 50rpx;
+}
+
+.to-index-btn {
+  color: #fff;
+  background: #e64340;
+  border-radius: 6px;
+  width: 300rpx;
+  height: 70rpx;
+  line-height: 70rpx;
+  text-align: center;
+  font-size: 28rpx;margin: 0 auto;
+
+}

@@ -1,0 +1,4 @@
+<!-- Canvas 2D：性能更好，支持同层渲染 -->
+<canvas wx:if="{{isUseNewCanvas}}" type="2d" class="ec-canvas" id="{{canvasId}}" bindinit="onCanvasInit" bindtouchstart="{{ ec.disableTouch ? '' : 'touchStart' }}" bindtouchmove="{{ ec.disableTouch ? '' : 'touchMove' }}" bindtouchend="{{ ec.disableTouch ? '' : 'touchEnd' }}"></canvas>
+<!-- 旧版 Canvas：兼容低版本基础库 -->
+<canvas wx:else class="ec-canvas" canvas-id="{{ canvasId }}" bindtouchstart="{{ ec.disableTouch ? '' : 'touchStart' }}" bindtouchmove="{{ ec.disableTouch ? '' : 'touchMove' }}" bindtouchend="{{ ec.disableTouch ? '' : 'touchEnd' }}"></canvas>

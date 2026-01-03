@@ -1,0 +1,5 @@
+<form bindsubmit="formSubmit" report-submit class="layout">
+ <button formType="submit" class="button" hover-class="none">
+  <view class="fixed"><slot></slot></view>
+ </button>
+</form>

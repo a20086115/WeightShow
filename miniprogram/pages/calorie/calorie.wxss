@@ -1,0 +1,48 @@
+.header-style{
+  background: #188be4 ;  
+  color: #fff;
+}
+.txt_style{
+  font-size: 12px;
+  color: rgb(238, 83, 83);
+  line-height: 12px;
+}
+.canvas {
+  width: 100%;
+  height: 200px;
+}
+.picker_date{
+  width: 100%;
+  height: 250rpx;
+}
+.calendar--weekday_label{
+  padding: 0px !important;
+}
+.calendar--mytext{
+  margin-top: 0px !important;
+}
+
+/* 图表的样式，必须设置，否则没有大小 */
+ec-canvas {
+  position: absolute;
+  top: 0px;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+/* 出勤  */
+.dotcolor-o{
+  background-color: #188be4 !important;  
+}
+
+/* 未出勤  */
+.dotcolor-t{
+  background-color: #FF7F50 !important;  
+}
+.circle{
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: 8rpx;
+  margin-left: 10rpx;
+}

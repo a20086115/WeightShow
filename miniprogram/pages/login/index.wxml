@@ -1,0 +1,17 @@
+<view class="login-container">
+	<view class="login" wx:if="{{ !logged }}">
+		<view class="app-info">
+			<image class="app-logo" src="../../images/icon.jpg" />
+			<text class="app-name">瘦身打卡助手</text>
+		</view>
+		<view class="alert">
+			<view class="alert-title">网页由该小程序开发，请确认授权以下信息</view>
+			<view class="alert-desc">
+				<view class="alert-text">获得你的公开信息（昵称、头像等）</view>
+				<view class="alert-text">需要您点击我的-个人信息去上传头像和昵称</view>
+			</view>
+		</view>
+		<button class="weui-btn" type="primary" bindtap="getUserInfoFun" >确认登录</button>
+    	<button class="weui-btn" type="primary"  bindtap="back">暂不授权</button>
+	</view>
+</view>

@@ -1,0 +1,36 @@
+<!--miniprogram/pages/dayMeal/dayMeal.wxml-->
+<import src="../template-cart/template-cart.wxml" />
+  <view class="container">
+    <van-search
+      value="{{ search }}"
+      placeholder="请输入搜索关键词"
+      bind:change="onSearchChange"
+      bind:search="onSearch"
+      use-action-slot
+    >
+     <view slot="action" bind:tap="onSearch">搜索</view>
+    </van-search>
+    <view style="display:flex">
+      <van-sidebar active-key="{{ activeKey }}" style="width:20%">
+        <van-sidebar-item :key="name"  title="{{ item.name }}" wx:for="{{ sidebars }}" info="{{ item.totalCalorie}}" bindtap="onClickNav" data-index="{{ index }}"/>
+      </van-sidebar>
+      <view style="width:80%">
+          <view wx:if="{{ currentFoods.length == 0}}" style="text-align:center">
+            <image class="no-goods-icon" src="/images/nofood.png"></image>
+            <view class="title-box">
+              暂无用餐记录
+            </view>
+            <view class="to-index-btn" bindtap="onSearch">
+              去添加
+            </view>
+          </view>
+          <view  wx:for="{{currentFoods}}" wx:key="_id" style="margin-top:10rpx" bindtap="clickFoods" data-item="{{ item }}">
+              <van-card num="{{ item.count }}" price="{{item.calorie + '千卡'}} "  title="{{item.foodsList[0]._id}}" thumb="{{ item.foodsList[0].img || FOOD_IMAGE_DEFAULT}}"
+                currency="" desc="100g" />
+          </view>
+      </view>
+    </view>
+</view>
+<van-dialog id="van-dialog" />
+
+<van-toast id="van-toast" />

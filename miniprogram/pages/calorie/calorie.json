@@ -1,0 +1,6 @@
+{
+  "usingComponents": {
+    "calendar": "plugin://calendar/calendar",
+    "ec-canvas": "../../ec-canvas/ec-canvas"
+  }
+}
