@@ -55,7 +55,7 @@ function calculateContinuousDays(dates, checkInDate) {
     prevDate = getPrevDate(prevDate)
     
     // 防止无限循环（最多检查365天）
-    if (continuousDays > 365) break
+    if (continuousDays > 10000) break
   }
   
   return continuousDays
@@ -93,7 +93,7 @@ async function updateUserContinuousDays(db, openId, checkInDate) {
         }
         
         // 最多查询400条（足够计算连续打卡，因为连续打卡最多365天）
-        if (allDates.length >= 400) {
+        if (allDates.length >= 10000) {
           hasMore = false
         }
       } else {
