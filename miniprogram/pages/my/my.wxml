@@ -93,7 +93,7 @@
         长按扫码进群，有问题可随时咨询，也欢迎对小程序提出意见和建议~感谢🙇
         <button class="cu-btn block margin-tb-sm lg" open-type="contact">联系客服</button>
     </view>
-    <image class="coverImage" show-menu-by-longpress  src="cloud://release-ba24f3.7265-release-ba24f3-1257780911/notice/图怪兽_暑期减肥瘦身训练班海报.jpg"  mode="widthFix"> </image>
+    <image class="coverImage" show-menu-by-longpress  src="cloud://release-ba24f3.7265-release-ba24f3-1257780911/notice/notice2.png"  mode="widthFix"> </image>
   </van-dialog>
     
   <van-dialog cancelButtonText="取消"  confirmButtonText="保存" bind:close="closeJoinGroup" closeOnClickOverlay="{{true}}" use-slot show="{{ visibleJoinGroup }}" showCancelButton="{{true}}" zIndex="1000001">

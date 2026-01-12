@@ -11,6 +11,7 @@
   
     <van-field title-width="120px" id="aimWeightKg" value="{{ currentUser.aimWeightKg }}" clearable label="目标体重（千克）" type="number" placeholder="请输入目标体重（千克）" bind:change="onValueChange"/>
     <van-field title-width="120px" id="aimWeight" value="{{ currentUser.aimWeight }}" clearable label="目标体重（斤）" type="number" placeholder="请输入目标体重（斤）" bind:change="onValueChange"/>
+    <van-field title-width="120px" id="aimBmi" value="{{ currentUser.aimBmi }}" disabled="true" label="目标BMI" type="number" placeholder="根据目标体重自动计算" />
     
     <van-field title-width="120px" id="lastWeightKg" value="{{ currentUser.weightKg }}" disabled="true"  clearable label="当前体重（千克）"  type="number" placeholder="请在首页打卡" bind:change="onValueChange" />
     <van-field title-width="120px" id="lastWeight" value="{{ currentUser.weight }}" disabled="true"  clearable label="当前体重（斤）"  type="number" placeholder="请在首页打卡" bind:change="onValueChange" />

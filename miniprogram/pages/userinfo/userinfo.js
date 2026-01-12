@@ -13,35 +13,86 @@ Page({
       nickName: "",
       height: "",
       aimWeight: "",
-      aimWeightKg: ""
+      aimWeightKg: "",
+      aimBmi: ""
     }
   },
   onChooseAvatar(e) {
     const { avatarUrl } = e.detail 
+    if (!avatarUrl) {
+      wx.showToast({
+        icon: 'none',
+        title: '未选择头像',
+      })
+      return
+    }
+    
+    // 先更新本地显示
     this.setData({
       'currentUser.avatarUrl': avatarUrl,
     })
-    console.log("xxxx", e)
-    const cloudPath = 'avatar/' +  getApp().globalData.userInfo.openId
+    
+    // 检查 openId 是否存在
+    const app = getApp()
+    const openId = app.globalData.userInfo?.openId
+    if (!openId) {
+      wx.showToast({
+        icon: 'none',
+        title: '请先登录',
+      })
+      return
+    }
+    
+    // 获取文件扩展名
+    const fileExtension = avatarUrl.split('.').pop() || 'jpg'
+    const cloudPath = `avatar/${openId}.${fileExtension}`
+    
+    console.log('[上传文件] 开始上传：', cloudPath)
     wx.showLoading({
       title: '上传中',
+      mask: true
     })
+    
     wx.cloud.uploadFile({
       cloudPath,
       filePath: avatarUrl,
       success: res => {
         wx.hideLoading()
         console.log('[上传文件] 成功：', cloudPath, res)
-        // 保存到记录中去
-        this.setData({
-          'currentUser.avatarUrl':  res.fileID,
-        })
+        if (res.fileID) {
+          // 保存到记录中去
+          this.setData({
+            'currentUser.avatarUrl': res.fileID,
+          })
+          wx.showToast({
+            icon: 'success',
+            title: '上传成功',
+            duration: 1500
+          })
+        } else {
+          wx.showToast({
+            icon: 'none',
+            title: '上传失败：未返回文件ID',
+          })
+        }
       },
-      fail: e => {
+      fail: err => {
         wx.hideLoading()
+        console.error('[上传文件] 失败：', err)
+        let errorMsg = '上传失败'
+        if (err.errMsg) {
+          if (err.errMsg.includes('permission')) {
+            errorMsg = '上传失败：权限不足'
+          } else if (err.errMsg.includes('network')) {
+            errorMsg = '上传失败：网络错误'
+          } else {
+            errorMsg = `上传失败：${err.errMsg}`
+          }
+        }
         wx.showToast({
           icon: 'none',
-          title: '上传失败',
+          title: errorMsg,
+          duration: 2000
         })
       }
     })
@@ -49,6 +100,10 @@ Page({
   onLoad: function (options) {
     // 先设置默认用户信息，让页面先渲染，提升用户体验
     var userInfo = {... getApp().globalData.userInfo}
+    // 如果有目标体重和身高，计算目标BMI
+    if (userInfo.aimWeightKg && userInfo.height) {
+      userInfo.aimBmi = this.calculateAimBmi(userInfo.aimWeightKg, userInfo.height)
+    }
     this.setData({ currentUser: userInfo })
   },
   
@@ -108,6 +163,19 @@ Page({
     }
 
   },
+  /**
+   * 计算目标BMI
+   * @param {number} aimWeightKg 目标体重（千克）
+   * @param {number} height 身高（厘米）
+   * @returns {number} 目标BMI
+   */
+  calculateAimBmi(aimWeightKg, height) {
+    if (!aimWeightKg || !height) {
+      return ""
+    }
+    const bmi = aimWeightKg / (height * height / 10000)
+    return parseFloat(bmi.toFixed(2))
+  },
   // 输入框
   onValueChange(e) {
     var value = e.detail;
@@ -119,11 +187,23 @@ Page({
     // 如果是输入的kg体重， 自动计算斤的体重；反之同理
     if(id == "aimWeightKg"){
       obj["currentUser.aimWeight"] = parseFloat(value) * 2;
+      // 计算目标BMI
+      if (this.data.currentUser.height) {
+        obj["currentUser.aimBmi"] = this.calculateAimBmi(parseFloat(value), this.data.currentUser.height)
+      }
     }else if(id == "aimWeight"){
       obj["currentUser.aimWeightKg"] = parseFloat(value) / 2;
+      // 计算目标BMI
+      if (this.data.currentUser.height) {
+        obj["currentUser.aimBmi"] = this.calculateAimBmi(parseFloat(value) / 2, this.data.currentUser.height)
+      }
     }else if(id == "height"){
-      // 计算BMI
+      // 计算当前BMI
       obj["currentUser.bmi"] = getApp().getBmi(this.data.currentUser.weightKg, parseFloat(value)).bmi;
+      // 计算目标BMI
+      if (this.data.currentUser.aimWeightKg) {
+        obj["currentUser.aimBmi"] = this.calculateAimBmi(this.data.currentUser.aimWeightKg, parseFloat(value))
+      }
     }
     this.setData(obj)
   }

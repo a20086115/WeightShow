@@ -18,7 +18,8 @@ const MIN = ['00', '30'];
 
 // 图表数据
 let xData = [];
-let yData = [];
+let yData = []; // 体重数据（斤）
+let bmiData = []; // BMI数据
 
 /**
  * 格式化日期为日格式（只显示日期，不显示月份）
@@ -51,25 +52,52 @@ function setOption(chart) {
     xAxisInterval = Math.ceil(formattedXData.length / 15);
   }
   
+  // 获取目标体重
+  const App = getApp();
+  const aimWeight = App.globalData.userInfo?.aimWeight || null;
+  
+  // 检查是否有有效的BMI数据（至少有一个非null值）
+  const hasValidBmiData = bmiData.some(bmi => bmi !== null && bmi !== undefined);
+  
+  // 计算BMI数据的实际范围（用于动态设置Y轴范围）
+  let bmiMin = null;
+  let bmiMax = null;
+  if (hasValidBmiData) {
+    const validBmiValues = bmiData.filter(bmi => bmi !== null && bmi !== undefined);
+    if (validBmiValues.length > 0) {
+      bmiMin = Math.min(...validBmiValues);
+      bmiMax = Math.max(...validBmiValues);
+    }
+  }
+  
+  // 构建图例数据
+  const legendData = ['体重'];
+  if (hasValidBmiData) {
+    legendData.push('BMI');
+  }
+  if (aimWeight) {
+    legendData.push('目标体重');
+  }
+  
   const option = {
     title: {
-      text: '本月体重曲线',
+      text: '本月体重与BMI曲线',
       left: 'center',
       z: 1,
       show: false
     },
-    color: ["#37A2DA"],
+    color: ["#37A2DA", "#FF6B6B", "#95E1D3"],
     legend: {
-      data: ['体重'],
+      data: legendData,
       show: true,
       top: 10,
       itemGap: 30
     },
     grid: {
       left: '15%',
-      right: '12%',
+      right: '15%',  // 为右侧Y轴留出空间
       top: '20%',
-      bottom: '18%',  // 只显示日期，不需要额外空间
+      bottom: '18%',
       containLabel: false
     },
     tooltip: {
@@ -104,7 +132,14 @@ function setOption(chart) {
         // 遍历所有系列数据
         params.forEach(function(item) {
           if (item && item.seriesName && item.value !== null && item.value !== undefined) {
-            const unit = item.seriesName === '体重' ? '斤' : '';
+            let unit = '';
+            if (item.seriesName === '体重') {
+              unit = '斤';
+            } else if (item.seriesName === 'BMI') {
+              unit = '';
+            } else if (item.seriesName === '目标体重') {
+              unit = '斤';
+            }
             result += item.seriesName + ': ' + item.value + unit + '\n';
           }
         });
@@ -135,9 +170,9 @@ function setOption(chart) {
         fontSize: 12,
         color: '#37A2DA',
         fontWeight: 'normal',
-        interval: xAxisInterval,  // 根据数据点数量自动调整间隔
-        rotate: 0,  // 只显示日期，不需要旋转
-        margin: 8  // 标签与轴线的距离
+        interval: xAxisInterval,
+        rotate: 0,
+        margin: 8
       },
       axisLine: {
         lineStyle: {
@@ -145,52 +180,135 @@ function setOption(chart) {
         }
       }
     },
-    yAxis: {
-      type: 'value',
-      name: '体重(斤)',
-      nameLocation: 'end',
-      nameGap: 15,
-      nameTextStyle: {
-        color: '#37A2DA',
-        fontSize: 13,
-        fontWeight: 'bold'
-      },
-      position: 'left',
-      axisLabel: {
-        formatter: '{value}',
-        color: '#37A2DA',
-        fontSize: 13,
-        fontWeight: 'normal'
-      },
-      axisLine: {
-        show: true,
-        lineStyle: {
-          color: '#37A2DA'
+    yAxis: [
+      {
+        type: 'value',
+        name: '体重(斤)',
+        nameLocation: 'end',
+        nameGap: 15,
+        nameTextStyle: {
+          color: '#37A2DA',
+          fontSize: 13,
+          fontWeight: 'bold'
+        },
+        position: 'left',
+        axisLabel: {
+          formatter: '{value}',
+          color: '#37A2DA',
+          fontSize: 13,
+          fontWeight: 'normal'
+        },
+        axisLine: {
+          show: true,
+          lineStyle: {
+            color: '#37A2DA'
+          }
+        },
+        splitLine: {
+          show: true,
+          lineStyle: {
+            color: '#f0f0f0',
+            type: 'dashed'
+          }
+        },
+        min: function (value) {
+          return Math.max(0, parseInt(value.min - 10));
         }
       },
-      splitLine: {
-        show: true,
-        lineStyle: {
-          color: '#f0f0f0',
-          type: 'dashed'
+      {
+        type: 'value',
+        name: 'BMI',
+        nameLocation: 'end',
+        nameGap: 15,
+        nameTextStyle: {
+          color: '#FF6B6B',
+          fontSize: 13,
+          fontWeight: 'bold'
+        },
+        position: 'right',
+        axisLabel: {
+          formatter: '{value}',
+          color: '#FF6B6B',
+          fontSize: 13,
+          fontWeight: 'normal'
+        },
+        axisLine: {
+          show: true,
+          lineStyle: {
+            color: '#FF6B6B'
+          }
+        },
+        splitLine: {
+          show: false  // 右侧Y轴不显示分割线，避免与左侧重叠
+        },
+        min: function (value) {
+          // 根据实际BMI数据动态设置最小值
+          // 如果传入了计算好的bmiMin，使用它；否则使用ECharts自动计算的值
+          const actualMin = bmiMin !== null ? bmiMin : (value.min || 10);
+          const actualMax = bmiMax !== null ? bmiMax : (value.max || 30);
+          const range = actualMax - actualMin;
+          
+          // 留出15%的边距，但最小不低于10
+          const minValue = Math.max(10, Math.floor(actualMin - range * 0.15));
+          return minValue;
+        },
+        max: function (value) {
+          // 根据实际BMI数据动态设置最大值
+          // 如果传入了计算好的bmiMax，使用它；否则使用ECharts自动计算的值
+          const actualMin = bmiMin !== null ? bmiMin : (value.min || 10);
+          const actualMax = bmiMax !== null ? bmiMax : (value.max || 30);
+          const range = actualMax - actualMin;
+          
+          // 留出15%的边距，但最大不超过35
+          const maxValue = Math.min(35, Math.ceil(actualMax + range * 0.15));
+          return maxValue;
         }
-      },
-      min: function (value) {
-        return Math.max(0, parseInt(value.min - 10));
       }
-    },
-    series: [{
-      name: '体重',
+    ],
+    series: [
+      {
+        name: '体重',
+        type: 'line',
+        smooth: true,
+        symbol: 'circle',
+        symbolSize: 9,
+        yAxisIndex: 0,
+        lineStyle: {
+          width: 3.5,
+          color: '#37A2DA'
+        },
+        itemStyle: {
+          color: '#37A2DA',
+          borderWidth: 2,
+          borderColor: '#fff'
+        },
+        emphasis: {
+          focus: 'series',
+          itemStyle: {
+            borderWidth: 3,
+            borderColor: '#fff'
+          }
+        },
+        data: yData
+      }
+    ]
+  };
+  
+  // 添加BMI曲线（如果有有效的BMI数据）
+  if (hasValidBmiData) {
+    option.series.push({
+      name: 'BMI',
       type: 'line',
       smooth: true,
       symbol: 'circle',
       symbolSize: 9,
+      yAxisIndex: 1,  // 使用右侧Y轴
       lineStyle: {
         width: 3.5,
-        color: '#37A2DA'
+        color: '#FF6B6B'
       },
       itemStyle: {
-        color: '#37A2DA',
+        color: '#FF6B6B',
         borderWidth: 2,
         borderColor: '#fff'
       },
@@ -201,9 +319,27 @@ function setOption(chart) {
           borderColor: '#fff'
         }
       },
-      data: yData
-    }]
-  };
+      data: bmiData
+    });
+  }
+  
+  // 添加目标体重线（如果有目标体重）
+  if (aimWeight) {
+    const targetWeightData = new Array(xData.length).fill(aimWeight);
+    option.series.push({
+      name: '目标体重',
+      type: 'line',
+      yAxisIndex: 0,  // 使用左侧Y轴
+      lineStyle: {
+        width: 2,
+        color: '#95E1D3',
+        type: 'dashed'  // 虚线
+      },
+      symbol: 'none',  // 不显示点
+      data: targetWeightData
+    });
+  }
+  
   App.globalData.option = option;
   chart.setOption(option);
 }
@@ -1294,6 +1430,7 @@ Page({
     this.data.days = {};
     xData = [];
     yData = [];
+    bmiData = [];  // 重置BMI数据
     
     // 用于跟踪上一个体重
     let lastWeight = null;
@@ -1318,6 +1455,15 @@ Page({
       if (record.text) {
         xData.push(record.date);
         yData.push(record.text);
+
+        // 计算BMI（如果有身高）
+        if (hasHeight && height) {
+          const weightKg = record.text / 2;  // 转换为千克
+          const bmi = weightKg / (height * height / 10000);
+          bmiData.push(parseFloat(bmi.toFixed(2)));
+        } else {
+          bmiData.push(null);  // 没有身高时，BMI为null
+        }
 
         // 根据体重变化设置背景颜色
         if (lastWeight !== null) {
