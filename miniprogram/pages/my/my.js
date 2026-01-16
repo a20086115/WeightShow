@@ -11,7 +11,8 @@ Page({
     app:getApp(),
     visibleFeedback: false,
     visibleJoinGroup: false,
-    htmlImage:"cloud://release-ba24f3.7265-release-ba24f3-1257780911/activity.png",
+    htmlImage:"cloud://release-ba24f3.7265-release-ba24f3-1257780911/activity.png", // 默认值，会被 params 覆盖
+    customerServiceImage:"cloud://release-ba24f3.7265-release-ba24f3-1257780911/notice/notice2.png", // 默认值，会被 params 覆盖
     message:"有问题可随时咨询，也欢迎对小程序提出意见和建议~感谢🙇",
     visibleNoticeDialog:false,
     noticeImage:"",
@@ -33,6 +34,8 @@ Page({
       // 获取用户信息更新
       // this.updateUserPhoto();
     }
+    // 加载配置参数（二维码图片路径）
+    this.loadParamsConfig();
     // 检查是否显示年度报告入口
     this.checkYearlyReportEntry();
   },
@@ -102,8 +105,7 @@ Page({
   },
   openJoinGroupDialog(){
     this.setData({
-      message:"发送【加群】给客服，客服会回复群聊二维码~欢迎加群一起交流哦🙇",
-      visibleFeedback: true
+      visibleJoinGroup: true
     })
   },
   closeJoinGroup(e){
@@ -207,6 +209,43 @@ Page({
   goToYearlyReport: function() {
     wx.navigateTo({
       url: '/pages/yearlyReport/yearlyReport?year=2025'
+    });
+  },
+  
+  /**
+   * 从云数据库 params 表加载配置参数
+   */
+  loadParamsConfig: function() {
+    // 获取加群二维码图片路径
+    CF.get("params", {
+      code: "join_group_qrcode_image"
+    }).then(res => {
+      if (res.result && res.result.data && res.result.data.length > 0) {
+        const config = res.result.data[0];
+        if (config.value) {
+          this.setData({
+            htmlImage: config.value
+          });
+        }
+      }
+    }).catch(err => {
+      console.error('获取加群二维码配置失败:', err);
+    });
+    
+    // 获取在线客服二维码图片路径
+    CF.get("params", {
+      code: "customer_service_qrcode_image"
+    }).then(res => {
+      if (res.result && res.result.data && res.result.data.length > 0) {
+        const config = res.result.data[0];
+        if (config.value) {
+          this.setData({
+            customerServiceImage: config.value
+          });
+        }
+      }
+    }).catch(err => {
+      console.error('获取在线客服二维码配置失败:', err);
     });
   },
 })
