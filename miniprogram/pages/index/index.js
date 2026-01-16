@@ -1312,7 +1312,8 @@ Page({
     // 防抖处理，避免频繁刷新，且不显示 loading（因为用户可能正在操作）
     if (!this._debouncedRefresh) {
       this._debouncedRefresh = debounce(() => {
-        this.queryRecordsByMonth(this.data.currentMonth, false, false);
+        // 需要更新最新体重，以便新用户记录后能正确显示BMI信息
+        this.queryRecordsByMonth(this.data.currentMonth, true, false);
       }, 300);
     }
     this._debouncedRefresh();
@@ -1340,7 +1341,14 @@ Page({
           height: parseFloat(height)
       }, () => {
         App.globalData.userInfo.height = height;
-        this.getBMI()
+        // 更新本地身高数据
+        this.setData({
+          height: height
+        });
+        // 更新BMI显示
+        this.getBMI();
+        // 重新查询当前月份数据，重新计算BMI并更新图表
+        this.queryRecordsByMonth(this.data.currentMonth, true, false);
       })
     }
   },

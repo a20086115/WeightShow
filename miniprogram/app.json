@@ -11,8 +11,7 @@
         "pages/aboutUs/about",
         "pages/RankingList/RankingList",
         "pages/my/sponsor",
-        "pages/yearlyReport/yearlyReport",
-        "pages/yearlyReport/posterPage"
+        "pages/yearlyReport/yearlyReport"
     ],
     "usingComponents": {
         "van-action-sheet": "./miniprogram_npm/@vant/weapp/action-sheet/index",
