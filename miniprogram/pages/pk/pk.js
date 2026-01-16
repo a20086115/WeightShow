@@ -355,13 +355,6 @@ Page({
   },
   // 邀请
   onInviteClose(e){
-    var openId = App.globalData.userInfo.openId;
-    if (!openId) {
-      // 请先授权
-      wx.showToast({ icon: 'none', title: '请先授权'})
-      wx.navigateTo({ url: '/pages/login/index' })
-      return;
-    }
     this.setData({
       visibleInviteDialog: false
     });

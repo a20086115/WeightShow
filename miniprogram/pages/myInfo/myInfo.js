@@ -46,21 +46,9 @@ Page({
   },
   // 展示name输入框
   newPk(){
-    if (App.globalData.userInfo._id) {
-      this.setData({
-        visible_name: true
-      })
-    }else{
-      wx.showModal({
-        title: '提示',
-        content: '请先授权登陆',
-        success(res) {
-          if (res.confirm) {
-            wx.navigateTo({ url: '/pages/login/index' })
-          } 
-        }
-      })
-    }
+    this.setData({
+      visible_name: true
+    })
   },
    /**
    * 点击提交PK

@@ -2,7 +2,6 @@
     "pages": [
         "pages/start/index",
         "pages/myInfo/myInfo",
-        "pages/login/index",
         "pages/index/index",
         "pages/records/records",
         "pages/pk/pk",

@@ -415,7 +415,7 @@ Page({
     showChange: false,
     visible: false, // 控制模态框的显示
     visibleHeight: false, // 体重输入框
-    bmiInfo: "授权查看BMI",
+    bmiInfo: "点击设置身高查看BMI",
     weight: 0,  // 输入框的value
     weightKg: 0,
     lastWeight: "", // 最新体重
@@ -450,7 +450,7 @@ Page({
     clockDate: App.globalData.userInfo.clockDate || "12:00" ,
     confirmButtonText:"保存本地",
     visibleHtml: false,
-    htmlImage:"cloud://release-ba24f3.7265-release-ba24f3-1257780911/activity.png",
+    htmlImage:"cloud://release-ba24f3.7265-release-ba24f3-1257780911/activity.png", // 默认值，会被 params 覆盖
     currentBMI: null, // 当前BMI值
     bmiMarkerPosition: 0, // BMI在范围条上的位置（百分比）
     currentBMICategory: 0, // 当前BMI所属分类（1-4）
@@ -586,13 +586,11 @@ Page({
     // 选择图片
     var avatarUrl = App.globalData.userInfo.avatarUrl;
     if (!avatarUrl) {
-      // 请先授权
+      // 如果没有头像，使用默认头像或提示用户设置
       wx.showToast({
         icon: 'none',
-        title: '请先授权',
-      })
-      wx.navigateTo({
-        url: '/pages/login/index'
+        title: '请先在"我的"页面设置头像',
+        duration: 2000
       })
       return;
     }
@@ -600,20 +598,14 @@ Page({
       title: '生成头像中...',
     })
     var that = this;
-    wx.getUserInfo({
-      success: function (res) {
-        var userInfo = res.userInfo
-        var nickName = userInfo.nickName
-        avatarUrl = userInfo.avatarUrl
-        avatarUrl = avatarUrl.replace("/132", "/0")
-        dataHappy.views[0].url = avatarUrl
-        console.log(dataHappy)
-        that.setData({
-          painting: dataHappy,
-        })
-      }
+    // 直接使用已有的头像URL
+    avatarUrl = avatarUrl.replace("/132", "/0")
+    dataHappy.views[0].url = avatarUrl
+    console.log(dataHappy)
+    that.setData({
+      painting: dataHappy,
     })
-
+    wx.hideLoading();
   },
   onClockOpenChange(event) {
     // 需要手动对 clockOpen 状态进行更新
@@ -723,6 +715,8 @@ Page({
       this.queryRecordsByMonth(this.data.currentMonth);
       // 查询最新活动
       this.queryLastActivity();
+      // 加载配置参数（二维码图片路径）
+      this.loadParamsConfig();
       // 检查是否显示年终报告入口
       this.checkYearlyReportEntry();
     });
@@ -1130,6 +1124,27 @@ Page({
       },
       fail: console.error
     })
+  },
+  
+  /**
+   * 从云数据库 params 表加载配置参数
+   */
+  loadParamsConfig: function() {
+    // 获取加群二维码图片路径
+    CF1.get("params", {
+      code: "join_group_qrcode_image"
+    }).then(res => {
+      if (res.result && res.result.data && res.result.data.length > 0) {
+        const config = res.result.data[0];
+        if (config.value) {
+          this.setData({
+            htmlImage: config.value
+          });
+        }
+      }
+    }).catch(err => {
+      console.error('获取加群二维码配置失败:', err);
+    });
   },
   /**
    * 是否选中推送提醒
@@ -1582,12 +1597,8 @@ Page({
     let bmiInfo = "";
     let bmiStyle = "";
     
-    // 检查授权
-    if (!App.globalData.userInfo.avatarUrl) {
-      bmiInfo = "点击授权查看BMI";
-    }
     // 检查身高
-    else if (!this.data.height) {
+    if (!this.data.height) {
       bmiInfo = "点击设置身高";
     }
     // 检查体重
@@ -1634,20 +1645,9 @@ Page({
     this.setData({height: e.detail})
   },
   changeHeight: function(e){
-    if (App.globalData.userInfo.avatarUrl) {
-      this.setData({
-        visibleHeight: true
-      });
-    } else {
-      wx.showToast({
-        icon: 'none',
-        title: '请先授权',
-        duration: 2000
-      });
-      wx.navigateTo({
-        url: '/pages/login/index'
-      });
-    }
+    this.setData({
+      visibleHeight: true
+    });
   },
   /**
    * 显示BMI提示弹框
@@ -1704,31 +1704,7 @@ Page({
       currentBMICategory: currentBMICategory
     });
   },
-  /**
-   * 检查用户授权
-   * @returns {boolean} 是否已授权
-   */
-  checkUserAuth: function() {
-    const openId = App.globalData.userInfo.openId;
-    if (!openId) {
-      wx.showToast({
-        icon: 'none',
-        title: '请先授权',
-        duration: 2000
-      });
-      wx.navigateTo({
-        url: '/pages/login/index'
-      });
-      return false;
-    }
-    return true;
-  },
-  
   uploadPhoto: function () {
-    // 检查授权
-    if (!this.checkUserAuth()) {
-      return;
-    }
     // 判断是否有照片， 有则显示，没有则上传
     var currentdate = this.data.currentdate;
     if (this.data.days[currentdate] && this.data.days[currentdate].fileid){
@@ -1910,11 +1886,6 @@ Page({
     this.setData({ showActions: false });
   },
   clockSet(){
-    // 检查授权
-    if (!this.checkUserAuth()) {
-      return;
-    }
-    
     const clockDate = App.globalData.userInfo.clockDate || "12:00";
     this.setData({
       multiIndex: [clockDate.substring(0, 2), clockDate.substring(3) === "00" ? 0 : 1],
