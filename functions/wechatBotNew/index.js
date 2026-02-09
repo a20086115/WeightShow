@@ -458,20 +458,20 @@ async function handleBindKeyword(content, gid, mid, wxuin, skw, type) {
               updatedAt: db.serverDate()
             }
           });
-          return createMessage("已绑定！绑定关系已更新。\n\n试试发「关键词」查看支持的功能～");
+          return createMessage("已绑定！绑定关系已更新。\n\n当前语气：鼓励型，可在小程序「我的-微信机器人」里进入配置切换（毒嘴/可爱/鼓励/专业）。\n试试发「关键词」查看支持的功能～");
         } else {
           // 绑定到不同的用户，提示用户
           return createMessage("该微信账号已绑定到其他用户，如需重新绑定请先解绑。");
         }
       } else {
-        // 创建新配置
+        // 创建新配置（默认语气 encourage = 鼓励型）
         await db.collection('robotConfigs').add({
           data: {
             ...configData,
             createdAt: db.serverDate()
           }
         });
-        return createMessage("绑定成功！\n\n现在我会：\n- 在你打卡后立即给你评价反馈\n- 定时推送激励消息（早上、中午、晚上）\n- 每日总结你的打卡情况\n\n试试发「关键词」查看支持的功能～\n快去小程序打卡吧");
+        return createMessage("绑定成功！\n\n当前默认语气：鼓励型。可在小程序「我的-微信机器人」里进入配置切换语气（毒嘴/可爱/鼓励/专业）。\n\n现在我会：\n- 在你打卡后立即给你评价反馈\n- 定时推送激励消息（早上、中午、晚上）\n- 每日总结你的打卡情况\n\n试试发「关键词」查看支持的功能～\n快去小程序打卡吧");
       }
     }
   } catch (error) {
