@@ -41,7 +41,7 @@
     BMI指数：<text style="{{ bmiStyle }}" >{{bmiInfo}}</text>
   </view>
   <van-icon class="iconClass hide" size="50rpx" bindtap="openFeedback"  name="phone-circle-o" />
-  <van-icon class="iconClass" size="50rpx" bindtap="save"  name="share" />
+  <van-icon class="iconClass" size="50rpx" bindtap="openShareSheet"  name="share" />
   <van-icon class="iconClass " size="50rpx"  bindtap="showBmiTip"  name="info-o" />
   <van-icon class="iconClass hide" size="50rpx" bindtap="clockSet"  name="clock-o" />
 </view>
@@ -56,7 +56,7 @@
 </view> -->
 
 
-<view class="container" hidden="{{ visible || visibleBmi || visibleHeight || visibleFeedback || hiddenChart || showImage || visibleClock || visibleHtml || visibleNoticeDialog}}">
+<view class="container" hidden="{{ visible || visibleBmi || visibleHeight || visibleFeedback || hiddenChart || showImage || visibleClock || visibleHtml || visibleNoticeDialog || visibleNewUserGuide}}">
   <ec-canvas id="mychart-dom-line" canvas-id="mychart-line" ec="{{ ec }}" force-use-old-canvas="true"></ec-canvas>
 </view>
 
@@ -140,6 +140,42 @@
   </van-cell-group>
 </van-dialog>
 
+<!-- 新用户引导：填写身高、目标体重、今日体重，展示 BMI 区间（当前 vs 目标） -->
+<van-dialog use-slot title="完善信息" show="{{ visibleNewUserGuide }}" showConfirmButton="{{ false }}" cancelButtonText="暂不" showCancelButton="{{ true }}" bind:close="onNewUserGuideClose" closeOnClickOverlay="{{ false }}" zIndex="100001">
+  <view class="new-user-guide-content">
+    <van-cell-group>
+      <van-field type="digit" label="身高" value="{{ newUserHeight }}" placeholder="必填，单位 cm" border="{{ true }}" bind:change="onNewUserHeightChange" />
+      <van-field type="digit" label="目标体重" value="{{ newUserAimWeight }}" placeholder="选填，单位斤" border="{{ true }}" bind:change="onNewUserAimWeightChange" />
+      <van-field type="digit" label="今日体重" value="{{ newUserTodayWeight }}" placeholder="选填，单位斤" border="{{ true }}" bind:change="onNewUserTodayWeightChange" />
+    </van-cell-group>
+    <view wx:if="{{ newUserHeight && (newUserTodayWeight || newUserAimWeight) }}" class="new-user-bmi-bar">
+      <view class="bmi-range-container bmi-range-container--new-user">
+        <view class="bmi-range-item" style="background: {{tips[1].color}}; flex: 1"><text class="bmi-range-label">偏瘦</text><text class="bmi-range-value">≤18.4</text></view>
+        <view class="bmi-range-item" style="background: {{tips[2].color}}; flex: 1"><text class="bmi-range-label">正常</text><text class="bmi-range-value">18.5~23.9</text></view>
+        <view class="bmi-range-item" style="background: {{tips[3].color}}; flex: 1"><text class="bmi-range-label">过重</text><text class="bmi-range-value">24.0~27.9</text></view>
+        <view class="bmi-range-item" style="background: {{tips[4].color}}; flex: 1"><text class="bmi-range-label">肥胖</text><text class="bmi-range-value">≥28.0</text></view>
+      </view>
+      <view class="new-user-bmi-markers">
+        <!-- 当前：竖线从色条向下连到圆点，再下方为「当前」标签 -->
+        <view wx:if="{{ newUserTodayWeight }}" class="bmi-marker bmi-marker-current" style="left: {{newUserCurrentBmiPosition}}%">
+          <view class="bmi-marker-line"></view>
+          <view class="bmi-marker-dot"></view>
+          <text class="bmi-marker-label bmi-marker-label--current">当前</text>
+        </view>
+        <!-- 目标：同上，标签为「目标」 -->
+        <view wx:if="{{ newUserAimWeight }}" class="bmi-marker bmi-marker-target" style="left: {{newUserTargetBmiPosition}}%">
+          <view class="bmi-marker-line"></view>
+          <view class="bmi-marker-dot"></view>
+          <text class="bmi-marker-label bmi-marker-label--target">目标</text>
+        </view>
+      </view>
+    </view>
+    <view class="new-user-guide-actions">
+      <van-button block type="info" bindtap="handleNewUserGuideSubmit">完成</van-button>
+    </view>
+  </view>
+</van-dialog>
+
 <van-notify id="van-notify" />
 
 <van-dialog cancelButtonText="{{showImageButton ? '取消': '长按图片修改'}}"  confirmButtonText="{{confirmButtonText}}" bind:close="downLoadImage" closeOnClickOverlay="{{true}}" use-slot show="{{ fileid && showImage }}" showCancelButton="{{true}}"  showConfirmButton="{{showImageButton}}"  zIndex="1000001">
@@ -158,6 +194,18 @@
   bind:cancel="onClose"
   bind:close="onClose"
   bind:select="onSelect"
+/>
+
+<van-action-sheet
+  z-index="1000003"
+  show="{{ showShareSheet }}"
+  actions="{{ shareSheetActions }}"
+  cancel-text="取消"
+  overlay="{{true}}"
+  close-on-click-overlay="{{true}}"
+  bind:cancel="onShareSheetClose"
+  bind:close="onShareSheetClose"
+  bind:select="onShareSheetSelect"
 />
 
 

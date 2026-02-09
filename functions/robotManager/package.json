@@ -1,7 +1,7 @@
 {
-    "name": "wechatBot",
+    "name": "robotManager",
     "version": "1.0.0",
-    "description": "",
+    "description": "机器人管理云函数",
     "main": "index.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
@@ -9,12 +9,6 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
-        "@cloudbase/adapter-node": "^1.0.2",
-        "@cloudbase/js-sdk": "^2.8.34",
-        "@cloudbase/node-sdk": "^3.17.0",
         "wx-server-sdk": "~3.0.1"
-    },
-    "engines": {
-        "node": ">=18.0.0"
     }
 }

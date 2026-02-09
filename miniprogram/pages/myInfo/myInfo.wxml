@@ -93,8 +93,36 @@
   </view>
 </view>
 
-<van-dialog use-slot title="发起Pk组队赛" show="{{ visible_name }}" bind:close="handleInsertPk" zIndex="100000" show-cancel-button>
-  <van-cell-group>
-    <van-field label="名称" value="{{ pk.name }}"  border="{{ true }}" placeholder="请输入PK赛名称" id="pk.name" bind:change="onValueChange" />
-  </van-cell-group>
+<van-dialog
+  use-slot
+  show="{{ visible_name }}"
+  bind:close="handleInsertPk"
+  zIndex="100000"
+  show-cancel-button
+  cancel-button-text="取消"
+  confirm-button-text="创建"
+  custom-class="pk-create-dialog"
+>
+  <view class="pk-dialog-slot">
+    <view class="pk-dialog-header">
+      <view class="pk-dialog-icon-wrap">
+        <van-icon name="trophy-o" class="pk-dialog-icon" />
+      </view>
+      <text class="pk-dialog-title">发起PK组队赛</text>
+      <text class="pk-dialog-desc">给队伍起个名字，邀请好友一起打卡PK</text>
+    </view>
+    <view class="pk-dialog-body">
+      <view class="pk-dialog-field-wrap">
+        <text class="pk-dialog-label">队伍名称</text>
+        <input
+          class="pk-dialog-input"
+          placeholder="请输入PK赛名称，如：三月减脂挑战"
+          placeholder-class="pk-dialog-placeholder"
+          value="{{ pk.name }}"
+          id="pk.name"
+          bindinput="onValueChange"
+        />
+      </view>
+    </view>
+  </view>
 </van-dialog>

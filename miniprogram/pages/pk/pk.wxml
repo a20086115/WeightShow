@@ -42,6 +42,16 @@
   <view class="action-buttons">
     <van-button size="small" round open-type="share" type="info" custom-class="action-btn">邀请好友</van-button>
     <van-button size="small" round bindtap="goBack" type="info" custom-class="action-btn">返回首页</van-button>
+    <!-- 绑定/管理机器人按钮：所有人可见，仅发起人可操作 -->
+    <van-button
+      size="small"
+      round
+      bindtap="manageRobot"
+      type="primary"
+      custom-class="action-btn"
+    >
+      {{pk.gid ? '🤖 机器人管理' : '🤖 绑定机器人'}}
+    </van-button>
     <van-button size="small" round bindtap="deletePk" type="danger" custom-class="action-btn" wx:if="{{isPKOwner}}">解散PK</van-button>
     <van-button size="small" round bindtap="leavePk" type="danger" custom-class="action-btn" wx:else>离开PK</van-button>
   </view>
@@ -78,6 +88,22 @@
     </view>
   </view>
 
-  <van-dialog title="PK邀请" message="您的好友邀请你参与体重PK打卡~是否参加？" show="{{ visibleInviteDialog }}" show-cancel-button bind:close="onInviteClose" >
+  <van-dialog
+    use-slot
+    show="{{ visibleInviteDialog }}"
+    show-cancel-button
+    cancel-button-text="暂不参加"
+    confirm-button-text="参加"
+    bind:close="onInviteClose"
+    custom-class="pk-invite-dialog"
+    z-index="100001"
+  >
+    <view class="pk-invite-slot">
+      <view class="pk-invite-icon-wrap">
+        <van-icon name="friends-o" class="pk-invite-icon" />
+      </view>
+      <text class="pk-invite-title">PK邀请</text>
+      <text class="pk-invite-desc">您的好友邀请你参与体重PK打卡，一起互相监督、一起瘦～</text>
+    </view>
   </van-dialog>
 </view>

@@ -138,7 +138,7 @@ Page({
   saveData() {
     // 参数完整性校验
     var currentUser = this.data.currentUser;
-    if (currentUser.age && currentUser.nickName && currentUser.height && currentUser.aimWeight) {
+    if (currentUser.age && currentUser.nickName && currentUser.aimWeight) {
       // 更新的查询条件
       CF.update("users", {openId: true}, {
         avatarUrl: this.data.currentUser.avatarUrl,

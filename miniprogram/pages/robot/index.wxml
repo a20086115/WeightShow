@@ -1,0 +1,113 @@
+<!--pages/robot/index.wxml-->
+<view class="container">
+  <!-- 个人未绑定提示与引导（仅在尚未绑定个人机器人时展示） -->
+  <view wx:if="{{!bindings.personal}}" class="unbound-section">
+    <!-- 功能介绍 -->
+    <view class="section">
+      <view class="section-title">
+        <text class="section-icon">✨</text>
+        <text>机器人功能</text>
+      </view>
+      <view class="feature-list">
+        <view class="feature-item">
+          <view class="feature-icon-wrapper">
+            <text class="feature-icon">📋</text>
+          </view>
+          <view class="feature-content">
+            <text class="feature-name">打卡评价</text>
+            <text class="feature-desc">你打卡后立即收到评价反馈</text>
+          </view>
+        </view>
+        <view class="feature-item">
+          <view class="feature-icon-wrapper">
+            <text class="feature-icon">⏰</text>
+          </view>
+          <view class="feature-content">
+            <text class="feature-name">定时推送</text>
+            <text class="feature-desc">早上激励（7:30-8:30）</text>
+            <text class="feature-desc">中午饮食提醒（11:00-13:00）</text>
+            <text class="feature-desc">晚上打卡提醒（19:00-20:00）</text>
+            <text class="feature-desc">每日总结（21:00-22:00）</text>
+          </view>
+        </view>
+        <view class="feature-item">
+          <view class="feature-icon-wrapper">
+            <text class="feature-icon">🎭</text>
+          </view>
+          <view class="feature-content">
+            <text class="feature-name">个性化话术</text>
+            <text class="feature-desc">毒嘴型/可爱型/鼓励型/专业型</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 绑定引导 -->
+    <view class="section">
+      <view class="section-title">
+        <text class="section-icon">👤</text>
+        <text>绑定好友</text>
+      </view>
+      <view class="wechat-id-row">
+        <text class="wechat-id-label">机器人微信号</text>
+        <text class="wechat-id-value" selectable>{{robotWechatId}}</text>
+        <van-button type="primary" size="small" bindtap="copyWechatId" class="copy-wechat-btn" round>复制</van-button>
+      </view>
+      <view class="wechat-id-tip">请先添加该微信号为好友，再发送下方绑定消息</view>
+      <view class="bind-guide">
+        <view class="guide-steps">
+          <view class="guide-step-item">
+            <view class="step-number">1</view>
+            <text class="guide-step">添加机器人微信号为好友</text>
+          </view>
+          <view class="guide-step-item">
+            <view class="step-number">2</view>
+            <text class="guide-step">点击下方"一键复制"绑定消息</text>
+          </view>
+          <view class="guide-step-item">
+            <view class="step-number">3</view>
+            <text class="guide-step">发送复制的绑定消息给机器人</text>
+          </view>
+        </view>
+      </view>
+      <van-button type="primary" size="large" bindtap="copyBindMessage" class="copy-btn" round>
+        一键复制绑定消息
+      </van-button>
+      <view class="bind-message-container">
+        <text class="bind-message-label">绑定消息（可长按复制）</text>
+        <view class="bind-message-box">
+          <text class="bind-message" selectable>{{bindMessage}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 提示 -->
+    <view class="tip-section">
+      <text class="tip-text">提示：绑定群聊请在PK详情页操作</text>
+    </view>
+  </view>
+
+  <!-- 已绑定个人时仅展示个人入口（PK 群绑定请在 PK 详情页维护） -->
+  <view wx:if="{{bindings.personal}}" class="bound-section">
+    <view class="section">
+      <view class="section-title">
+        <text class="section-icon">👤</text>
+        <text>个人绑定</text>
+      </view>
+      <view class="binding-card">
+        <view class="binding-card-header">
+          <view class="binding-status-badge">
+            <view class="status-dot"></view>
+            <text class="binding-status-text">已绑定</text>
+          </view>
+        </view>
+        <view class="binding-card-footer">
+          <van-button type="primary" size="small" bindtap="managePersonalConfig" round>管理配置</van-button>
+        </view>
+      </view>
+    </view>
+    <view class="tip-section">
+      <text class="tip-text">PK 群机器人请在 PK 详情页中绑定/管理</text>
+    </view>
+  </view>
+</view>

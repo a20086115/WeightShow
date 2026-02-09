@@ -459,7 +459,19 @@ Page({
     yearlyReportEntryClosed: false, // 是否已关闭首页入口
     floatPosition: { x: 0, y: 0 }, // 悬浮图标位置
     touchStart: { x: 0, y: 0 }, // 触摸起始位置
-    isDragging: false // 是否正在拖拽
+    isDragging: false, // 是否正在拖拽
+    showShareSheet: false, // 分享/海报合并入口 ActionSheet
+    shareSheetActions: [
+      { name: '保存海报', id: 'poster' },
+      { name: '分享到朋友圈', id: 'timeline' },
+      { name: '分享给好友', id: 'friend' }
+    ],
+    visibleNewUserGuide: false, // 新用户引导弹框（无身高时显示）
+    newUserHeight: '',
+    newUserAimWeight: '',
+    newUserTodayWeight: '',
+    newUserCurrentBmiPosition: 0, // 当前 BMI 在区间条上的位置（0–100）
+    newUserTargetBmiPosition: 0   // 目标 BMI 在区间条上的位置（0–100）
   },
   showNoticeDialog(){
     this.setData({
@@ -556,6 +568,36 @@ Page({
     }
     return true;
   },
+
+  /**
+   * 打开分享/海报合并入口 ActionSheet
+   */
+  openShareSheet() {
+    this.setData({ showShareSheet: true });
+  },
+  onShareSheetClose() {
+    this.setData({ showShareSheet: false });
+  },
+  onShareSheetSelect(e) {
+    this.setData({ showShareSheet: false });
+    const id = e.detail && e.detail.id;
+    if (id === 'poster') {
+      this.save();
+    } else if (id === 'timeline') {
+      wx.showModal({
+        title: '分享到朋友圈',
+        content: '请点击右上角「…」，选择「分享到朋友圈」',
+        showCancel: false
+      });
+    } else if (id === 'friend') {
+      wx.showModal({
+        title: '分享给好友',
+        content: '请点击右上角「…」，选择「发送给朋友」',
+        showCancel: false
+      });
+    }
+  },
+
   save() {
     this.setData({
       confirmButtonText: "保存本地"
@@ -708,9 +750,14 @@ Page({
   onLoad: function(){
     wx.showShareMenu({  menus: ['shareAppMessage', 'shareTimeline']});
     App.initUserInfo(() => {
+      const userHeight = App.globalData.userInfo.height || "";
       this.setData({
-        height: App.globalData.userInfo.height || ""
+        height: userHeight
       });
+      // 无身高视为新用户，显示引导弹框
+      if (!userHeight) {
+        // this.setData({ visibleNewUserGuide: true });
+      }
       // 查询当月记录
       this.queryRecordsByMonth(this.data.currentMonth);
       // 查询最新活动
@@ -1287,6 +1334,7 @@ Page({
           weightKg: parseFloat(weightKg) || 0
         }, () => {
           this.refreshRecords();
+          if (date === TODAY) this.showShareGuide();
         }, (err) => {
           console.error('更新记录失败:', err);
         });
@@ -1299,10 +1347,33 @@ Page({
         weightKg: parseFloat(weightKg) || 0
       }, () => {
         this.refreshRecords();
+        if (date === TODAY) this.showShareGuide();
       }, (err) => {
         console.error('插入记录失败:', err);
       });
     }
+  },
+
+  /**
+   * 打卡成功后的「分享到朋友圈」引导
+   */
+  showShareGuide() {
+    return;
+    wx.showModal({
+      title: '记录这一天',
+      content: '分享到朋友圈，记录今天的打卡吧～',
+      confirmText: '去分享',
+      cancelText: '暂不',
+      success: (res) => {
+        if (res.confirm) {
+          wx.showModal({
+            title: '分享到朋友圈',
+            content: '请点击右上角「…」，选择「分享到朋友圈」',
+            showCancel: false
+          });
+        }
+      }
+    });
   },
   
   /**
@@ -1658,6 +1729,132 @@ Page({
     });
   },
   /**
+   * 根据 BMI 值计算在区间条上的位置（0–100），与现有 BMI 弹框一致
+   */
+  getBmiPositionPercent: function(bmi) {
+    if (!bmi || bmi <= 0) return 0;
+    const v = parseFloat(bmi);
+    let pos = 0;
+    if (v <= 18.4) {
+      pos = (v / 18.4) * 25;
+    } else if (v < 24) {
+      pos = 25 + ((v - 18.5) / (23.9 - 18.5)) * 25;
+    } else if (v < 28) {
+      pos = 50 + ((v - 24) / (27.9 - 24)) * 25;
+    } else {
+      const inObese = Math.min((v - 28) / (40 - 28), 1);
+      pos = 75 + inObese * 25;
+    }
+    return Math.max(0, Math.min(100, pos));
+  },
+
+  /**
+   * 新用户引导：根据身高/今日体重/目标体重更新 BMI 区间条上的当前、目标位置
+   */
+  updateNewUserBmiPositions: function() {
+    const h = parseFloat(this.data.newUserHeight);
+    const todayJin = parseFloat(this.data.newUserTodayWeight);
+    const aimJin = parseFloat(this.data.newUserAimWeight);
+    let currentPos = 0, targetPos = 0;
+    if (h && h > 0) {
+      if (todayJin && todayJin > 0) {
+        const kg = todayJin / 2;
+        const bmi = kg / (h * h / 10000);
+        currentPos = this.getBmiPositionPercent(bmi);
+      }
+      if (aimJin && aimJin > 0) {
+        const kg = aimJin / 2;
+        const bmi = kg / (h * h / 10000);
+        targetPos = this.getBmiPositionPercent(bmi);
+      }
+    }
+    this.setData({
+      newUserCurrentBmiPosition: currentPos,
+      newUserTargetBmiPosition: targetPos
+    });
+  },
+
+  onNewUserHeightChange: function(e) {
+    this.setData({ newUserHeight: e.detail || '' }, () => this.updateNewUserBmiPositions());
+  },
+  onNewUserAimWeightChange: function(e) {
+    this.setData({ newUserAimWeight: e.detail || '' }, () => this.updateNewUserBmiPositions());
+  },
+  onNewUserTodayWeightChange: function(e) {
+    this.setData({ newUserTodayWeight: e.detail || '' }, () => this.updateNewUserBmiPositions());
+  },
+
+  /**
+   * 新用户引导：点击「暂不」关闭
+   */
+  onNewUserGuideClose: function(e) {
+    if (e && e.detail !== 'confirm') {
+      this.setData({ visibleNewUserGuide: false });
+    }
+  },
+
+  /**
+   * 新用户引导：完成
+   */
+  handleNewUserGuideSubmit: function() {
+    const height = (this.data.newUserHeight || '').trim();
+    if (!height) {
+      wx.showToast({ title: '请填写身高', icon: 'none' });
+      return;
+    }
+    const heightNum = parseFloat(height);
+    if (!heightNum || heightNum <= 0 || heightNum > 250) {
+      wx.showToast({ title: '请填写有效身高（cm）', icon: 'none' });
+      return;
+    }
+    const aimWeight = this.data.newUserAimWeight ? parseFloat(this.data.newUserAimWeight) : null;
+    const todayWeight = this.data.newUserTodayWeight ? parseFloat(this.data.newUserTodayWeight) : null;
+    const today = dayjs().format('YYYY-MM-DD');
+
+    const updateData = { height: heightNum };
+    if (aimWeight != null && aimWeight > 0) {
+      updateData.aimWeight = aimWeight;
+      updateData.aimWeightKg = aimWeight / 2;
+    }
+    CF.update("users", { openId: true }, updateData, () => {
+      App.globalData.userInfo.height = String(heightNum);
+      if (aimWeight != null) {
+        App.globalData.userInfo.aimWeight = aimWeight;
+        App.globalData.userInfo.aimWeightKg = aimWeight / 2;
+      }
+      this.setData({
+        height: String(heightNum),
+        visibleNewUserGuide: false,
+        newUserHeight: '',
+        newUserAimWeight: '',
+        newUserTodayWeight: ''
+      });
+      if (todayWeight != null && todayWeight > 0) {
+        CF.insert("records", {
+          date: today,
+          weight: todayWeight,
+          weightKg: todayWeight / 2
+        }, () => {
+          this.refreshRecords();
+          this.getBMI();
+          wx.showToast({ title: '已保存', icon: 'success' });
+        }, (err) => {
+          console.error('插入今日体重失败:', err);
+          this.refreshRecords();
+          this.getBMI();
+        });
+      } else {
+        this.refreshRecords();
+        this.getBMI();
+        wx.showToast({ title: '已保存', icon: 'success' });
+      }
+    }, (err) => {
+      console.error('更新用户信息失败:', err);
+      wx.showToast({ title: '保存失败，请重试', icon: 'none' });
+    });
+  },
+
+  /**
    * 显示BMI提示弹框
    */
   showBmiTip: function () {
@@ -1907,6 +2104,25 @@ Page({
         path: '/pages/index/index',
         imageUrl: '/images/share-index.png'
     }
+  },
+
+  /**
+   * 分享到朋友圈（标题：当前月有体重下降则「本月已瘦 X 斤，一起打卡！」，否则「瘦身打卡助手」）
+   */
+  onShareTimeline() {
+    const records = (this.data.records || [])
+      .filter(r => r && r.weight)
+      .map(r => r.weight);
+    let title = '瘦身打卡助手';
+    if (records.length >= 2) {
+      const max = Math.max(...records);
+      const min = Math.min(...records);
+      const diff = max - min;
+      if (diff > 0) {
+        title = `本月已瘦 ${diff.toFixed(1)} 斤，一起打卡！`;
+      }
+    }
+    return { title };
   },
 })
 

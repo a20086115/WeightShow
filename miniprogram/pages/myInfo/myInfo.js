@@ -87,11 +87,11 @@ Page({
       showTipFlag: false
     })
   },
-  // 输入框
+  // 输入框（支持原生 input 的 e.detail.value 与 van-field 的 e.detail）
   onValueChange(e) {
     var key = e.target.id;
     var obj = {};
-    obj[key] = e.detail;
-    this.setData(obj)
+    obj[key] = e.detail.value !== undefined ? e.detail.value : e.detail;
+    this.setData(obj);
   }
 })

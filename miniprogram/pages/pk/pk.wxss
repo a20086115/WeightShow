@@ -269,6 +269,52 @@ ec-canvas {
   font-size: 26rpx;
 }
 
+/* PK邀请弹框 - 美化 */
+.pk-invite-dialog {
+  border-radius: 24rpx !important;
+  overflow: hidden;
+  box-shadow: 0 16rpx 48rpx rgba(24, 139, 228, 0.2);
+}
+
+.pk-invite-slot {
+  padding: 48rpx 40rpx 40rpx;
+  min-width: 520rpx;
+  text-align: center;
+}
+
+.pk-invite-icon-wrap {
+  width: 100rpx;
+  height: 100rpx;
+  margin: 0 auto 28rpx;
+  background: linear-gradient(135deg, #188be4 0%, #4a90e2 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8rpx 24rpx rgba(24, 139, 228, 0.35);
+}
+
+.pk-invite-icon {
+  font-size: 48rpx;
+  color: #fff;
+}
+
+.pk-invite-title {
+  display: block;
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 20rpx;
+  letter-spacing: 1rpx;
+}
+
+.pk-invite-desc {
+  display: block;
+  font-size: 26rpx;
+  color: #666;
+  line-height: 1.6;
+}
+
 /* 兼容旧样式 */
 .memberTitle {
   text-align: center;

@@ -104,9 +104,25 @@ Page({
     })
   },
   openJoinGroupDialog(){
-    this.setData({
-      visibleJoinGroup: true
-    })
+    // 加群交流弹窗展示最新活动的图片（与「最新活动」入口一致）
+    CF.get("notice", {}).then(res => {
+      if (res.result && res.result.data && res.result.data.length > 0) {
+        const notice = res.result.data[0];
+        this.setData({
+          htmlImage: notice.image,
+          visibleJoinGroup: true
+        });
+      } else {
+        // 无最新活动时仍用 params 配置的加群图
+        this.setData({
+          visibleJoinGroup: true
+        });
+      }
+    }).catch(() => {
+      this.setData({
+        visibleJoinGroup: true
+      });
+    });
   },
   closeJoinGroup(e){
     this.setData({
@@ -209,6 +225,39 @@ Page({
   goToYearlyReport: function() {
     wx.navigateTo({
       url: '/pages/yearlyReport/yearlyReport?year=2025'
+    });
+  },
+  
+  /**
+   * 跳转到机器人：已绑定个人则直接进个人配置页，未绑定则进绑定引导页
+   */
+  navToRobotPage: function() {
+    const userInfo = getApp().globalData.userInfo;
+    if (!userInfo || !userInfo.openId) {
+      wx.showToast({ title: '请先登录', icon: 'none' });
+      return;
+    }
+    wx.showLoading({ title: '加载中...', mask: true });
+    wx.cloud.callFunction({
+      name: 'robotManager',
+      data: { action: 'getBindings', userInfo: userInfo }
+    }).then(res => {
+      wx.hideLoading();
+      if (res.result && res.result.errCode === 0 && res.result.data) {
+        const personal = res.result.data.personal;
+        if (personal && personal.targetId && personal.configId) {
+          wx.navigateTo({
+            url: `/pages/robot/config?type=friend&targetId=${personal.targetId}&configId=${personal.configId}`
+          });
+          return;
+        }
+      }
+      wx.navigateTo({
+        url: '/pages/robot/index'
+      });
+    }).catch(() => {
+      wx.hideLoading();
+      wx.navigateTo({ url: '/pages/robot/index' });
     });
   },
   

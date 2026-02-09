@@ -1,0 +1,52 @@
+<!-- 群绑定机器人说明页：展示机器人微信号与绑定步骤 -->
+<view class="container">
+  <!-- 机器人微信号 -->
+  <view class="section wechat-section">
+    <view class="section-title">
+      <text class="section-icon">🤖</text>
+      <text>机器人微信号</text>
+    </view>
+    <view class="wechat-id-row">
+      <text class="wechat-id-label">微信号</text>
+      <text class="wechat-id-value" selectable>{{robotWechatId}}</text>
+      <van-button type="primary" size="small" bindtap="copyWechatId" class="copy-wechat-btn" round>复制</van-button>
+    </view>
+    <view class="wechat-tip">请先添加该微信号为好友，再将机器人拉入群聊</view>
+  </view>
+
+  <!-- 绑定步骤 -->
+  <view class="section">
+    <view class="section-title">
+      <text class="section-icon">📋</text>
+      <text>绑定步骤</text>
+    </view>
+    <view class="guide-steps">
+      <view class="guide-step-item">
+        <view class="step-number">1</view>
+        <text class="guide-step">添加机器人微信号 <text class="highlight">{{robotWechatId}}</text> 为好友</text>
+      </view>
+      <view class="guide-step-item">
+        <view class="step-number">2</view>
+        <text class="guide-step">将机器人拉入本 PK 的群聊</text>
+      </view>
+      <view class="guide-step-item">
+        <view class="step-number">3</view>
+        <text class="guide-step">在群内发送下方「绑定消息」完成绑定</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 绑定消息 -->
+  <view class="section" wx:if="{{bindMessage}}">
+    <view class="section-title">
+      <text class="section-icon">💬</text>
+      <text>绑定消息</text>
+    </view>
+    <view class="bind-message-box">
+      <text class="bind-message" selectable>{{bindMessage}}</text>
+    </view>
+    <van-button type="primary" size="large" bindtap="copyBindMessage" class="copy-btn" round>
+      一键复制绑定消息
+    </van-button>
+  </view>
+</view>

@@ -1,0 +1,14 @@
+{
+  "name": "getWeightRecordsByMonthBatch",
+  "version": "1.0.0",
+  "description": "批量查询多人在某月的体重记录，供 PK 详情页一次请求拉取",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "wx-server-sdk": "latest"
+  }
+}

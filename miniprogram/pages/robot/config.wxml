@@ -1,0 +1,115 @@
+<!--pages/robot/config.wxml-->
+<view class="container">
+  <!-- 话术类型 -->
+  <view class="section">
+    <view class="section-title">
+      <text class="section-icon">🎭</text>
+      <text>话术类型</text>
+    </view>
+    <view class="speech-style-container">
+      <van-radio-group value="{{config.speechStyle}}" bind:change="changeSpeechStyle">
+        <view class="speech-style-item {{config.speechStyle === 'sarcastic' ? 'active' : ''}}" bindtap="selectSpeechStyle" data-value="sarcastic">
+          <view class="speech-style-content">
+            <view class="speech-style-name">毒嘴型</view>
+            <text class="speech-style-desc">犀利幽默，一针见血</text>
+          </view>
+          <view class="speech-style-radio">
+            <view class="radio-check {{config.speechStyle === 'sarcastic' ? 'checked' : ''}}"></view>
+          </view>
+        </view>
+        <view class="speech-style-item {{config.speechStyle === 'cute' ? 'active' : ''}}" bindtap="selectSpeechStyle" data-value="cute">
+          <view class="speech-style-content">
+            <view class="speech-style-name">可爱型</view>
+            <text class="speech-style-desc">萌趣可爱，温暖治愈</text>
+          </view>
+          <view class="speech-style-radio">
+            <view class="radio-check {{config.speechStyle === 'cute' ? 'checked' : ''}}"></view>
+          </view>
+        </view>
+        <view class="speech-style-item {{config.speechStyle === 'encourage' ? 'active' : ''}}" bindtap="selectSpeechStyle" data-value="encourage">
+          <view class="speech-style-content">
+            <view class="speech-style-name">鼓励型</view>
+            <text class="speech-style-desc">积极向上，充满正能量</text>
+          </view>
+          <view class="speech-style-radio">
+            <view class="radio-check {{config.speechStyle === 'encourage' ? 'checked' : ''}}"></view>
+          </view>
+        </view>
+        <view class="speech-style-item {{config.speechStyle === 'professional' ? 'active' : ''}}" bindtap="selectSpeechStyle" data-value="professional">
+          <view class="speech-style-content">
+            <view class="speech-style-name">专业型</view>
+            <text class="speech-style-desc">专业严谨，数据导向</text>
+          </view>
+          <view class="speech-style-radio">
+            <view class="radio-check {{config.speechStyle === 'professional' ? 'checked' : ''}}"></view>
+          </view>
+        </view>
+      </van-radio-group>
+    </view>
+  </view>
+
+  <!-- 打卡评价配置 -->
+  <view class="section">
+    <view class="section-title">
+      <text class="section-icon">📋</text>
+      <text>打卡评价</text>
+    </view>
+    <van-cell-group>
+      <van-cell title="启用打卡评价" value="{{config.config.checkInTrigger.enabled ? '已开启' : '已关闭'}}" border="{{false}}">
+        <van-switch slot="right-icon" checked="{{config.config.checkInTrigger.enabled}}" bind:change="toggleCheckInTrigger" />
+      </van-cell>
+      <view wx:if="{{type === 'friend'}}" class="config-desc">
+        <text class="desc-text">总开关：控制整个打卡评价功能的总开关</text>
+      </view>
+      
+      <van-cell wx:if="{{type === 'friend' && config.config.checkInTrigger.enabled}}" title="个人打卡评价" value="{{config.config.checkInTrigger.personalCheckIn.enabled ? '已开启' : '已关闭'}}" border="{{false}}">
+        <van-switch slot="right-icon" checked="{{config.config.checkInTrigger.personalCheckIn.enabled}}" bind:change="togglePersonalCheckIn" />
+      </van-cell>
+      <view wx:if="{{type === 'friend' && config.config.checkInTrigger.enabled}}" class="config-desc">
+        <text class="desc-text">子开关：在总开关开启时，控制个人打卡评价的具体功能</text>
+      </view>
+      
+      <van-cell wx:if="{{type === 'group' && config.config.checkInTrigger.enabled}}" title="PK打卡评价" value="{{config.config.checkInTrigger.pkCheckIn.enabled ? '已开启' : '已关闭'}}" border="{{false}}">
+        <van-switch slot="right-icon" checked="{{config.config.checkInTrigger.pkCheckIn.enabled}}" bind:change="togglePkCheckIn" />
+      </van-cell>
+      
+      <van-cell wx:if="{{type === 'group' && config.config.checkInTrigger.enabled && config.config.checkInTrigger.pkCheckIn.enabled}}" title="@用户提醒" value="{{config.config.checkInTrigger.pkCheckIn.atUser ? '已开启' : '已关闭'}}" border="{{false}}">
+        <van-switch slot="right-icon" checked="{{config.config.checkInTrigger.pkCheckIn.atUser}}" bind:change="toggleAtUser" />
+      </van-cell>
+    </van-cell-group>
+  </view>
+
+  <!-- 定时推送配置 -->
+  <view class="section">
+    <view class="section-title">
+      <text class="section-icon">⏰</text>
+      <text>定时推送</text>
+    </view>
+    <van-cell-group>
+      <van-cell title="早上激励" label="{{config.config.scheduledMessages.morningPush.timeRange}}" value="{{config.config.scheduledMessages.morningPush.enabled ? '已开启' : '已关闭'}}" border="{{false}}">
+        <van-switch slot="right-icon" checked="{{config.config.scheduledMessages.morningPush.enabled}}" bind:change="toggleScheduledMessage" data-type="morning" />
+      </van-cell>
+      
+      <van-cell title="中午饮食提醒" label="{{config.config.scheduledMessages.lunchReminder.timeRange}}" value="{{config.config.scheduledMessages.lunchReminder.enabled ? '已开启' : '已关闭'}}" border="{{false}}">
+        <van-switch slot="right-icon" checked="{{config.config.scheduledMessages.lunchReminder.enabled}}" bind:change="toggleScheduledMessage" data-type="lunch" />
+      </van-cell>
+      
+      <van-cell title="晚上打卡提醒" label="{{config.config.scheduledMessages.eveningReminder.timeRange}}" value="{{config.config.scheduledMessages.eveningReminder.enabled ? '已开启' : '已关闭'}}" border="{{false}}">
+        <van-switch slot="right-icon" checked="{{config.config.scheduledMessages.eveningReminder.enabled}}" bind:change="toggleScheduledMessage" data-type="evening" />
+      </van-cell>
+      
+      <van-cell wx:if="{{type === 'friend'}}" title="每日总结" label="{{config.config.scheduledMessages.dailySummary.timeRange}}" value="{{config.config.scheduledMessages.dailySummary.enabled ? '已开启' : '已关闭'}}" border="{{false}}">
+        <van-switch slot="right-icon" checked="{{config.config.scheduledMessages.dailySummary.enabled}}" bind:change="toggleScheduledMessage" data-type="dailySummary" />
+      </van-cell>
+      
+      <van-cell wx:if="{{type === 'group'}}" title="每日战报" label="{{config.config.scheduledMessages.dailyReport.timeRange}}" value="{{config.config.scheduledMessages.dailyReport.enabled ? '已开启' : '已关闭'}}" border="{{false}}">
+        <van-switch slot="right-icon" checked="{{config.config.scheduledMessages.dailyReport.enabled}}" bind:change="toggleScheduledMessage" data-type="dailyReport" />
+      </van-cell>
+    </van-cell-group>
+  </view>
+
+  <!-- 解绑按钮 -->
+  <view class="section">
+    <van-button type="danger" size="large" bindtap="unbind" round>解绑机器人</van-button>
+  </view>
+</view>

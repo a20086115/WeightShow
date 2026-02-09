@@ -341,3 +341,86 @@ ec-canvas {
   font-size: 32rpx;
   color: #969799;
 }
+
+/* 新用户引导弹框 */
+.new-user-guide-content {
+  padding: 0 0 24rpx;
+}
+
+.new-user-bmi-bar {
+  position: relative;
+  margin-top: 24rpx;
+  padding: 0 16rpx;
+}
+
+.bmi-range-container--new-user {
+  margin-bottom: 8rpx;
+}
+
+.new-user-bmi-markers {
+  position: relative;
+  height: 100rpx;
+  display: flex;
+  align-items: flex-end;
+}
+
+/* 每个指针：竖线(上) → 圆点 → 文案(下)，整体居中对齐 */
+.new-user-bmi-markers .bmi-marker {
+  position: absolute;
+  bottom: 0;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
+}
+
+/* 竖线：从色条向下延伸，与圆点相连 */
+.new-user-bmi-markers .bmi-marker-line {
+  width: 4rpx;
+  height: 44rpx;
+  margin: 0 auto 6rpx;
+  border-radius: 2rpx;
+}
+
+.new-user-bmi-markers .bmi-marker-dot {
+  width: 24rpx;
+  height: 24rpx;
+  border-radius: 50%;
+  border: 4rpx solid;
+  margin-bottom: 6rpx;
+  flex-shrink: 0;
+}
+
+.bmi-marker-current { z-index: 11; }
+.bmi-marker-current .bmi-marker-line { background: #188be4; }
+.bmi-marker-current .bmi-marker-dot { border-color: #188be4; background: #fff; }
+
+.bmi-marker-target { z-index: 10; }
+.bmi-marker-target .bmi-marker-line { background: #34C759; }
+.bmi-marker-target .bmi-marker-dot { border-color: #34C759; background: #fff; }
+
+/* 标签与指针同色，并加浅底避免重叠时混在一起 */
+.bmi-marker-label {
+  font-size: 22rpx;
+  font-weight: 500;
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+  white-space: nowrap;
+}
+
+.bmi-marker-label--current {
+  color: #188be4;
+  background: rgba(24, 139, 228, 0.1);
+}
+
+.bmi-marker-label--target {
+  color: #34C759;
+  background: rgba(52, 199, 89, 0.1);
+}
+
+.new-user-guide-actions {
+  margin-top: 32rpx;
+  padding: 0 32rpx;
+}

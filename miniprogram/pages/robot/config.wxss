@@ -1,0 +1,214 @@
+/* pages/robot/config.wxss */
+.container {
+  padding: 0;
+  background: linear-gradient(180deg, #f5f7fa 0%, #f0f2f5 100%);
+  min-height: 100vh;
+}
+
+.section {
+  background: white;
+  border-radius: 0;
+  padding: 0;
+  margin-bottom: 20rpx;
+  box-shadow: none;
+  overflow: hidden;
+}
+
+.section:first-of-type {
+  margin-top: 20rpx;
+  border-top-left-radius: 24rpx;
+  border-top-right-radius: 24rpx;
+}
+
+.section-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  padding: 32rpx 30rpx 24rpx;
+  color: #1a1a1a;
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  background: white;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.section-icon {
+  font-size: 32rpx;
+  line-height: 1;
+}
+
+/* 话术类型样式优化 */
+.speech-style-container {
+  padding: 20rpx 30rpx 30rpx;
+  background: white;
+}
+
+.speech-style-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28rpx 24rpx;
+  margin-bottom: 16rpx;
+  background: #f8f9fa;
+  border-radius: 16rpx;
+  border: 2rpx solid transparent;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.speech-style-item:last-child {
+  margin-bottom: 0;
+}
+
+.speech-style-item.active {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.08) 100%);
+  border-color: #667eea;
+  box-shadow: 0 4rpx 12rpx rgba(102, 126, 234, 0.15);
+}
+
+.speech-style-item:active {
+  transform: scale(0.98);
+  background-color: #f0f0f0;
+}
+
+.speech-style-item.active:active {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.12) 100%);
+}
+
+.speech-style-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.speech-style-name {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #1a1a1a;
+  line-height: 1.4;
+}
+
+.speech-style-item.active .speech-style-name {
+  color: #667eea;
+}
+
+.speech-style-desc {
+  font-size: 24rpx;
+  color: #666;
+  line-height: 1.5;
+  font-weight: 300;
+}
+
+.speech-style-item.active .speech-style-desc {
+  color: #555;
+}
+
+.speech-style-radio {
+  margin-left: 20rpx;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.radio-check {
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 50%;
+  border: 2rpx solid #ddd;
+  background: white;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.radio-check.checked {
+  border-color: #667eea;
+  background: #667eea;
+}
+
+.radio-check.checked::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: 50%;
+  background: white;
+}
+
+/* van-cell-group 样式优化 */
+.van-cell-group {
+  background: white;
+  margin: 0;
+  border-radius: 0;
+}
+
+.van-cell {
+  padding: 30rpx;
+  transition: background-color 0.2s ease;
+}
+
+.van-cell:active {
+  background-color: #fafafa;
+}
+
+.van-cell__title {
+  font-size: 28rpx;
+  color: #1a1a1a;
+  font-weight: 400;
+}
+
+.van-cell__value {
+  font-size: 24rpx;
+  color: #999;
+  margin-right: 20rpx;
+}
+
+/* 优化van-cell的label样式 */
+.van-cell__label {
+  font-size: 24rpx !important;
+  color: #999 !important;
+  margin-top: 8rpx !important;
+  font-weight: 300 !important;
+}
+
+/* 解绑按钮区域 */
+.section:last-child {
+  padding: 40rpx 30rpx 60rpx;
+  background: transparent;
+  margin-bottom: 0;
+}
+
+.section:last-child .van-button {
+  box-shadow: 0 4rpx 12rpx rgba(238, 65, 54, 0.2);
+}
+
+/* 统一卡片样式 */
+.van-cell-group::after {
+  border: none;
+}
+
+/* 优化开关样式 */
+.van-switch {
+  margin-left: 0;
+}
+
+.van-switch--on {
+  background-color: #667eea;
+}
+
+/* 配置说明文字 */
+.config-desc {
+  padding: 16rpx 30rpx 20rpx;
+  background: white;
+}
+
+.desc-text {
+  font-size: 24rpx;
+  color: #999;
+  line-height: 1.6;
+  font-weight: 300;
+}

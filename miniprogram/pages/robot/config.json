@@ -1,0 +1,11 @@
+{
+  "usingComponents": {
+    "van-cell": "../../miniprogram_npm/@vant/weapp/cell/index",
+    "van-cell-group": "../../miniprogram_npm/@vant/weapp/cell-group/index",
+    "van-switch": "../../miniprogram_npm/@vant/weapp/switch/index",
+    "van-radio": "../../miniprogram_npm/@vant/weapp/radio/index",
+    "van-radio-group": "../../miniprogram_npm/@vant/weapp/radio-group/index",
+    "van-button": "../../miniprogram_npm/@vant/weapp/button/index"
+  },
+  "navigationBarTitleText": "机器人配置"
+}

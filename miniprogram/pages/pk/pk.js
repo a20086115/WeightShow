@@ -100,6 +100,8 @@ Page({
             pk: e.result.data[0]
           })
           this.requestData(this.data.currentYear + '-' + this.formatMonth(this.data.currentMonth));
+          // pk数据加载后，尝试设置owner标志（如果userInfo已存在）
+          this.setOwnerFlag();
         });
         // 查询授权信息
         CF.get("users", {
@@ -109,6 +111,7 @@ Page({
           this.setData({
             visibleInviteDialog: true,
           })
+          // 用户信息加载后，再次设置owner标志
           this.setOwnerFlag();
         })
       }else{
@@ -123,15 +126,23 @@ Page({
       };
   },
   setOwnerFlag(){
-    if(this.data.pk.openId == App.globalData.userInfo.openId){
-      this.setData({
-        isPKOwner: true
-      })
-    }else{
-      this.setData({
-        isPKOwner: false
-      })
+    // 确保pk和userInfo都存在才进行判断
+    if (!this.data.pk || !this.data.pk.openId) {
+      console.log('setOwnerFlag: pk数据未加载完成');
+      return;
     }
+    
+    if (!App.globalData.userInfo || !App.globalData.userInfo.openId) {
+      console.log('setOwnerFlag: userInfo未加载完成');
+      return;
+    }
+    
+    const isOwner = this.data.pk.openId === App.globalData.userInfo.openId;
+    console.log('setOwnerFlag: pk.openId=', this.data.pk.openId, 'userInfo.openId=', App.globalData.userInfo.openId, 'isOwner=', isOwner);
+    
+    this.setData({
+      isPKOwner: isOwner
+    });
   },
   showPopup() {
     this.setData({ show: true });
@@ -292,51 +303,61 @@ Page({
     })
   },
   requestData(month) {
-    // 清空信息
     seriesData.length = 0;
     seriesBmiData.length = 0;
     var member = this.data.pk.members;
-    var ajaxArray = [];
-    for (let m of member) {
-      ajaxArray.push(this.queryRecordsByMonth(month, m.openId));
+    if (!member || member.length === 0) {
+      this.setData({ members: [] });
+      return;
     }
+    var openIds = member.map(function (m) { return m.openId; });
     wx.showLoading({ title: '加载中...', icon: 'loading' });
-    Promise.all(ajaxArray).then((res) => {
+    wx.cloud.callFunction({
+      name: 'getWeightRecordsByMonthBatch',
+      data: { month: month, openIds: openIds }
+    }).then((res) => {
       wx.hideLoading();
       const today = dayjs().format('YYYY-MM-DD');
-      res.forEach((item, index) => {
-        const records = item.result.data;
+      const allRecords = (res.result && res.result.data) ? res.result.data : [];
+      // 按 openId 分组，保证顺序与 member 一致时直接取用
+      const recordsByOpenId = {};
+      for (let i = 0; i < allRecords.length; i++) {
+        const r = allRecords[i];
+        if (!recordsByOpenId[r.openId]) recordsByOpenId[r.openId] = [];
+        recordsByOpenId[r.openId].push(r);
+      }
+      for (let index = 0; index < member.length; index++) {
+        const records = recordsByOpenId[member[index].openId] || [];
         if (records.length > 0) {
-          const initialWeight = records[0].weight; // 月初体重
-          const currentWeight = records[records.length - 1].weight; // 最新体重
-          const targetWeight = member[index].aimWeight || '未知'; // 目标体重
+          const initialWeight = records[0].weight;
+          const currentWeight = records[records.length - 1].weight;
+          const targetWeight = member[index].aimWeight || '未知';
 
           member[index].initialWeight = initialWeight;
           member[index].currentWeight = currentWeight;
-          member[index].weightLostThisMonth = (currentWeight - initialWeight).toFixed(2); // 本月已减
-          // weightLostThisMonth 转成汉字 带+-号
+          member[index].weightLostThisMonth = (currentWeight - initialWeight).toFixed(2);
           member[index].weightLostThisMonth = member[index].weightLostThisMonth > 0 ? '+' + member[index].weightLostThisMonth : member[index].weightLostThisMonth;
           if (targetWeight !== '未知') {
             const totalWeightLossNeeded = initialWeight - targetWeight;
-            member[index].completionRate = ((initialWeight - currentWeight) / totalWeightLossNeeded * 100).toFixed(2) + '%'; // 目标完成率
+            member[index].completionRate = ((initialWeight - currentWeight) / totalWeightLossNeeded * 100).toFixed(2) + '%';
           } else {
             member[index].completionRate = '未知';
           }
-          // 检查今日是否已打卡
           member[index].checkedInToday = records.some(record => record.date === today);
         } else {
           member[index].initialWeight = '未知';
           member[index].currentWeight = '未知';
           member[index].weightLostThisMonth = '未知';
           member[index].completionRate = '未知';
+          member[index].checkedInToday = false;
         }
         this.prepareSeriesData(records, member[index]);
-      });
+      }
       this.setData({ members: member });
       this.initXdata();
       this.init();
     }).catch((e) => {
-      console.log("queryRecordsByMonth failed", e);
+      console.log("getWeightRecordsByMonthBatch failed", e);
       wx.hideLoading();
       wx.showToast({ title: '网络出小差了,请稍后再试...', icon: 'none' });
     });
@@ -419,22 +440,17 @@ Page({
     seriesData.push(obj)
     seriesBmiData.push(bmiObj)
   },
+  // 获取组件
   /**
-  * 按日期查询
-  */
-  queryRecordsByMonth: function (month, openId) {
-    console.log("queryRecords" + month)
-    return wx.cloud.callFunction({
-      name: 'getWeightRecordsByMonth',
-      data: {
-        month: month,
-        openId: openId
-      }
-    })
+   * 生命周期函数--监听页面显示
+   */
+  onShow: function () {
+    // 页面显示时重新检查是否是PK创建者（防止用户信息延迟加载）
+    if (this.data.pk && this.data.pk.openId) {
+      this.setOwnerFlag();
+    }
   },
 
- 
-  // 获取组件
   onReady: function () {
     this.ecComponent = this.selectComponent('#mychart-dom-line');
   },
@@ -492,5 +508,33 @@ Page({
     wx.switchTab({
       url: '/pages/index/index',
     })
+  },
+  
+  /**
+   * 管理机器人
+   */
+  manageRobot: function() {
+    const pk = this.data.pk;
+    
+    if (!pk || !pk._id) {
+      wx.showToast({
+        title: 'PK信息不存在',
+        icon: 'none'
+      });
+      return;
+    }
+    
+    // 如果已绑定，跳转到配置页面；如果未绑定，显示绑定引导
+    if (pk.gid) {
+      // 已绑定，跳转到配置页面
+      wx.navigateTo({
+        url: `/pages/robot/config?type=group&targetId=${pk.gid}&pkId=${pk._id}&pkName=${encodeURIComponent(pk.name || '')}`
+      });
+    } else {
+      // 未绑定，跳转到群绑定说明页（展示微信号与绑定步骤）
+      wx.navigateTo({
+        url: `/pages/robot/bind-guide?pkId=${pk._id}&pkName=${encodeURIComponent(pk.name || '')}`
+      });
+    }
   }
 })

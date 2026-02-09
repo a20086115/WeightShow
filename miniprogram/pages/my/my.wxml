@@ -26,6 +26,14 @@
              <view class="cuIcon-emoji"></view>
             </view>
           </view>
+          <view class="cu-item" bindtap="navToRobotPage">
+            <view class="content">
+              <text class="text-grey">微信机器人</text>
+            </view>
+           <view class="action text-xxl">
+             <view class="cuIcon-like"></view>
+            </view>
+          </view>
           <view class="cu-item" wx:if="{{showYearlyReportEntry}}" bindtap="goToYearlyReport">
             <view class="content">
               <text class="text-grey">2025年度报告</text>
