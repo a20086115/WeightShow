@@ -124,10 +124,11 @@ page {
 }
 
 .rank-name {
-  font-size: 24rpx;
+  font-size: 32rpx;
   font-weight: bold;
   color: #333333;
-  margin-bottom: 10rpx;
+  margin-bottom: 20rpx;
+  margin-top: 20rpx;
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;

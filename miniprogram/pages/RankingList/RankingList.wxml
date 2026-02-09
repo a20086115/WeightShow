@@ -29,13 +29,7 @@
   color="#188be4"
   text="{{'您当前排在第' + continuousIndex + '位，连续打卡' + currentUsers[continuousIndex-1].continuousDays + '天！继续努力吧！'}}" 
 />
-<van-notice-bar wx:else
-  left-icon="../../../images/laba.png"
-  mode="closeable"
-  background="#fff7e6"
-  color="#ff9800"
-  text="抱歉，您未入榜，请继续努力！╭(●｀∀´●)╯"
-/>
+
 
 <!-- 加载状态 -->
 <view wx:if="{{ loading }}" class="loading-container">
@@ -52,13 +46,13 @@
         <text class="medal-icon">🥈</text>
       </view>
       <view class="rank-avatar-wrapper">
-        <van-image 
+        <!-- <van-image 
           round 
           width="60rpx" 
           height="60rpx" 
           class="rank-avatar" 
           src="{{ currentUsers[1].avatarUrl }}"
-        />
+        /> -->
       </view>
       <view class="rank-info">
         <view class="rank-name">{{ currentUsers[1].nickName }}</view>
@@ -77,13 +71,13 @@
         <text class="medal-icon">🥇</text>
       </view>
       <view class="rank-avatar-wrapper">
-        <van-image 
+        <!-- <van-image 
           round 
           width="80rpx" 
           height="80rpx" 
           class="rank-avatar" 
           src="{{ currentUsers[0].avatarUrl }}"
-        />
+        /> -->
       </view>
       <view class="rank-info">
         <view class="rank-name">{{ currentUsers[0].nickName }}</view>
@@ -102,13 +96,13 @@
         <text class="medal-icon">🥉</text>
       </view>
       <view class="rank-avatar-wrapper">
-        <van-image 
+        <!-- <van-image 
           round 
           width="60rpx" 
           height="60rpx" 
           class="rank-avatar" 
           src="{{ currentUsers[2].avatarUrl }}"
-        />
+        /> -->
       </view>
       <view class="rank-info">
         <view class="rank-name">{{ currentUsers[2].nickName }}</view>
@@ -131,13 +125,13 @@
       class="rank-item rank-normal {{ idx < 3 ? 'hidden' : '' }}"
     >
       <view class="rank-number">{{ idx + 1 }}</view>
-      <van-image 
+      <!-- <van-image 
         round 
         width="64rpx" 
         height="64rpx" 
         class="rank-avatar-small" 
         src="{{ item.avatarUrl }}"
-      />
+      /> -->
       <view class="rank-info-normal">
         <view class="rank-name-normal">{{ item.nickName }}</view>
         <view class="rank-value-normal">
