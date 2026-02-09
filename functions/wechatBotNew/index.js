@@ -340,7 +340,7 @@ async function handleBindKeyword(content, gid, mid, wxuin, skw, type) {
           },
           scheduledMessages: {
             morningPush: { enabled: true, timeRange: '07:30-08:30' },
-            lunchReminder: { enabled: true, timeRange: '11:00-13:00' },
+            lunchReminder: { enabled: true, timeRange: '11:30-12:30' },
             eveningReminder: { enabled: true, timeRange: '19:00-20:00' },
             dailyReport: { enabled: true, timeRange: '21:00-22:00' }
           },
@@ -428,7 +428,7 @@ async function handleBindKeyword(content, gid, mid, wxuin, skw, type) {
           },
           scheduledMessages: {
             morningPush: { enabled: true, timeRange: '07:30-08:30' },
-            lunchReminder: { enabled: true, timeRange: '11:00-13:00' },
+            lunchReminder: { enabled: true, timeRange: '11:30-12:30' },
             eveningReminder: { enabled: true, timeRange: '19:00-20:00' },
             dailySummary: { enabled: true, timeRange: '21:00-22:00' }
           },
@@ -458,20 +458,20 @@ async function handleBindKeyword(content, gid, mid, wxuin, skw, type) {
               updatedAt: db.serverDate()
             }
           });
-          return createMessage("已绑定！绑定关系已更新。\n\n当前语气：鼓励型，可在小程序「我的-微信机器人」里进入配置切换（毒嘴/可爱/鼓励/专业）。\n试试发「关键词」查看支持的功能～");
+          return createMessage("已绑定！绑定关系已更新。\n\n试试发「关键词」查看支持的功能～");
         } else {
           // 绑定到不同的用户，提示用户
           return createMessage("该微信账号已绑定到其他用户，如需重新绑定请先解绑。");
         }
       } else {
-        // 创建新配置（默认语气 encourage = 鼓励型）
+        // 创建新配置
         await db.collection('robotConfigs').add({
           data: {
             ...configData,
             createdAt: db.serverDate()
           }
         });
-        return createMessage("绑定成功！\n\n当前默认语气：鼓励型。可在小程序「我的-微信机器人」里进入配置切换语气（毒嘴/可爱/鼓励/专业）。\n\n现在我会：\n- 在你打卡后立即给你评价反馈\n- 定时推送激励消息（早上、中午、晚上）\n- 每日总结你的打卡情况\n\n试试发「关键词」查看支持的功能～\n快去小程序打卡吧");
+        return createMessage("绑定成功！\n\n现在我会：\n- 在你打卡后立即给你评价反馈\n- 定时推送激励消息（早上、中午、晚上）\n- 每日总结你的打卡情况\n\n试试发「关键词」查看支持的功能～\n快去小程序打卡吧");
       }
     }
   } catch (error) {
@@ -588,18 +588,37 @@ async function handleEvaluationKeyword(targetId, skw) {
  * 处理「激励」关键词：对应早上 7-9 点的激励话术，与定时推送的 morning 一致，不受今日发送次数限制
  */
 async function handleMotivationKeyword(targetId, skw) {
+  console.log('[handleMotivationKeyword] 处理激励关键词', { targetId, skw });
   try {
     const binding = await getBinding(targetId, 'friend');
     if (!binding) {
+      console.warn('[handleMotivationKeyword] 未找到绑定关系', { targetId });
       return createMessage('未找到绑定关系，请先发送"绑定：用户ID"进行绑定');
     }
+    console.log('[handleMotivationKeyword] 找到绑定关系', {
+      targetId,
+      openId: binding.openId,
+      speechStyle: binding.speechStyle
+    });
+    
     const messageType = 'morning';
-    const message = await generateScheduledMessage(messageType, binding, 'friend');
+    const message = await generateScheduledMessage(messageType, binding, 'friend', { fromKeyword: true });
+    
+    console.log('[handleMotivationKeyword] 生成消息结果', {
+      hasMessage: !!message,
+      messageLength: message?.length || 0,
+      messagePreview: message?.slice(0, 100) || 'null'
+    });
+    
     const content = message || '【早上好】新的一天开始了！记得记录体重，坚持就是胜利！';
     await saveMessageRecord(binding, messageType, 'keyword', null, content); // triggerType='keyword'，不参与定时「今日已推送」统计
     return createMessage(content);
   } catch (error) {
-    console.error('处理激励关键词失败:', error);
+    console.error('[handleMotivationKeyword] 处理激励关键词失败', {
+      errorMessage: error.message,
+      errorStack: error.stack,
+      errorName: error.name
+    });
     return createMessage(`获取激励失败：${error.message}`);
   }
 }
@@ -901,15 +920,51 @@ async function handleScheduledMessage(binding, type) {
  * @param {string} openId - 用户openId
  * @returns {Promise<string>} 话术内容
  */
+/**
+ * 格式化体重数值，保留最多1位小数，去掉末尾的0
+ * @param {number} weight - 体重值
+ * @returns {string} 格式化后的体重字符串
+ */
+function formatWeight(weight) {
+  if (weight == null || isNaN(weight)) return '0';
+  return parseFloat(weight.toFixed(1)).toString();
+}
+
 async function generateCheckInSpeech(speechStyle, record, type, member = null, openId = null) {
+  console.log('[generateCheckInSpeech] 方法调用开始', {
+    speechStyle,
+    type,
+    openId: openId || 'null',
+    memberNickName: member?.nickName || 'null',
+    recordDate: record?.date,
+    recordWeight: record?.weight,
+    hasAiInstance: !!aiInstance
+  });
+
   const weight = record.weight || 0;
   const today = record.date || new Date(new Date().getTime() + 8 * 60 * 60 * 1000).toISOString().split('T')[0];
   const context = await getFriendCheckInContext(openId || '', today, { todayRecord: record });
   // 无 weightChange 字段，用今日体重与昨日体重差值计算
   const weightChange = context.yesterdayRecord != null ? (weight - context.yesterdayRecord.weight) : 0;
-  const weightChangeText = weightChange > 0 ? `+${weightChange}` : weightChange.toString();
+  // 格式化体重和体重变化
+  const formattedWeight = formatWeight(weight);
+  const formattedWeightChange = formatWeight(Math.abs(weightChange));
+  const weightChangeText = weightChange > 0 ? `+${formattedWeightChange}` : (weightChange < 0 ? `-${formattedWeightChange}` : '0');
+
+  console.log('[generateCheckInSpeech] 上下文数据', {
+    today,
+    weight,
+    formattedWeight,
+    weightChange,
+    formattedWeightChange,
+    hasYesterdayRecord: !!context.yesterdayRecord,
+    yesterdayWeight: context.yesterdayRecord?.weight || null,
+    hasUserInfo: !!context.userInfo,
+    monthlyRecordsCount: context.monthlyRecords?.length || 0
+  });
 
   if (aiInstance) {
+    console.log('[generateCheckInSpeech] AI实例存在，尝试使用AI生成');
     try {
       const prompt = buildCheckInPrompt(speechStyle, context, member);
 
@@ -923,9 +978,11 @@ async function generateCheckInSpeech(speechStyle, record, type, member = null, o
         type,
         today
       };
-      console.log('AI打卡评价调用参数', aiParams);
+      console.log('[generateCheckInSpeech] AI调用参数', aiParams);
+      console.log('[generateCheckInSpeech] 完整提示词', { prompt });
 
       const model = aiInstance.createModel('hunyuan-exp');
+      console.log('[generateCheckInSpeech] 开始调用AI生成文本');
       const result = await model.generateText({
         model: aiParams.model,
         messages: [
@@ -938,7 +995,17 @@ async function generateCheckInSpeech(speechStyle, record, type, member = null, o
         max_tokens: aiParams.max_tokens
       });
       
+      console.log('[generateCheckInSpeech] AI返回原始结果', {
+        hasResult: !!result,
+        hasText: !!(result?.text),
+        textLength: result?.text?.length || 0,
+        textPreview: result?.text?.slice(0, 100) || 'null',
+        usage: result?.usage || null,
+        error: result?.error || null
+      });
+      
       if (result && result.text && result.text.trim()) {
+        console.log('[generateCheckInSpeech] AI返回有效文本，开始清理');
         // 清理AI返回的文本，去除引号、说明文字等
         let cleanedText = result.text.trim();
         
@@ -977,18 +1044,34 @@ async function generateCheckInSpeech(speechStyle, record, type, member = null, o
           cleanedText = result.text.trim().replace(/^["']+|["']+$/g, '');
         }
         
-        console.log('AI打卡评价成功', {
+        console.log('[generateCheckInSpeech] AI打卡评价成功', {
           textLength: cleanedText.length,
-          textPreview: cleanedText,
-          usage: result?.usage || null,
-          result: result
+          textPreview: cleanedText.slice(0, 100),
+          fullText: cleanedText,
+          usage: result?.usage || null
         });
         return cleanedText;
+      } else {
+        console.warn('[generateCheckInSpeech] AI返回结果无效', {
+          hasResult: !!result,
+          hasText: !!(result?.text),
+          textIsEmpty: !result?.text?.trim(),
+          result: result
+        });
       }
     } catch (error) {
-      console.error('AI生成话术失败，使用模板:', error.message);
+      console.error('[generateCheckInSpeech] AI生成话术失败，使用模板', {
+        errorMessage: error.message,
+        errorStack: error.stack,
+        errorName: error.name
+      });
       // AI失败时继续使用模板
     }
+  } else {
+    console.warn('[generateCheckInSpeech] AI实例不存在，直接使用模板话术', {
+      aiInstanceIsNull: aiInstance === null,
+      aiInstanceIsUndefined: aiInstance === undefined
+    });
   }
   
   // 使用模板话术（AI不可用或失败时的回退方案）
@@ -996,40 +1079,50 @@ async function generateCheckInSpeech(speechStyle, record, type, member = null, o
   const templates = {
     sarcastic: [
       weightChange === 0 
-        ? `今天体重${weight}斤，保持稳定，继续加油！`
-        : `今天体重${weight}斤，${weightChange >= 0 ? '又' : ''}${weightChange >= 0 ? '胖' : '瘦'}了${Math.abs(weightChange)}斤，${weightChange >= 0 ? '继续加油' : '不错'}！`,
+        ? `今天体重${formattedWeight}斤，保持稳定，继续加油！`
+        : `今天体重${formattedWeight}斤，${weightChange >= 0 ? '又' : ''}${weightChange >= 0 ? '胖' : '瘦'}了${formattedWeightChange}斤，${weightChange >= 0 ? '继续加油' : '不错'}！`,
       weightChange === 0
-        ? `体重${weight}斤，保持稳定，看来很自律！`
-        : `体重${weight}斤，${weightChange >= 0 ? '看来' : '终于'}${weightChange >= 0 ? '没少吃' : '有进步'}了${Math.abs(weightChange)}斤！`,
+        ? `体重${formattedWeight}斤，保持稳定，看来很自律！`
+        : `体重${formattedWeight}斤，${weightChange >= 0 ? '看来' : '终于'}${weightChange >= 0 ? '没少吃' : '有进步'}了${formattedWeightChange}斤！`,
     ],
     cute: [
       weightChange === 0
-        ? `今天体重${weight}斤，保持稳定哦～要继续努力呢！`
-        : `今天体重${weight}斤，${weightChange < 0 ? '好棒' : '要加油'}哦～${weightChange < 0 ? '瘦了' : '胖了'}${Math.abs(weightChange)}斤呢！`,
+        ? `今天体重${formattedWeight}斤，保持稳定哦～要继续努力呢！`
+        : `今天体重${formattedWeight}斤，${weightChange < 0 ? '好棒' : '要加油'}哦～${weightChange < 0 ? '瘦了' : '胖了'}${formattedWeightChange}斤呢！`,
       weightChange === 0
-        ? `体重${weight}斤，小可爱保持得很好，要继续努力哦～`
-        : `体重${weight}斤，${weightChange < 0 ? '小可爱' : '小宝贝'}${weightChange < 0 ? '真厉害' : '要继续努力'}，${weightChange < 0 ? '瘦了' : '胖了'}${Math.abs(weightChange)}斤～`,
+        ? `体重${formattedWeight}斤，小可爱保持得很好，要继续努力哦～`
+        : `体重${formattedWeight}斤，${weightChange < 0 ? '小可爱' : '小宝贝'}${weightChange < 0 ? '真厉害' : '要继续努力'}，${weightChange < 0 ? '瘦了' : '胖了'}${formattedWeightChange}斤～`,
     ],
     encourage: [
       weightChange === 0
-        ? `今天体重${weight}斤，保持稳定，继续加油！明天会更好！`
-        : `今天体重${weight}斤，${weightChange < 0 ? '太棒了' : '继续加油'}！${weightChange < 0 ? '成功减重' : '增加了'}${Math.abs(weightChange)}斤，${weightChange < 0 ? '坚持下去' : '明天会更好'}！`,
+        ? `今天体重${formattedWeight}斤，保持稳定，继续加油！明天会更好！`
+        : `今天体重${formattedWeight}斤，${weightChange < 0 ? '太棒了' : '继续加油'}！${weightChange < 0 ? '成功减重' : '增加了'}${formattedWeightChange}斤，${weightChange < 0 ? '坚持下去' : '明天会更好'}！`,
       weightChange === 0
-        ? `体重${weight}斤，保持稳定，加油！明天继续努力！`
-        : `体重${weight}斤，${weightChange < 0 ? '很棒' : '加油'}！${weightChange < 0 ? '减了' : '增加了'}${Math.abs(weightChange)}斤，${weightChange < 0 ? '离目标更近了' : '明天继续努力'}！`,
+        ? `体重${formattedWeight}斤，保持稳定，加油！明天继续努力！`
+        : `体重${formattedWeight}斤，${weightChange < 0 ? '很棒' : '加油'}！${weightChange < 0 ? '减了' : '增加了'}${formattedWeightChange}斤，${weightChange < 0 ? '离目标更近了' : '明天继续努力'}！`,
     ],
     professional: [
       weightChange === 0
-        ? `今日体重：${weight}斤，与昨日持平。请继续保持。`
-        : `今日体重：${weight}斤，较昨日${weightChange > 0 ? '增加' : '减少'}${Math.abs(weightChange)}斤。${weightChange < 0 ? '减重趋势良好' : '建议调整饮食和运动计划'}。`,
+        ? `今日体重：${formattedWeight}斤，与昨日持平。请继续保持。`
+        : `今日体重：${formattedWeight}斤，较昨日${weightChange > 0 ? '增加' : '减少'}${formattedWeightChange}斤。${weightChange < 0 ? '减重趋势良好' : '建议调整饮食和运动计划'}。`,
       weightChange === 0
-        ? `体重记录：${weight}斤，无变化。保持当前状态。`
-        : `体重记录：${weight}斤，变化${weightChangeText}斤。${weightChange < 0 ? '减重进度正常' : '建议加强运动和控制饮食'}。`,
+        ? `体重记录：${formattedWeight}斤，无变化。保持当前状态。`
+        : `体重记录：${formattedWeight}斤，变化${weightChangeText}斤。${weightChange < 0 ? '减重进度正常' : '建议加强运动和控制饮食'}。`,
     ]
   };
   
   const styleTemplates = templates[speechStyle] || templates.encourage;
   const template = styleTemplates[Math.floor(Math.random() * styleTemplates.length)];
+  
+  console.log('[generateCheckInSpeech] 使用模板话术', {
+    speechStyle,
+    selectedTemplate: template,
+    weight,
+    formattedWeight,
+    weightChange,
+    formattedWeightChange,
+    templateCount: styleTemplates.length
+  });
   
   return template;
 }
@@ -1111,33 +1204,38 @@ function buildCheckInDataLine(context, member = null) {
     return `${who}暂无近期体重记录，可提醒坚持打卡。`;
   }
 
+  // 格式化体重数值
+  const formattedWeight = formatWeight(weight);
+  const formattedWeightChange = formatWeight(Math.abs(weightChange));
+  const formattedAimWeight = userInfo?.aimWeight ? formatWeight(userInfo.aimWeight) : null;
+
   let dataLine;
   if (todayRecord && todayRecord.weight != null) {
     if (hasYesterday) {
-      const yesterday = yesterdayRecord.weight;
-      const changeStr = weightChange < 0 ? `较昨日减${Math.abs(weightChange)}斤` : weightChange > 0 ? `较昨日涨${weightChange}斤` : '较昨日持平';
-      dataLine = `${today}，${who}当前${weight}斤，${changeStr}（昨日${yesterday}斤）。`;
+      const yesterday = formatWeight(yesterdayRecord.weight);
+      const changeStr = weightChange < 0 ? `较昨日减${formattedWeightChange}斤` : weightChange > 0 ? `较昨日涨${formattedWeightChange}斤` : '较昨日持平';
+      dataLine = `${today}，${who}当前${formattedWeight}斤，${changeStr}（昨日${yesterday}斤）。`;
     } else {
-      dataLine = `${today}，${who}今日${weight}斤（昨日未打卡，无昨日记录）。`;
+      dataLine = `${today}，${who}今日${formattedWeight}斤（昨日未打卡，无昨日记录）。`;
     }
   } else {
-    dataLine = `${who}最近体重${weight}斤。`;
+    dataLine = `${who}最近体重${formattedWeight}斤。`;
   }
 
-  if (userInfo?.aimWeight) {
-    const remain = (weight - userInfo.aimWeight).toFixed(1);
-    dataLine += ` 目标${userInfo.aimWeight}斤，还差${remain}斤。`;
+  if (formattedAimWeight) {
+    const remain = formatWeight(weight - userInfo.aimWeight);
+    dataLine += ` 目标${formattedAimWeight}斤，还差${remain}斤。`;
   }
   if (userInfo?.height) {
     const bmi = ((weight / 2) / (userInfo.height * userInfo.height / 10000)).toFixed(1);
     dataLine += ` BMI${bmi}。`;
   }
   if (monthlyRecords.length > 0) {
-    const w0 = monthlyRecords[0].weight;
-    const delta = (w0 - weight).toFixed(1);
-    const dir = delta > 0 ? '减' : delta < 0 ? '增' : '平';
-    dataLine += ` 本月从${w0}斤到${weight}斤，${dir}${Math.abs(delta)}斤。`;
-    const monthList = monthlyRecords.map(r => `${r.date.slice(5)} ${r.weight}斤`);
+    const w0 = formatWeight(monthlyRecords[0].weight);
+    const delta = formatWeight(monthlyRecords[0].weight - weight);
+    const dir = parseFloat(delta) > 0 ? '减' : parseFloat(delta) < 0 ? '增' : '平';
+    dataLine += ` 本月从${w0}斤到${formattedWeight}斤，${dir}${formatWeight(Math.abs(monthlyRecords[0].weight - weight))}斤。`;
+    const monthList = monthlyRecords.map(r => `${r.date.slice(5)} ${formatWeight(r.weight)}斤`);
     if (monthList.length > 0) dataLine += ` 本月记录：${monthList.join('、')}。`;
   }
   return dataLine;
@@ -1173,23 +1271,59 @@ function buildCheckInPrompt(speechStyle, context, member = null) {
 async function generateScheduledMessage(messageType, binding, type, options = {}) {
   const now = new Date();
   const today = new Date(now.getTime() + 8 * 60 * 60 * 1000).toISOString().split('T')[0];
+  
+  console.log('[generateScheduledMessage] 方法调用开始', {
+    messageType,
+    type,
+    targetId: binding?.targetId,
+    openId: binding?.openId,
+    today,
+    fromKeyword: options.fromKeyword,
+    hasAiInstance: !!aiInstance
+  });
+  
   if (messageType === 'daily_summary') {
     console.log('[generateScheduledMessage] daily_summary 入参', { today, openId: binding?.openId, targetId: binding?.targetId, nowISO: now.toISOString(), fromKeyword: options.fromKeyword });
   }
   switch (messageType) {
     case 'morning': {
+      console.log('[generateScheduledMessage] morning case 开始处理');
       // 早上激励：结合个人打卡数据与话术类型生成
       const morningCtx = await getFriendCheckInContext(binding.openId, today);
       const morningDataLine = buildCheckInDataLine(morningCtx, null);
       const styleDesc = getSpeechStyleDesc(binding.speechStyle);
+      
+      console.log('[generateScheduledMessage] morning 上下文数据', {
+        openId: binding.openId,
+        today,
+        hasTodayRecord: !!morningCtx.todayRecord,
+        hasYesterdayRecord: !!morningCtx.yesterdayRecord,
+        morningDataLine,
+        speechStyle: binding.speechStyle,
+        styleDesc
+      });
+      
       const prompt = `你是一名减脂教练，请根据用户情况生成一条 40~80 字的早晨激励文案。
 用户情况：${morningDataLine}
 语气要求：${styleDesc}。可以提到坚持记录体重、早睡早起、健康饮食和运动。
-要求：1）用中文；2）不要包含任何引号、括号里的字数说明或“如下”等提示词；3）只输出一段完整的激励正文，不能有标题。`;
+要求：1）用中文；2）不要包含任何引号、括号里的字数说明或"如下"等提示词；3）只输出一段完整的激励正文，不能有标题。`;
+      
+      console.log('[generateScheduledMessage] morning 提示词', { prompt });
+      
       const body = await generateScheduledAiBody(prompt);
+      
+      console.log('[generateScheduledMessage] morning AI生成结果', {
+        hasBody: !!body,
+        bodyLength: body?.length || 0,
+        bodyPreview: body?.slice(0, 100) || 'null'
+      });
+      
       if (body) {
-        return `【早上好】${body}`;
+        const result = `【早上好】${body}`;
+        console.log('[generateScheduledMessage] morning 返回AI生成内容', { result });
+        return result;
       }
+      console.log('[generateScheduledMessage] morning AI生成失败，返回模板话术');
       return `【早上好】新的一天开始了！记得记录体重，坚持就是胜利！`;
     }
       
@@ -1211,6 +1345,18 @@ async function generateScheduledMessage(messageType, binding, type, options = {}
       
     case 'evening':
       if (type === 'friend') {
+        // 检查今日是否已打卡
+        const eveningRecordsRes = await db.collection('records').where({
+          openId: binding.openId,
+          date: today
+        }).get();
+        
+        if (eveningRecordsRes.data.length > 0) {
+          // 今日已打卡，不发送提醒
+          console.log('[evening] 个人已打卡，跳过晚上提醒', { openId: binding.openId, today });
+          return null;
+        }
+        
         return `【晚上提醒】今天还没记录体重呢，记得打卡哦！`;
       } else {
         // 查询今日打卡情况
@@ -1333,10 +1479,22 @@ async function generateScheduledMessage(messageType, binding, type, options = {}
  * @returns {Promise<string>} 清洗后的文案内容（可能为空字符串）
  */
 async function generateScheduledAiBody(prompt) {
+  console.log('[generateScheduledAiBody] 方法调用开始', {
+    hasAiInstance: !!aiInstance,
+    promptLength: prompt?.length || 0,
+    promptPreview: prompt?.slice(0, 200) || 'null'
+  });
+  
   if (!aiInstance) {
+    console.warn('[generateScheduledAiBody] AI实例不存在，返回空字符串', {
+      aiInstanceIsNull: aiInstance === null,
+      aiInstanceIsUndefined: aiInstance === undefined
+    });
     return '';
   }
+  
   try {
+    console.log('[generateScheduledAiBody] 开始调用AI生成文本');
     const model = aiInstance.createModel('hunyuan-exp');
     const result = await model.generateText({
       model: 'hunyuan-turbos-latest',
@@ -1350,16 +1508,32 @@ async function generateScheduledAiBody(prompt) {
       max_tokens: 150
     });
     
+    console.log('[generateScheduledAiBody] AI返回原始结果', {
+      hasResult: !!result,
+      hasText: !!(result?.text),
+      textLength: result?.text?.length || 0,
+      textPreview: result?.text?.slice(0, 100) || 'null',
+      usage: result?.usage || null,
+      error: result?.error || null
+    });
+    
     if (!result || !result.text || !result.text.trim()) {
+      console.warn('[generateScheduledAiBody] AI返回结果无效', {
+        hasResult: !!result,
+        hasText: !!(result?.text),
+        textIsEmpty: !result?.text?.trim(),
+        result: result
+      });
       return '';
     }
     
+    console.log('[generateScheduledAiBody] 开始清理AI返回文本');
     let cleanedText = result.text.trim();
     
     // 去掉首尾引号
     cleanedText = cleanedText.replace(/^["']+|["']+$/g, '');
     
-    // 去掉末尾可能带有的“（xx字...）”说明
+    // 去掉末尾可能带有的"（xx字...）"说明
     const lastQuoteIndex = Math.max(
       cleanedText.lastIndexOf('"'),
       cleanedText.lastIndexOf("'")
@@ -1380,9 +1554,20 @@ async function generateScheduledAiBody(prompt) {
     // 避免机器人端对引号/反斜杠转义不当导致截断，去掉内部的 " 和 \
     cleanedText = cleanedText.replace(/["\\]/g, '');
     
+    console.log('[generateScheduledAiBody] 文本清理完成', {
+      originalLength: result.text.length,
+      cleanedLength: cleanedText.length,
+      cleanedText: cleanedText.slice(0, 100),
+      fullCleanedText: cleanedText
+    });
+    
     return cleanedText;
   } catch (error) {
-    console.error('AI生成定时文案失败，将使用模板:', error.message);
+    console.error('[generateScheduledAiBody] AI生成定时文案失败，将使用模板', {
+      errorMessage: error.message,
+      errorStack: error.stack,
+      errorName: error.name
+    });
     return '';
   }
 }
