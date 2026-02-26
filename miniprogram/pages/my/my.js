@@ -18,6 +18,7 @@ Page({
     noticeImage:"",
     noticeContent:"",
     showYearlyReportEntry: false, // 是否显示年度报告入口
+    showSponsorEntry: false, // 是否显示赞赏入口
     lastCheckTime: 0 // 上次检查年度报告的时间戳，用于避免频繁调用
   },
 
@@ -38,6 +39,8 @@ Page({
     this.loadParamsConfig();
     // 检查是否显示年度报告入口
     this.checkYearlyReportEntry();
+    // 检查是否显示赞赏入口
+    this.checkSponsorEntry();
   },
   onShow(){
     // 获取用户信息
@@ -261,6 +264,23 @@ Page({
     });
   },
   
+  /**
+   * 检查是否显示赞赏入口（通过 params 表 code="sponsor" 控制）
+   */
+  checkSponsorEntry: function() {
+    CF.get("params", {
+      code: "sponsor"
+    }).then(res => {
+      if (res.result && res.result.data && res.result.data.length > 0) {
+        this.setData({
+          showSponsorEntry: res.result.data[0].value === "1"
+        });
+      }
+    }).catch(err => {
+      console.error('获取赞赏入口配置失败:', err);
+    });
+  },
+
   /**
    * 从云数据库 params 表加载配置参数
    */

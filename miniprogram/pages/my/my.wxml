@@ -58,7 +58,7 @@
              <view class="cuIcon-like"></view>
             </view>
           </view>
-          <view class="cu-item" bindtap="navToSponsorPage">
+          <view class="cu-item" wx:if="{{showSponsorEntry}}" bindtap="navToSponsorPage">
             <view class="content">
               <text class="text-grey">支持作者</text>
             </view>
