@@ -66,7 +66,26 @@
   font-size: 26rpx;
 }
 
-/* 添加赞赏码样式 */
+.blessing-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 16rpx;
+  padding: 40rpx 30rpx;
+  margin-bottom: 30rpx;
+  text-align: center;
+}
+
+.blessing-text {
+  color: #fff;
+  font-size: 30rpx;
+  line-height: 1.6;
+  letter-spacing: 1rpx;
+}
+
+.thank-sub {
+  font-size: 24rpx;
+  color: #999;
+}
+
 .reward-qr {
   width: 400rpx;
   margin: 20rpx 0;

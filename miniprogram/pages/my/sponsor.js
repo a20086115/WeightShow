@@ -7,16 +7,33 @@ Page({
      * 页面的初始数据
      */
     data: {
-        sponsorCount: 0,
-        rewardCode: 'cloud://release-ba24f3.7265-release-ba24f3-1257780911/notice/赞赏码.jpeg'
+        rewardCode: 'cloud://release-ba24f3.7265-release-ba24f3-1257780911/notice/赞赏码.jpeg',
+        blessing: '',
+        blessings: [
+            '管住嘴迈开腿，你已经在路上了！💪',
+            '瘦下来的你，一定会感谢现在努力的自己~',
+            '每天轻一点，离目标就近一步！',
+            '坚持记录，就是成功的一半 ✨',
+            '你不是一个人在战斗，我们一起加油！',
+            '今天的汗水，是明天的自信 🏃',
+            '体重只是数字，健康才是目的~',
+            '别急，好身材正在来的路上 🌟',
+            '每一次打卡，都是对自己的承诺！',
+            '减肥不是受苦，是遇见更好的自己 ❤️'
+        ]
     },
-    
 
     /**
      * 生命周期函数--监听页面加载
      */
     onLoad(options) {
-        this.loadSponsorCount()
+        this.randomBlessing();
+    },
+
+    randomBlessing() {
+        const list = this.data.blessings;
+        const idx = Math.floor(Math.random() * list.length);
+        this.setData({ blessing: list[idx] });
     },
 
     /**
@@ -70,18 +87,6 @@ Page({
             path: '/pages/my/sponsor',
             imageUrl: '/images/share-sponsor.png' // 可选，自定义转发图片
         }
-    },
-
-    // 加载总赞助次数
-    loadSponsorCount() {
-        // 获取所有赞助记录数量
-        CF.count("sponsor", {}).then((res) => {
-            if(res.result && res.result.total) {
-                this.setData({
-                    sponsorCount: res.result.total
-                })
-            }
-        })
     },
 
     // 查看赞赏码

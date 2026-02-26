@@ -1,10 +1,15 @@
 <!-- pages/sponsor/sponsor.wxml -->
 <view class="container">
+  <!-- 励志语 -->
+  <view class="blessing-card">
+    <text class="blessing-text">{{blessing}}</text>
+  </view>
+
   <!-- 赞赏码 -->
   <view class="card-group">
     <view class="card">
-      <text class="card-title">请喝奶茶</text>
-      <text class="card-desc">扫描下方二维码赞助\n一杯奶茶暖心田</text>
+      <text class="card-title">请作者喝杯奶茶</text>
+      <text class="card-desc">每一次赞赏，都是对坚持的鼓励\n长按识别二维码即可赞赏</text>
       <image class="reward-qr" src="{{rewardCode}}" mode="widthFix" show-menu-by-longpress/>
     </view>
   </view>
@@ -12,6 +17,6 @@
   <!-- 致谢信息 -->
   <view class="thank-msg">
     <text>您的支持是持续更新的动力！❤️</text>
-    <text>已获得{{sponsorCount}}次支持</text>
+    <text class="thank-sub">愿你早日达成目标体重~</text>
   </view>
 </view>
