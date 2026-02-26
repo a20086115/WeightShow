@@ -1,7 +1,7 @@
 /*
  * 群绑定机器人说明页：展示微信号与绑定步骤，供 PK 详情页「绑定机器人」跳转
  */
-const ROBOT_WECHAT_ID = 'webot222';
+const ROBOT_WECHAT_ID = 'wxbot222';
 
 Page({
   data: {

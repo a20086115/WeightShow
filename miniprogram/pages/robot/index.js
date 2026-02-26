@@ -17,7 +17,7 @@ Page({
     },
     isBound: false,
     bindMessage: '', // 绑定消息
-    robotWechatId: 'webot222', // 机器人微信号，用于个人绑定引导
+    robotWechatId: 'wxbot222', // 机器人微信号，用于个人绑定引导
     userInfo: {}
   },
 
