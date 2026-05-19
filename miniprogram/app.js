@@ -32,6 +32,29 @@ App({
       cb && cb();
     })
   },
+  /**
+   * 确保已从 cloud users 拿到文档（含 _id）。无 _id 时会请求云库，供 PK 列表等依赖主键的逻辑使用。
+   * @returns {Promise<object>} 当前的 globalData.userInfo
+   */
+  ensureUserInfoWithId() {
+    if (this.globalData.userInfo && this.globalData.userInfo._id) {
+      return Promise.resolve(this.globalData.userInfo);
+    }
+    const app = this;
+    return new Promise((resolve) => {
+      CF.get(
+        'users',
+        { openId: true },
+        (e) => {
+          app.globalData.userInfo = (e.result && e.result.data && e.result.data[0]) || {};
+          resolve(app.globalData.userInfo);
+        },
+        () => {
+          resolve(app.globalData.userInfo || {});
+        }
+      );
+    });
+  },
   getBmi(weight, height){
     var tips = [{
       color:"RGB(141,216,248)",
