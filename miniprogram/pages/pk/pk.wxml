@@ -65,9 +65,10 @@
       <view class="table-col table-col-data">目标</view>
       <view class="table-col table-col-data">变化</view>
       <view class="table-col table-col-data">完成率</view>
+      <view class="table-col table-col-action" wx:if="{{isPKOwner}}"></view>
     </view>
     <view class="table-body">
-      <view class="table-row" wx:for="{{members}}" wx:key="openId">
+      <view class="table-row" wx:for="{{members}}" wx:for-index="idx" wx:key="openId">
         <view class="table-col table-col-member">
           <view class="member-info">
             <view class="member-avatar-wrapper">
@@ -84,9 +85,27 @@
           {{item.weightLostThisMonth}}
         </view>
         <view class="table-col table-col-data completion-rate">{{item.completionRate}}</view>
+        <view
+          class="table-col table-col-action"
+          wx:if="{{isPKOwner && item.openId !== myOpenId}}"
+          catchtap="onMemberActionTap"
+          data-index="{{idx}}"
+        >
+          <van-icon name="ellipsis" class="member-action-icon" />
+        </view>
+        <view class="table-col table-col-action" wx:elif="{{isPKOwner}}"></view>
       </view>
     </view>
   </view>
+
+  <van-action-sheet
+    show="{{ showMemberAction }}"
+    actions="{{ memberActions }}"
+    cancel-text="取消"
+    bind:close="onMemberActionClose"
+    bind:cancel="onMemberActionClose"
+    bind:select="onMemberActionSelect"
+  />
 
   <van-dialog
     use-slot

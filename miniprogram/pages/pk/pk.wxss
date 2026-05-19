@@ -169,6 +169,21 @@ ec-canvas {
   align-self: center;
 }
 
+.table-col-action {
+  flex: 0 0 48rpx;
+  align-self: center;
+}
+
+.member-action-icon {
+  font-size: 36rpx;
+  color: #999;
+  padding: 16rpx;
+}
+
+.member-action-icon:active {
+  color: #666;
+}
+
 /* 表格主体 */
 .table-body {
   width: 100%;

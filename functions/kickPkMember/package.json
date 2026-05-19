@@ -1,0 +1,10 @@
+{
+  "name": "kickPkMember",
+  "version": "1.0.0",
+  "description": "PK 发起人移出成员",
+  "main": "index.js",
+  "license": "ISC",
+  "dependencies": {
+    "wx-server-sdk": "latest"
+  }
+}

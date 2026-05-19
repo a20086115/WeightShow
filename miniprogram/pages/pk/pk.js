@@ -75,6 +75,10 @@ Page({
     currentYear: new Date().getFullYear(),
     currentMonth: new Date().getMonth() + 1,
     isPKOwner: false,
+    myOpenId: '',
+    showMemberAction: false,
+    kickTarget: null,
+    memberActions: [{ name: '移出 PK', color: '#ee0a24' }],
     visibleInviteDialog: false,
     ec: {
       // 将 lazyLoad 设为 true 后，需要手动初始化图表
@@ -141,7 +145,93 @@ Page({
     console.log('setOwnerFlag: pk.openId=', this.data.pk.openId, 'userInfo.openId=', App.globalData.userInfo.openId, 'isOwner=', isOwner);
     
     this.setData({
-      isPKOwner: isOwner
+      isPKOwner: isOwner,
+      myOpenId: App.globalData.userInfo.openId
+    });
+  },
+  /**
+   * 发起人点击成员行操作按钮
+   */
+  onMemberActionTap(e) {
+    const idx = e.currentTarget.dataset.index;
+    const member = this.data.members[idx];
+    if (!member || !member.openId) return;
+    this.setData({
+      kickTarget: member,
+      showMemberAction: true
+    });
+  },
+  onMemberActionClose() {
+    this.setData({
+      showMemberAction: false,
+      kickTarget: null
+    });
+  },
+  onMemberActionSelect(e) {
+    this.setData({ showMemberAction: false });
+    if (e.detail && e.detail.name === '移出 PK') {
+      this.confirmKickMember();
+    }
+  },
+  /**
+   * 确认移出成员
+   */
+  confirmKickMember() {
+    const target = this.data.kickTarget;
+    if (!target || !target.openId) return;
+    if (!this.data.isPKOwner) {
+      wx.showToast({ title: '仅发起人可操作', icon: 'none' });
+      return;
+    }
+    const nickName = target.nickName || '该成员';
+    const that = this;
+    wx.showModal({
+      title: '移出成员',
+      content: `确定将「${nickName}」移出本 PK 吗？移出后对方将无法查看本队数据。`,
+      confirmColor: '#ee0a24',
+      success(res) {
+        if (!res.confirm) {
+          that.setData({ kickTarget: null });
+          return;
+        }
+        that.doKickMember(target.openId);
+      }
+    });
+  },
+  /**
+   * 调用云函数移出成员并刷新页面数据
+   * @param {string} targetOpenId
+   */
+  doKickMember(targetOpenId) {
+    const that = this;
+    wx.showLoading({ title: '处理中...', mask: true });
+    wx.cloud.callFunction({
+      name: 'kickPkMember',
+      data: {
+        pkId: this.data.pk._id,
+        targetOpenId
+      }
+    }).then((res) => {
+      wx.hideLoading();
+      const result = res.result || {};
+      if (!result.ok) {
+        wx.showToast({ title: result.errMsg || '操作失败', icon: 'none' });
+        return;
+      }
+      wx.showToast({ title: '已移出', icon: 'success' });
+      that.setData({ kickTarget: null });
+      CF.get('pk', { _id: that.data.pk._id }, (e) => {
+        const pk = e.result.data[0];
+        if (!pk) return;
+        that.setData({ pk });
+        that.requestData(
+          that.data.currentYear + '-' + that.formatMonth(that.data.currentMonth)
+        );
+      });
+    }).catch((err) => {
+      wx.hideLoading();
+      console.error('kickPkMember failed', err);
+      wx.showToast({ title: '网络出小差了,请稍后再试', icon: 'none' });
     });
   },
   showPopup() {
@@ -326,6 +416,7 @@ Page({
         if (!recordsByOpenId[r.openId]) recordsByOpenId[r.openId] = [];
         recordsByOpenId[r.openId].push(r);
       }
+      this.initXdata();
       for (let index = 0; index < member.length; index++) {
         const records = recordsByOpenId[member[index].openId] || [];
         if (records.length > 0) {
@@ -354,7 +445,6 @@ Page({
         this.prepareSeriesData(records, member[index]);
       }
       this.setData({ members: member });
-      this.initXdata();
       this.init();
     }).catch((e) => {
       console.log("getWeightRecordsByMonthBatch failed", e);
@@ -425,12 +515,12 @@ Page({
     bmiData.fill(null);
     for (var record of records) {
       if (record.weight) {
-        arr[parseInt(record.date.substr("8")) - 1] = record.weight
+        arr[parseInt(record.date.substring(8)) - 1] = record.weight
         if (member.height) {
           var weight = record.weight;
           var height = member.height;
           var BMI = weight / 2 / (height * height / 10000);
-          bmiData[parseInt(record.date.substr("8")) - 1] = BMI.toFixed(2)
+          bmiData[parseInt(record.date.substring(8)) - 1] = BMI.toFixed(2)
         }
       }
     }
