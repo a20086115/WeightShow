@@ -27,22 +27,28 @@ Page({
   onLoad: function (options) {
     // 先让页面渲染，避免阻塞页面切换
   },
-  
+
   /**
-   * 生命周期函数--监听页面初次渲染完成
-   * 页面渲染完成后再调用接口，避免阻塞页面切换
+   * 每次进入「组队PK」Tab 都会拉列表；用户信息若晚于首屏就绪，从其它页返回时也会再拉一次。
    */
-  onReady: function () {
+  onShow: function () {
     this.queryPk()
   },
-  queryPk(){
-    if(App.globalData.userInfo._id){
-      CF.get("pk", { "members.openId": App.globalData.userInfo.openId }, (e) => {
-        this.setData({
-          pkList: e.result.data
-        })
-      })
+
+  /**
+   * 拉取当前用户所在 PK 列表；若尚未拿到 users._id，会先经 App.ensureUserInfoWithId 拉取用户文档。
+   */
+  async queryPk(){
+    await App.ensureUserInfoWithId();
+    const userInfo = App.globalData.userInfo;
+    if (!userInfo || !userInfo._id || !userInfo.openId) {
+      return;
     }
+    CF.get("pk", { "members.openId": userInfo.openId }, (e) => {
+      this.setData({
+        pkList: e.result.data
+      })
+    })
   },
   // 展示name输入框
   newPk(){
@@ -59,7 +65,7 @@ Page({
     })
     if (e.detail == "confirm") {
       if (this.data.pk._id)  {   // 之前已经有值
-        CF.update("pk", { _id: pk._id }, this.data.pk, () => {
+        CF.update("pk", { _id: this.data.pk._id }, this.data.pk, () => {
           this.queryPk()
         })
       } else {
