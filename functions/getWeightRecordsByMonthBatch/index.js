@@ -5,6 +5,8 @@ const _ = db.command
 
 /** 单次 .in() 数量限制（微信云开发建议不超过 20） */
 const IN_QUERY_LIMIT = 31
+/** 云数据库单次 get 上限 */
+const PAGE_SIZE = 100
 
 /**
  * 批量查询多人在某月的体重记录（一次请求替代 N 次轮询）
@@ -25,18 +27,28 @@ exports.main = async (event, context) => {
 
   try {
     const allData = []
-    // 分批查询，避免 .in() 超过限制
+    // 分批 openId，每批内批量查 records，满 PAGE_SIZE 则继续 skip 拉取
     for (let i = 0; i < openIds.length; i += IN_QUERY_LIMIT) {
       const chunk = openIds.slice(i, i + IN_QUERY_LIMIT)
-      const res = await db.collection('records')
-        .where({
-          openId: _.in(chunk),
-          date: _.and(_.gte(dateStart), _.lte(dateEnd))
-        })
-        .orderBy('date', 'asc')
-        .get()
-      if (res.data && res.data.length) {
-        allData.push(...res.data)
+      const where = {
+        openId: _.in(chunk),
+        date: _.and(_.gte(dateStart), _.lte(dateEnd))
+      }
+      let skip = 0
+      while (true) {
+        const res = await db.collection('records')
+          .where(where)
+          .orderBy('date', 'asc')
+          .skip(skip)
+          .limit(PAGE_SIZE)
+          .get()
+        if (res.data && res.data.length) {
+          allData.push(...res.data)
+        }
+        if (!res.data || res.data.length < PAGE_SIZE) {
+          break
+        }
+        skip += PAGE_SIZE
       }
     }
     return { data: allData, errMsg: 'ok' }
