@@ -40,7 +40,7 @@ Page({
     // 检查是否显示年度报告入口
     this.checkYearlyReportEntry();
     // 检查是否显示赞赏入口
-    this.checkSponsorEntry();
+    // this.checkSponsorEntry();
   },
   onShow(){
     // 获取用户信息
