@@ -165,14 +165,14 @@
         <view class="checkin-input-card">
           <view class="checkin-input-label">体重</view>
           <view class="checkin-input-row">
-            <input type="digit" value="{{checkinWeight}}" placeholder="请输入" bindinput="onCheckinWeightInput" />
+            <input type="digit" value="{{checkinWeight}}" bindinput="onCheckinWeightInput" />
             <text>斤</text>
           </view>
         </view>
         <view class="checkin-input-card kg">
           <view class="checkin-input-label">千克</view>
           <view class="checkin-input-row">
-            <input type="digit" value="{{checkinWeightKg}}" placeholder="自动换算" bindinput="onCheckinWeightKgChange" />
+            <input type="digit" value="{{checkinWeightKg}}" bindinput="onCheckinWeightKgChange" />
             <text>kg</text>
           </view>
         </view>

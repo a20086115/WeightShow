@@ -357,20 +357,24 @@
 }
 
 .checkin-input-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  display: flex;
+  flex-direction: column;
   gap: 18rpx;
   margin-top: 30rpx;
 }
 
 .checkin-input-card {
   min-width: 0;
-  min-height: 150rpx;
-  padding: 22rpx;
+  min-height: 112rpx;
+  padding: 22rpx 24rpx;
   border-radius: 22rpx;
   background: #f3f9ff;
   border: 1rpx solid #e4f0fb;
   box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18rpx;
 }
 
 .checkin-input-card.kg {
@@ -385,18 +389,20 @@
 }
 
 .checkin-input-row {
-  margin-top: 16rpx;
   display: flex;
   align-items: baseline;
+  justify-content: flex-end;
   min-width: 0;
+  flex: 1;
 }
 
 .checkin-input-row input {
-  width: 100%;
+  width: 280rpx;
   min-width: 0;
   color: #1f2d3d;
-  font-size: 42rpx;
+  font-size: 40rpx;
   font-weight: 800;
+  text-align: right;
 }
 
 .checkin-input-row text {
