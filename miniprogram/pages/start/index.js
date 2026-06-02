@@ -20,6 +20,6 @@ Page({
     })
   },
   goIndex() {
-    wx.switchTab({ url: '/pages/index/index' })
+    wx.switchTab({ url: '/pages/indexV2/index' })
   },
 })

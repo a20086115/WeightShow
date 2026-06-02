@@ -1,12 +1,17 @@
 {
+  "navigationBarTitleText": "瘦身打卡助手",
+  "navigationBarBackgroundColor": "#188be4",
+  "navigationBarTextStyle": "white",
   "usingComponents": {
+    "weight-calendar": "/components/weightCalendar/weightCalendar",
     "ec-canvas": "../../ec-canvas/ec-canvas",
-    "van-action-sheet": "../../miniprogram_npm/@vant/weapp/action-sheet/index",
     "van-button": "../../miniprogram_npm/@vant/weapp/button/index",
+    "van-cell-group": "../../miniprogram_npm/@vant/weapp/cell-group/index",
+    "van-checkbox": "../../miniprogram_npm/@vant/weapp/checkbox/index",
     "van-datetime-picker": "../../miniprogram_npm/@vant/weapp/datetime-picker/index",
     "van-dialog": "../../miniprogram_npm/@vant/weapp/dialog/index",
+    "van-field": "../../miniprogram_npm/@vant/weapp/field/index",
     "van-icon": "../../miniprogram_npm/@vant/weapp/icon/index",
-    "van-image": "../../miniprogram_npm/@vant/weapp/image/index",
     "van-popup": "../../miniprogram_npm/@vant/weapp/popup/index"
   }
 }

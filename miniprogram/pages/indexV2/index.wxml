@@ -1,0 +1,223 @@
+<view class="page">
+  <weight-calendar
+    year-month="{{currentMonth}}"
+    selected-date="{{selectedDate}}"
+    records-map="{{recordsMap}}"
+    bind:prev="prevMonth"
+    bind:next="nextMonth"
+    bind:select="onCalendarSelect"
+    bind:records="goRecords"
+  />
+
+  <view class="overview-card">
+    <view class="overview-head">
+      <view>
+        <view class="card-title">体重概览</view>
+        <view class="card-subtitle">{{selectedDateText}}</view>
+      </view>
+      <button class="checkin-btn" bindtap="openCheckin">
+        <text class="checkin-plus">＋</text>
+        <text>{{hasSelectedRecord ? '修改记录' : '今日打卡'}}</text>
+      </button>
+    </view>
+
+    <view class="overview-main">
+      <view class="weight-main">
+        <view class="metric-label">今日体重</view>
+        <view class="weight-value">
+          <text>{{displayWeight || '--'}}</text>
+          <text class="weight-unit">斤</text>
+        </view>
+        <view class="change-chip {{todayChangeClass}}" wx:if="{{todayChangeText}}">
+          {{todayChangeText}}
+        </view>
+      </view>
+
+      <view class="bmi-panel" bindtap="showBmiInfo">
+        <view class="metric-label bmi-label">
+          <text>BMI</text>
+          <text class="info-dot">?</text>
+        </view>
+        <view class="bmi-value">{{bmiValue || '--'}}</view>
+        <view class="bmi-tag {{bmiClass}}">{{bmiLabel || '待完善'}}</view>
+      </view>
+    </view>
+
+    <view class="target-block" wx:if="{{targetText}}">
+      <view class="target-line">
+        <text>目标进度 {{targetProgress}}%</text>
+        <text>{{targetText}}</text>
+      </view>
+      <view class="progress-track">
+        <view class="progress-fill" style="width: {{targetProgress}}%"></view>
+      </view>
+    </view>
+
+    <view class="stat-row">
+      <view class="stat-item">
+        <view class="stat-value">{{totalCheckinDays}}</view>
+        <view class="stat-label">累计打卡</view>
+      </view>
+      <view class="stat-item">
+        <view class="stat-value">{{monthCheckinDays}}</view>
+        <view class="stat-label">本月打卡</view>
+      </view>
+      <view class="stat-item">
+        <view class="stat-value {{monthChangeClass}}">{{monthChangeText}}</view>
+        <view class="stat-label">本月变化</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="trend-card">
+    <view class="section-head">
+      <view>
+        <view class="card-title">本月趋势</view>
+        <view class="card-subtitle">体重变化</view>
+      </view>
+      <view class="more-link" bindtap="goAnalysis">更多分析</view>
+    </view>
+    <view class="chart-empty" wx:if="{{!hasChartData}}">
+      记录两次体重后，将生成趋势图
+    </view>
+    <view class="chart-box" wx:else>
+      <ec-canvas id="trend-chart" canvas-id="trend-chart" ec="{{ec}}"></ec-canvas>
+    </view>
+  </view>
+
+  <view class="onboarding-mask" wx:if="{{showOnboarding}}">
+    <view class="onboarding-card">
+      <view class="onboarding-accent"></view>
+      <view class="onboarding-badge">首次记录</view>
+      <view class="onboarding-title">开始你的体重打卡</view>
+      <view class="onboarding-desc">填好基础信息，明天按时回来记录一次</view>
+      <view class="onboarding-form">
+        <view class="form-row onboarding-field">
+          <view class="field-copy">
+            <text class="field-label">身高</text>
+            <text class="field-hint">用于计算 BMI</text>
+          </view>
+          <view class="field-input">
+            <input type="digit" value="{{newUserHeight}}" placeholder="例如 170" bindinput="onNewHeightInput" />
+            <text>cm</text>
+          </view>
+        </view>
+        <view class="form-row onboarding-field">
+          <view class="field-copy">
+            <text class="field-label">当前体重</text>
+            <text class="field-hint">今天的第一条记录</text>
+          </view>
+          <view class="field-input">
+            <input type="digit" value="{{newUserWeight}}" placeholder="例如 150" bindinput="onNewWeightInput" />
+            <text>斤</text>
+          </view>
+        </view>
+        <view class="form-row onboarding-field">
+          <view class="field-copy">
+            <text class="field-label">目标体重</text>
+            <text class="field-hint">后续可在资料里修改</text>
+          </view>
+          <view class="field-input">
+            <input type="digit" value="{{newUserTarget}}" placeholder="可选" bindinput="onNewTargetInput" />
+            <text>斤</text>
+          </view>
+        </view>
+      </view>
+      <view class="onboarding-reminder">
+        <view class="reminder-card">
+          <view class="reminder-main">
+            <view class="reminder-title-row">
+              <text class="reminder-dot"></text>
+              <text>明天提醒我打卡</text>
+            </view>
+            <view class="reminder-desc">建议新用户先把提醒打开</view>
+          </view>
+          <van-checkbox custom-class="reminder-checkbox" value="{{ subscribeChecked }}" bind:change="onSubscribeCheckboxChange" />
+        </view>
+        <view wx:if="{{ subscribeChecked }}" class="reminder-time-field onboarding-time" bindtap="showReminderTimePicker">
+          <view>
+            <text class="reminder-time-label">提醒时间</text>
+            <text class="reminder-time-tip">明天 {{ reminderTime }}</text>
+          </view>
+          <view class="reminder-time-right">
+            <text class="reminder-time-value">{{ reminderTime }}</text>
+            <van-icon name="arrow" class="reminder-time-arrow" />
+          </view>
+        </view>
+      </view>
+      <button class="primary-action" bindtap="submitOnboarding">开始记录</button>
+      <view class="helper-text">完成后会保存今天的第一条体重记录</view>
+    </view>
+  </view>
+
+  <van-dialog use-slot title="{{hasSelectedRecord ? '修改体重记录' : '请录入信息'}}" show="{{showCheckinDialog}}" zIndex="100000" showConfirmButton="{{false}}">
+    <van-cell-group>
+      <van-field label="日期" value="{{ selectedDate }}" border="{{ true }}" disabled />
+      <van-field label="体重(千克)" value="{{ checkinWeightKg }}" type="digit" placeholder="请输入体重" border="{{ true }}" bind:change="onCheckinWeightKgChange" />
+      <van-field label="体重(斤）" value="{{ checkinWeight }}" type="digit" placeholder="请输入体重" border="{{ true }}" bind:change="onCheckinWeightChange" />
+      <view class="subscribe-reminder-container">
+        <van-checkbox custom-class="padding" value="{{ subscribeChecked }}" bind:change="onSubscribeCheckboxChange">明天提醒我打卡</van-checkbox>
+        <view wx:if="{{ subscribeChecked }}" class="reminder-time-field" bindtap="showReminderTimePicker">
+          <text class="reminder-time-label">提醒时间：</text>
+          <text class="reminder-time-value">{{ reminderTime }}</text>
+          <van-icon name="arrow" class="reminder-time-arrow" />
+        </view>
+      </view>
+      <view class="button-container">
+        <van-button block class="action-btn" plain bind:tap="closeCheckin" type="default">取消</van-button>
+        <van-button block class="action-btn" plain bind:tap="submitCheckin" type="info">确定</van-button>
+      </view>
+    </van-cell-group>
+  </van-dialog>
+
+  <van-popup show="{{visibleReminderTimePicker}}" position="bottom" bind:close="onReminderTimeCancel" z-index="100001">
+    <van-datetime-picker
+      type="time"
+      value="{{reminderTime}}"
+      bind:confirm="onReminderTimeConfirm"
+      bind:cancel="onReminderTimeCancel"
+    />
+  </van-popup>
+
+  <view class="onboarding-mask" wx:if="{{showBmiDialog}}">
+    <view class="bmi-dialog-card">
+      <view class="bmi-dialog-title">BMI 中国标准</view>
+      <view class="bmi-current" wx:if="{{bmiValue}}">
+        你的 BMI
+        <text class="{{bmiClass}}">{{bmiValue}}</text>
+        <text>{{bmiLabel}}</text>
+      </view>
+      <view class="bmi-current" wx:else>完善身高和体重后可查看当前位置</view>
+
+      <view class="bmi-range-bar">
+        <view class="bmi-range-container">
+          <view class="bmi-range-item thin">
+            <text>偏瘦</text>
+            <text>≤18.4</text>
+          </view>
+          <view class="bmi-range-item normal">
+            <text>正常</text>
+            <text>18.5~23.9</text>
+          </view>
+          <view class="bmi-range-item overweight">
+            <text>超重</text>
+            <text>24.0~27.9</text>
+          </view>
+          <view class="bmi-range-item obese">
+            <text>肥胖</text>
+            <text>≥28.0</text>
+          </view>
+        </view>
+        <view class="bmi-marker" wx:if="{{bmiValue}}" style="left: {{bmiMarkerPosition}}%">
+          <view class="bmi-marker-triangle"></view>
+          <view class="bmi-marker-label">当前</view>
+        </view>
+      </view>
+
+      <view class="bmi-text">
+        BMI = 体重(kg) / 身高(m)²，只是健康参考指标之一，建议结合腰围、体脂和身体状态一起看。
+      </view>
+      <button class="primary-action" bindtap="closeBmiInfo">知道了</button>
+    </view>
+  </view>
+</view>

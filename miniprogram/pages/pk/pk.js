@@ -490,7 +490,7 @@ Page({
       })
     }else{
       wx.switchTab({
-        url: '/pages/index/index',
+        url: '/pages/indexV2/index',
       })
     }
   },
@@ -596,7 +596,7 @@ Page({
   },
   goBack(){
     wx.switchTab({
-      url: '/pages/index/index',
+      url: '/pages/indexV2/index',
     })
   },
   

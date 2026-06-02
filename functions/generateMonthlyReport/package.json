@@ -1,0 +1,12 @@
+{
+  "name": "generateMonthlyReport",
+  "version": "1.0.0",
+  "main": "index.js",
+  "dependencies": {
+    "@cloudbase/node-sdk": "^3.17.0",
+    "wx-server-sdk": "~3.0.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

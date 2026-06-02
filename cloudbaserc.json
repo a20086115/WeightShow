@@ -1,0 +1,39 @@
+{
+  "$schema": "https://static.cloudbase.net/cli/cloudbaserc.schema.json",
+  "envId": "release-ba24f3",
+  "functionRoot": "functions",
+  "functions": [
+    {
+      "name": "wechatBotNew",
+      "runtime": "Nodejs18.15",
+      "handler": "index.main",
+      "timeout": 60,
+      "memorySize": 512,
+      "description": ""
+    },
+    {
+      "name": "getCheckinStats",
+      "runtime": "Nodejs16.13",
+      "handler": "index.main",
+      "timeout": 30,
+      "memorySize": 256,
+      "description": "Read-only check-in statistics"
+    },
+    {
+      "name": "list",
+      "runtime": "Nodejs16.13",
+      "handler": "index.main",
+      "timeout": 30,
+      "memorySize": 256,
+      "description": "Generic paginated query with optional fetchAll"
+    },
+    {
+      "name": "generateMonthlyReport",
+      "runtime": "Nodejs18.15",
+      "handler": "index.main",
+      "timeout": 60,
+      "memorySize": 512,
+      "description": "Generate AI monthly weight report"
+    }
+  ]
+}

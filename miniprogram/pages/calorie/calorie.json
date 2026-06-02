@@ -1,6 +1,8 @@
 {
   "usingComponents": {
     "calendar": "plugin://calendar/calendar",
-    "ec-canvas": "../../ec-canvas/ec-canvas"
+    "ec-canvas": "../../ec-canvas/ec-canvas",
+    "van-col": "../../miniprogram_npm/@vant/weapp/col/index",
+    "van-row": "../../miniprogram_npm/@vant/weapp/row/index"
   }
 }

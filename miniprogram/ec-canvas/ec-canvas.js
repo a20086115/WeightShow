@@ -3,6 +3,24 @@ import * as echarts from './echarts';
 
 let ctx;
 
+function getPixelRatio() {
+  try {
+    if (wx.getWindowInfo) {
+      const windowInfo = wx.getWindowInfo();
+      if (windowInfo && windowInfo.pixelRatio) {
+        return windowInfo.pixelRatio;
+      }
+    }
+  } catch (e) {}
+
+  try {
+    const systemInfo = wx.getSystemInfoSync();
+    return systemInfo.pixelRatio || 1;
+  } catch (e) {
+    return 1;
+  }
+}
+
 function compareVersion(v1, v2) {
   v1 = v1.split('.')
   v2 = v2.split('.')
@@ -166,18 +184,13 @@ Component({
           const canvasNode = res[0].node
           this.canvasNode = canvasNode
 
-          // 使用新的API获取设备像素比
-          let canvasDpr = 1;
-          try {
-            const deviceInfo = wx.getDeviceInfo ? wx.getDeviceInfo() : wx.getSystemInfoSync();
-            canvasDpr = deviceInfo.pixelRatio || 1;
-          } catch (e) {
-            // 降级使用旧API
-            canvasDpr = wx.getSystemInfoSync().pixelRatio || 1;
-          }
+          const canvasDpr = Math.max(1, Math.min(getPixelRatio(), 3));
           
           const canvasWidth = res[0].width
           const canvasHeight = res[0].height
+
+          canvasNode.width = canvasWidth * canvasDpr
+          canvasNode.height = canvasHeight * canvasDpr
 
           const ctx = canvasNode.getContext('2d')
           

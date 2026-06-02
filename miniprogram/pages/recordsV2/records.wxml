@@ -1,0 +1,142 @@
+<view class="page">
+  <view class="scope-tabs top-tabs">
+    <view class="scope-tab {{scope === 'month' ? 'active' : ''}}" data-scope="month" bindtap="changeScope">本月</view>
+    <view class="scope-tab {{scope === 'year' ? 'active' : ''}}" data-scope="year" bindtap="changeScope">今年</view>
+    <view class="scope-tab {{scope === 'all' ? 'active' : ''}}" data-scope="all" bindtap="changeScope">全部</view>
+  </view>
+
+  <view class="month-panel">
+    <button class="month-arrow {{scope === 'all' ? 'disabled' : ''}}" bindtap="prevMonth">‹</button>
+    <view class="month-center">
+      <view class="month-title">{{periodTitle}}</view>
+      <view class="month-subtitle">{{periodSubtitle}}</view>
+    </view>
+    <button class="month-arrow {{scope === 'all' ? 'disabled' : ''}}" bindtap="nextMonth">›</button>
+  </view>
+
+  <view class="trend-card">
+    <view class="section-head">
+      <view>
+        <view class="section-title">趋势曲线</view>
+        <view class="section-subtitle">{{trendSubtitle}}</view>
+      </view>
+      <view class="granularity-tabs" wx:if="{{scope !== 'month'}}">
+        <view class="granularity-tab {{chartGranularity === 'day' ? 'active' : ''}}" data-granularity="day" bindtap="changeGranularity">按天</view>
+        <view class="granularity-tab {{chartGranularity === 'month' ? 'active' : ''}}" data-granularity="month" bindtap="changeGranularity">按月</view>
+      </view>
+    </view>
+    <view class="chart-empty" wx:if="{{!hasTrendData}}">记录两次以上会生成曲线</view>
+    <view class="chart-box" wx:else>
+      <ec-canvas id="records-chart" canvas-id="records-chart" ec="{{ec}}"></ec-canvas>
+    </view>
+  </view>
+
+  <view class="summary-card">
+    <view class="summary-main">
+      <view>
+        <view class="summary-label">{{summaryTitle}}</view>
+        <view class="summary-value {{summary.changeClass}}">{{summary.changeText}}</view>
+        <view class="summary-note">{{summary.noteText}}</view>
+      </view>
+      <view class="summary-badge">{{summary.statusText}}</view>
+    </view>
+    <view class="summary-grid">
+      <view class="summary-item">
+        <text>{{summary.latestWeight}}</text>
+        <text>最新体重</text>
+      </view>
+      <view class="summary-item">
+        <text>{{summary.minWeight}}</text>
+        <text>最低体重</text>
+      </view>
+      <view class="summary-item">
+        <text>{{summary.maxWeight}}</text>
+        <text>最高体重</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="list-head" wx:if="{{scope === 'month'}}">
+    <view>
+      <view class="section-title">历史打卡</view>
+      <view class="section-subtitle">按时间倒序查看，可修改或删除</view>
+    </view>
+  </view>
+
+  <view class="empty-card" wx:if="{{scope === 'month' && !displayRecords.length}}">
+    <view class="empty-title">这个月还没有记录</view>
+    <view class="empty-text">回到首页选择日期，记录一次体重后这里会自动出现。</view>
+  </view>
+
+  <view class="record-list" wx:if="{{scope === 'month' && displayRecords.length}}">
+    <view class="record-item" wx:for="{{displayRecords}}" wx:key="date">
+      <view class="date-block">
+        <view class="day">{{item.day}}</view>
+        <view class="weekday">{{item.weekday}}</view>
+      </view>
+      <view class="record-main">
+        <view class="record-top">
+          <view>
+            <text class="record-weight">{{item.weight}}</text>
+            <text class="unit">斤</text>
+          </view>
+          <view class="change-chip {{item.changeClass}}" wx:if="{{item.changeText}}">{{item.changeText}}</view>
+        </view>
+        <view class="record-meta">
+          <text wx:if="{{item.bmiText}}">BMI {{item.bmiText}}</text>
+          <text wx:if="{{item.date}}">{{item.date}}</text>
+        </view>
+      </view>
+      <view class="record-actions">
+        <button bindtap="openEdit" data-index="{{index}}">修改</button>
+        <button class="delete" bindtap="confirmDelete" data-index="{{index}}">删除</button>
+      </view>
+    </view>
+  </view>
+
+  <view class="archive-list" wx:if="{{scope !== 'month'}}">
+    <view class="list-head archive-head">
+      <view>
+        <view class="section-title">{{scope === 'year' ? '月份归档' : '历史归档'}}</view>
+        <view class="section-subtitle">{{scope === 'year' ? '按月份汇总今年记录' : '按年份和月份汇总全部记录'}}</view>
+      </view>
+    </view>
+
+    <view class="empty-card" wx:if="{{!archiveGroups.length}}">
+      <view class="empty-title">暂无历史记录</view>
+      <view class="empty-text">完成打卡后会在这里形成归档。</view>
+    </view>
+
+    <view class="year-group" wx:for="{{archiveGroups}}" wx:key="year">
+      <view class="year-title" wx:if="{{scope === 'all'}}">{{item.year}} 年</view>
+      <view
+        class="month-row"
+        wx:for="{{item.months}}"
+        wx:for-item="monthItem"
+        wx:key="month"
+        data-month="{{monthItem.month}}"
+        bindtap="openMonth"
+      >
+        <view class="month-name">{{monthItem.label}}</view>
+        <view class="month-info">
+          <view>{{monthItem.days}} 天记录</view>
+          <view>最新 {{monthItem.latestWeight}}</view>
+        </view>
+        <view class="month-change {{monthItem.changeClass}}">{{monthItem.changeText}}</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="dialog-mask" wx:if="{{showEditDialog}}">
+    <view class="dialog-card">
+      <view class="dialog-title">修改记录</view>
+      <view class="dialog-subtitle">{{editingRecord.date}}</view>
+      <view class="form-row">
+        <text>体重</text>
+        <input type="digit" value="{{editWeight}}" placeholder="斤" bindinput="onEditWeightInput" />
+      </view>
+      <button class="primary-action" bindtap="submitEdit">保存</button>
+      <button class="secondary-action" bindtap="closeEdit">取消</button>
+    </view>
+  </view>
+</view>

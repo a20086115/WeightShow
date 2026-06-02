@@ -969,7 +969,7 @@ async function generateCheckInSpeech(speechStyle, record, type, member = null, o
       const prompt = buildCheckInPrompt(speechStyle, context, member);
 
       const aiParams = {
-        model: 'hunyuan-turbos-latest',
+        model: 'hy3-preview',
         temperature: 0.8,
         max_tokens: 150,
         promptLength: prompt.length,
@@ -981,7 +981,7 @@ async function generateCheckInSpeech(speechStyle, record, type, member = null, o
       console.log('[generateCheckInSpeech] AI调用参数', aiParams);
       console.log('[generateCheckInSpeech] 完整提示词', { prompt });
 
-      const model = aiInstance.createModel('hunyuan-exp');
+      const model = aiInstance.createModel('hunyuan-v3');
       console.log('[generateCheckInSpeech] 开始调用AI生成文本');
       const result = await model.generateText({
         model: aiParams.model,
@@ -1495,9 +1495,9 @@ async function generateScheduledAiBody(prompt) {
   
   try {
     console.log('[generateScheduledAiBody] 开始调用AI生成文本');
-    const model = aiInstance.createModel('hunyuan-exp');
+    const model = aiInstance.createModel('hunyuan-v3');
     const result = await model.generateText({
-      model: 'hunyuan-turbos-latest',
+      model: 'hy3-preview',
       messages: [
         {
           role: "user",

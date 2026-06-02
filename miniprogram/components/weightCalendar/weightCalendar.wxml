@@ -1,0 +1,30 @@
+<view class="calendar-card">
+  <view class="calendar-head">
+    <view class="month-arrow" bindtap="onPrev">‹</view>
+    <view class="month-title">{{yearMonthText}}</view>
+    <view class="head-actions">
+      <view class="records-btn" bindtap="onRecords">
+        <text class="records-icon">☰</text>
+        <text>全部记录</text>
+      </view>
+      <view class="month-arrow" bindtap="onNext">›</view>
+    </view>
+  </view>
+
+  <view class="week-row">
+    <view class="week-cell" wx:for="{{weeks}}" wx:key="*this">{{item}}</view>
+  </view>
+
+  <view class="day-grid">
+    <view
+      class="day-cell {{item.empty ? 'day-cell-empty' : ''}} {{item.isToday ? 'day-cell-today' : ''}} {{item.isSelected ? 'day-cell-selected' : ''}}"
+      wx:for="{{days}}"
+      wx:key="key"
+      data-date="{{item.date}}"
+      bindtap="onSelect"
+    >
+      <view wx:if="{{!item.empty}}" class="day-number">{{item.day}}</view>
+      <view wx:if="{{!item.empty && item.weight}}" class="day-weight">{{item.weight}}</view>
+    </view>
+  </view>
+</view>

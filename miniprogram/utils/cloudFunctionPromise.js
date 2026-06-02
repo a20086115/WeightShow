@@ -153,6 +153,31 @@ const cloud = {
   },
 
   /**
+   * 查询全部数据（由云函数服务端分页拉取）
+   * @param {string} tbName - 数据库表名
+   * @param {object} query - 查询条件
+   * @param {string} field - 排序字段
+   * @param {string} order - 排序方式
+   * @param {number} maxRecords - 最大返回数量，防止异常大查询
+   * @returns {Promise}
+   */
+  listAll: function (tbName, query, field, order, maxRecords) {
+    if (!tbName || !query) {
+      return Promise.reject(new Error('listAll: 参数不完整'));
+    }
+    return ajax('list', {
+      tbName: tbName,
+      query: query,
+      page: 1,
+      size: 100,
+      field: field || '_id',
+      order: order || 'desc',
+      fetchAll: true,
+      maxRecords: maxRecords || 10000
+    });
+  },
+
+  /**
    * 统计数据
    * @param {string} tbName - 数据库表名
    * @param {object} query - 查询条件

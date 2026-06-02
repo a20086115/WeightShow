@@ -1,10 +1,12 @@
 {
   "navigationBarTitleText": "2025年度报告",
   "usingComponents": {
-    "van-loading": "../../miniprogram_npm/@vant/weapp/loading/index",
+    "van-button": "../../miniprogram_npm/@vant/weapp/button/index",
+    "van-dialog": "../../miniprogram_npm/@vant/weapp/dialog/index",
+    "van-field": "../../miniprogram_npm/@vant/weapp/field/index",
     "van-icon": "../../miniprogram_npm/@vant/weapp/icon/index",
+    "van-loading": "../../miniprogram_npm/@vant/weapp/loading/index",
     "ec-canvas": "../../ec-canvas/ec-canvas",
     "canvasdrawer": "/components/canvasdrawer/canvasdrawer"
   }
 }
-
