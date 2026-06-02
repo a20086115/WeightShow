@@ -34,6 +34,14 @@
       "timeout": 60,
       "memorySize": 512,
       "description": "Generate AI monthly weight report"
+    },
+    {
+      "name": "subscribe",
+      "runtime": "Nodejs10.15",
+      "handler": "index.main",
+      "timeout": 3,
+      "memorySize": 256,
+      "description": ""
     }
   ]
 }
