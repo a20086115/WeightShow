@@ -4,7 +4,6 @@
   "navigationBarTitleText": "瘦身打卡助手",
   "navigationBarTextStyle": "white",
   "usingComponents": {
-    "calendar": "plugin://calendar/calendar",
     "ec-canvas": "../../ec-canvas/ec-canvas",
     "canvasdrawer": "/components/canvasdrawer/canvasdrawer",
     "van-action-sheet": "../../miniprogram_npm/@vant/weapp/action-sheet/index",

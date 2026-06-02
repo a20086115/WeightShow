@@ -1,23 +1,68 @@
 {
     "pages": [
-        "pages/start/index",
-        "pages/myInfo/myInfo",
-        "pages/index/index",
         "pages/indexV2/index",
-        "pages/recordsV2/records",
-        "pages/analysis/analysis",
-        "pages/monthlyReport/monthlyReport",
-        "pages/records/records",
-        "pages/pk/pk",
-        "pages/success/success",
-        "pages/my/my",
-        "pages/userinfo/userinfo",
-        "pages/aboutUs/about",
         "pages/RankingList/RankingList",
-    "pages/yearlyReport/yearlyReport",
-    "pages/robot/index",
-        "pages/robot/config",
-        "pages/robot/bind-guide"
+        "pages/myInfo/myInfo",
+        "pages/my/my"
+    ],
+    "subPackages": [
+        {
+            "root": "pages/recordsV2",
+            "pages": [
+                "records"
+            ]
+        },
+        {
+            "root": "pages/analysis",
+            "pages": [
+                "analysis"
+            ]
+        },
+        {
+            "root": "pages/monthlyReport",
+            "pages": [
+                "monthlyReport"
+            ]
+        },
+        {
+            "root": "pages/pk",
+            "pages": [
+                "pk"
+            ]
+        },
+        {
+            "root": "pages/success",
+            "pages": [
+                "success"
+            ]
+        },
+        {
+            "root": "pages/userinfo",
+            "pages": [
+                "userinfo"
+            ]
+        },
+        {
+            "root": "pages/aboutUs",
+            "pages": [
+                "about"
+            ]
+        },
+        {
+            "root": "pages/yearlyReport",
+            "pages": [
+                "yearlyReport",
+                "posterPage"
+            ]
+        },
+        {
+            "root": "pages/robot",
+            "pages": [
+                "index",
+                "config",
+                "bind-guide"
+            ]
+        }
     ],
     "window": {
         "backgroundTextStyle": "light",
@@ -28,12 +73,6 @@
         "navigationStyle": "default"
     },
     "lazyCodeLoading": "requiredComponents",
-    "plugins": {
-        "calendar": {
-            "version": "1.2.1",
-            "provider": "wx23a9cef3522e4f7c"
-        }
-    },
     "networkTimeout": {
         "request": 20000,
         "connectSocket": 20000,
