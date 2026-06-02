@@ -150,25 +150,63 @@
     </view>
   </view>
 
-  <van-dialog use-slot title="{{hasSelectedRecord ? '修改体重记录' : '请录入信息'}}" show="{{showCheckinDialog}}" zIndex="100000" showConfirmButton="{{false}}">
-    <van-cell-group>
-      <van-field label="日期" value="{{ selectedDate }}" border="{{ true }}" disabled />
-      <van-field label="体重(千克)" value="{{ checkinWeightKg }}" type="digit" placeholder="请输入体重" border="{{ true }}" bind:change="onCheckinWeightKgChange" />
-      <van-field label="体重(斤）" value="{{ checkinWeight }}" type="digit" placeholder="请输入体重" border="{{ true }}" bind:change="onCheckinWeightChange" />
-      <view class="subscribe-reminder-container">
-        <van-checkbox custom-class="padding" value="{{ subscribeChecked }}" bind:change="onSubscribeCheckboxChange">明天提醒我打卡</van-checkbox>
-        <view wx:if="{{ subscribeChecked }}" class="reminder-time-field" bindtap="showReminderTimePicker">
-          <text class="reminder-time-label">提醒时间：</text>
-          <text class="reminder-time-value">{{ reminderTime }}</text>
-          <van-icon name="arrow" class="reminder-time-arrow" />
+  <view class="checkin-mask" wx:if="{{showCheckinDialog}}">
+    <view class="checkin-dialog-card">
+      <view class="onboarding-accent"></view>
+      <view class="checkin-dialog-head">
+        <view>
+          <view class="checkin-dialog-title">{{hasSelectedRecord ? '修改体重记录' : '今日打卡'}}</view>
+          <view class="checkin-dialog-subtitle">{{selectedDate}}</view>
+        </view>
+        <view class="checkin-dialog-badge">{{hasSelectedRecord ? '编辑' : '记录'}}</view>
+      </view>
+
+      <view class="checkin-input-grid">
+        <view class="checkin-input-card">
+          <view class="checkin-input-label">体重</view>
+          <view class="checkin-input-row">
+            <input type="digit" value="{{checkinWeight}}" placeholder="请输入" bindinput="onCheckinWeightInput" />
+            <text>斤</text>
+          </view>
+        </view>
+        <view class="checkin-input-card kg">
+          <view class="checkin-input-label">千克</view>
+          <view class="checkin-input-row">
+            <input type="digit" value="{{checkinWeightKg}}" placeholder="自动换算" bindinput="onCheckinWeightKgChange" />
+            <text>kg</text>
+          </view>
         </view>
       </view>
-      <view class="button-container">
-        <van-button block class="action-btn" plain bind:tap="closeCheckin" type="default">取消</van-button>
-        <van-button block class="action-btn" plain bind:tap="submitCheckin" type="info">确定</van-button>
+
+      <view class="checkin-reminder">
+        <view class="reminder-card checkin-reminder-card">
+          <view class="reminder-main">
+            <view class="reminder-title-row">
+              <text class="reminder-dot"></text>
+              <text>明天提醒我打卡</text>
+            </view>
+            <view class="reminder-desc">开启后会按你选的时间提醒</view>
+          </view>
+          <van-checkbox custom-class="reminder-checkbox" value="{{ subscribeChecked }}" bind:change="onSubscribeCheckboxChange" />
+        </view>
+        <view wx:if="{{ subscribeChecked }}" class="reminder-time-field onboarding-time checkin-time" bindtap="showReminderTimePicker">
+          <view>
+            <text class="reminder-time-label">提醒时间</text>
+            <text class="reminder-time-tip">明天 {{ reminderTime }}</text>
+          </view>
+          <view class="reminder-time-right">
+            <text class="reminder-time-value">{{ reminderTime }}</text>
+            <van-icon name="arrow" class="reminder-time-arrow" />
+          </view>
+        </view>
       </view>
-    </van-cell-group>
-  </van-dialog>
+
+      <view class="checkin-actions">
+        <button class="secondary-checkin-action" bindtap="closeCheckin">取消</button>
+        <button class="primary-checkin-action" bindtap="submitCheckin">{{hasSelectedRecord ? '保存修改' : '完成打卡'}}</button>
+      </view>
+    </view>
+  </view>
 
   <van-popup show="{{visibleReminderTimePicker}}" position="bottom" bind:close="onReminderTimeCancel" z-index="100001">
     <van-datetime-picker

@@ -1,14 +1,233 @@
+page {
+  min-height: 100vh;
+  background: #f5f8fb;
+}
+
+.pageContainer {
+  min-height: 100vh;
+  padding: 24rpx 24rpx 168rpx;
+  box-sizing: border-box;
+}
+
+.profile-hero {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 236rpx;
+  padding: 34rpx 30rpx;
+  border-radius: 20rpx;
+  background: linear-gradient(135deg, #188be4 0%, #20b4c8 100%);
+  box-shadow: 0 14rpx 34rpx rgba(24, 139, 228, 0.22);
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.profile-hero::after {
+  content: "";
+  position: absolute;
+  right: -88rpx;
+  bottom: -96rpx;
+  width: 260rpx;
+  height: 260rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.hero-copy {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  min-width: 0;
+  padding-right: 28rpx;
+}
+
+.hero-kicker {
+  display: inline-flex;
+  align-items: center;
+  height: 38rpx;
+  padding: 0 16rpx;
+  border-radius: 19rpx;
+  background: rgba(255, 255, 255, 0.18);
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 22rpx;
+}
+
+.hero-title {
+  margin-top: 18rpx;
+  color: #ffffff;
+  font-size: 40rpx;
+  font-weight: 800;
+  line-height: 48rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hero-subtitle {
+  margin-top: 12rpx;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 24rpx;
+  line-height: 34rpx;
+}
+
 .avatar-wrapper {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    border-radius: 50%; /* 圆形头像 */
-    background: white;
-  }
-  
-  .avatar {
-    width: 100px; /* 或其他尺寸 */
-    height: 100px; /* 或其他尺寸 */
-    border-radius: 50%; /* 圆形图片 */
-  }
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 142rpx;
+  height: 142rpx;
+  padding: 0;
+  margin: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 10rpx 26rpx rgba(0, 0, 0, 0.14);
+  overflow: hidden;
+}
+
+.avatar-wrapper::after {
+  border: 0;
+}
+
+.avatar-wrapper:active {
+  transform: scale(0.97);
+}
+
+.avatar {
+  width: 142rpx;
+  height: 142rpx;
+  border-radius: 50%;
+}
+
+.avatar-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 142rpx;
+  height: 142rpx;
+  color: #188be4;
+  font-size: 46rpx;
+}
+
+.avatar-edit {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 40rpx;
+  background: rgba(31, 45, 61, 0.62);
+  color: #ffffff;
+  font-size: 20rpx;
+  line-height: 40rpx;
+  text-align: center;
+}
+
+.metric-strip {
+  display: flex;
+  align-items: center;
+  margin: 24rpx 0 26rpx;
+  padding: 24rpx 8rpx;
+  border-radius: 16rpx;
+  background: #ffffff;
+  box-shadow: 0 8rpx 24rpx rgba(24, 139, 228, 0.07);
+}
+
+.metric-item {
+  flex: 1;
+  min-width: 0;
+  text-align: center;
+}
+
+.metric-value {
+  color: #1f2d3d;
+  font-size: 34rpx;
+  font-weight: 800;
+  line-height: 42rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.metric-label {
+  margin-top: 8rpx;
+  color: #8a97a3;
+  font-size: 22rpx;
+}
+
+.metric-divider {
+  width: 1rpx;
+  height: 48rpx;
+  background: #edf2f6;
+}
+
+.form-section {
+  margin-top: 24rpx;
+  padding: 26rpx 0 4rpx;
+  border-radius: 16rpx;
+  background: #ffffff;
+  box-shadow: 0 8rpx 24rpx rgba(24, 139, 228, 0.07);
+  overflow: hidden;
+}
+
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 28rpx 18rpx;
+}
+
+.section-title {
+  color: #1f2d3d;
+  font-size: 30rpx;
+  font-weight: 800;
+  line-height: 40rpx;
+}
+
+.section-desc {
+  margin-top: 6rpx;
+  color: #8a97a3;
+  font-size: 23rpx;
+  line-height: 32rpx;
+}
+
+.profile-cell-group {
+  overflow: hidden;
+}
+
+.profile-field {
+  --cell-background-color: #ffffff;
+  --cell-vertical-padding: 18rpx;
+  --cell-horizontal-padding: 28rpx;
+  --field-label-color: #4d5b68;
+  --field-input-text-color: #1f2d3d;
+  --field-placeholder-text-color: #b6c0c9;
+  --field-disabled-text-color: #657381;
+}
+
+.readonly-field {
+  --cell-background-color: #fbfcfe;
+}
+
+.save-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  padding: 20rpx 24rpx calc(20rpx + env(safe-area-inset-bottom));
+  background: rgba(245, 248, 251, 0.94);
+  box-shadow: 0 -10rpx 26rpx rgba(31, 45, 61, 0.08);
+  box-sizing: border-box;
+}
+
+.save-button {
+  height: 88rpx;
+  border: 0;
+  border-radius: 44rpx;
+  background: linear-gradient(135deg, #188be4 0%, #20b4c8 100%);
+  box-shadow: 0 12rpx 24rpx rgba(24, 139, 228, 0.26);
+  font-size: 30rpx;
+  font-weight: 700;
+}

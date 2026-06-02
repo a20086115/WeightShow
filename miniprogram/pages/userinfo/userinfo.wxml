@@ -1,26 +1,80 @@
-<!--miniprogram/pages/addPlace/addPlace.wxml-->
 <view class="pageContainer">
-  <button class="avatar-wrapper" open-type="chooseAvatar" bind:chooseavatar="onChooseAvatar">
-    <image class="avatar" src="{{ currentUser.avatarUrl }}"></image>
-  </button> 
-  <van-cell-group>
+  <view class="profile-hero">
+    <view class="hero-copy">
+      <view class="hero-kicker">个人资料</view>
+      <view class="hero-title">{{ currentUser.nickName || '健康档案' }}</view>
+      <view class="hero-subtitle">目标管理 · 身体数据 · 打卡状态</view>
+    </view>
+    <button class="avatar-wrapper" open-type="chooseAvatar" bind:chooseavatar="onChooseAvatar">
+      <image wx:if="{{ currentUser.avatarUrl }}" class="avatar" src="{{ currentUser.avatarUrl }}" mode="aspectFill"></image>
+      <view wx:else class="avatar-placeholder">
+        <text class="cuIcon-cameraadd"></text>
+      </view>
+      <view class="avatar-edit">更换</view>
+    </button>
+  </view>
 
-    <van-field title-width="120px" type="nickname" id="nickName" value="{{ currentUser.nickName }}" bind:change="onValueChange" clearable label="昵称" placeholder="昵称" />
-    <van-field title-width="120px" id="age" value="{{ currentUser.age }}" clearable label="年龄" placeholder="请输入年龄" bind:change="onValueChange"/>
-    <van-field title-width="120px" id="height" value="{{ currentUser.height }}" clearable label="身高（厘米）" placeholder="请输入身高（厘米）" bind:change="onValueChange"/>
-  
-    <van-field title-width="120px" id="aimWeightKg" value="{{ currentUser.aimWeightKg }}" clearable label="目标体重（千克）" type="number" placeholder="请输入目标体重（千克）" bind:change="onValueChange"/>
-    <van-field title-width="120px" id="aimWeight" value="{{ currentUser.aimWeight }}" clearable label="目标体重（斤）" type="number" placeholder="请输入目标体重（斤）" bind:change="onValueChange"/>
-    <van-field title-width="120px" id="aimBmi" value="{{ currentUser.aimBmi }}" disabled="true" label="目标BMI" type="number" placeholder="根据目标体重自动计算" />
-    
-    <van-field title-width="120px" id="lastWeightKg" value="{{ currentUser.weightKg }}" disabled="true"  clearable label="当前体重（千克）"  type="number" placeholder="请在首页打卡" bind:change="onValueChange" />
-    <van-field title-width="120px" id="lastWeight" value="{{ currentUser.weight }}" disabled="true"  clearable label="当前体重（斤）"  type="number" placeholder="请在首页打卡" bind:change="onValueChange" />
-    
+  <view class="metric-strip">
+    <view class="metric-item">
+      <view class="metric-value">{{ currentUser.height || '--' }}</view>
+      <view class="metric-label">身高 cm</view>
+    </view>
+    <view class="metric-divider"></view>
+    <view class="metric-item">
+      <view class="metric-value">{{ currentUser.aimWeightKg || '--' }}</view>
+      <view class="metric-label">目标 kg</view>
+    </view>
+    <view class="metric-divider"></view>
+    <view class="metric-item">
+      <view class="metric-value">{{ currentUser.bmi || '--' }}</view>
+      <view class="metric-label">当前 BMI</view>
+    </view>
+  </view>
 
-    <van-field title-width="120px" id="bmi" value="{{ currentUser.bmi }}" disabled="true" label="当前BMI" type="number" />
-  
-  </van-cell-group>
+  <view class="form-section">
+    <view class="section-head">
+      <view>
+        <view class="section-title">基础信息</view>
+        <view class="section-desc">必填资料</view>
+      </view>
+    </view>
+    <van-cell-group custom-class="profile-cell-group">
+      <van-field custom-class="profile-field" title-width="120px" type="nickname" id="nickName" value="{{ currentUser.nickName }}" bind:change="onValueChange" clearable label="昵称" placeholder="请输入昵称" />
+      <van-field custom-class="profile-field" title-width="120px" id="age" value="{{ currentUser.age }}" clearable label="年龄" placeholder="请输入年龄" bind:change="onValueChange" />
+      <van-field custom-class="profile-field" title-width="120px" id="height" value="{{ currentUser.height }}" clearable label="身高（厘米）" placeholder="请输入身高（厘米）" bind:change="onValueChange" />
+    </van-cell-group>
+  </view>
 
-  <van-button class="margin-top-50" type="info" size="large" bindtap="saveData">保存</van-button>
+  <view class="form-section">
+    <view class="section-head">
+      <view>
+        <view class="section-title">目标设置</view>
+        <view class="section-desc">自动换算</view>
+      </view>
+    </view>
+    <van-cell-group custom-class="profile-cell-group">
+      <van-field custom-class="profile-field" title-width="120px" id="aimWeightKg" value="{{ currentUser.aimWeightKg }}" clearable label="目标体重（公斤）" type="number" placeholder="请输入目标体重（公斤）" bind:change="onValueChange" />
+      <van-field custom-class="profile-field" title-width="120px" id="aimWeight" value="{{ currentUser.aimWeight }}" clearable label="目标体重（斤）" type="number" placeholder="请输入目标体重（斤）" bind:change="onValueChange" />
+      <van-field custom-class="profile-field readonly-field" title-width="120px" id="aimBmi" value="{{ currentUser.aimBmi }}" disabled="true" label="目标BMI" type="number" placeholder="根据目标体重自动计算" />
+    </van-cell-group>
+  </view>
+
+  <view class="form-section">
+    <view class="section-head">
+      <view>
+        <view class="section-title">当前状态</view>
+        <view class="section-desc">最近打卡</view>
+      </view>
+    </view>
+    <van-cell-group custom-class="profile-cell-group">
+      <van-field custom-class="profile-field readonly-field" title-width="120px" id="lastWeightKg" value="{{ currentUser.weightKg }}" disabled="true" clearable label="当前体重（公斤）" type="number" placeholder="请在首页打卡" bind:change="onValueChange" />
+      <van-field custom-class="profile-field readonly-field" title-width="120px" id="lastWeight" value="{{ currentUser.weight }}" disabled="true" clearable label="当前体重（斤）" type="number" placeholder="请在首页打卡" bind:change="onValueChange" />
+      <van-field custom-class="profile-field readonly-field" title-width="120px" id="bmi" value="{{ currentUser.bmi }}" disabled="true" label="当前BMI" type="number" />
+    </van-cell-group>
+  </view>
+
+  <view class="save-bar">
+    <van-button custom-class="save-button" type="info" size="large" bindtap="saveData">保存资料</van-button>
+  </view>
   <van-toast id="van-toast" />
 </view>
