@@ -1,7 +1,5 @@
-import { cloud as CF } from '../../utils/cloudFunction.js'
 const App = getApp()
 
-import data from '../index/data.js'
 Page({
   data: {
     indicatorDots: !1,

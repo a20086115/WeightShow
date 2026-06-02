@@ -44,7 +44,7 @@ exports.main = async (event, context) => {
             "value": "感谢您的使用~"
           },
         };
-        let page = "pages/start/index"
+        let page = "pages/indexV2/index"
         // 使用 await 等待推送发送完成，并捕获错误
         try {
           await sendMessage(subscribe.openId, page, msgData, "-ejtsE73bMY5DzlafJoQvPxhkOUklQUP_hZGIMLWzXA")

@@ -3,7 +3,8 @@
         "pages/indexV2/index",
         "pages/RankingList/RankingList",
         "pages/myInfo/myInfo",
-        "pages/my/my"
+        "pages/my/my",
+        "pages/start/index"
     ],
     "subPackages": [
         {
