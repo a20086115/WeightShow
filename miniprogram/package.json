@@ -5,8 +5,7 @@
   "main": "app.js",
   "dependencies": {
     "@vant/weapp": "1.10.0",
-    "json2canvas": "^1.0.11",
-    "vant-weapp": "^0.5.29"
+    "json2canvas": "^1.0.11"
   },
   "devDependencies": {},
   "scripts": {
