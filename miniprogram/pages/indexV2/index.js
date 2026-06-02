@@ -511,16 +511,16 @@ Page({
     const height = toNumber(this.data.newUserHeight);
     const weight = toNumber(this.data.newUserWeight);
     const target = toNumber(this.data.newUserTarget);
-    if (!height || height <= 0 || !weight || weight <= 0) {
-      wx.showToast({ title: '请填写身高和当前体重', icon: 'none' });
+    if (!height || height <= 0 || !weight || weight <= 0 || !target || target <= 0) {
+      wx.showToast({ title: '请填写身高、体重和目标', icon: 'none' });
       return;
     }
 
-    const updateData = { height };
-    if (target && target > 0) {
-      updateData.aimWeight = target;
-      updateData.aimWeightKg = Number((target / 2).toFixed(2));
-    }
+    const updateData = {
+      height,
+      aimWeight: target,
+      aimWeightKg: Number((target / 2).toFixed(2))
+    };
 
     this.requestCheckinSubscribe();
 
@@ -532,7 +532,7 @@ Page({
       }))
       .then(() => {
         App.globalData.userInfo.height = height;
-        if (target) App.globalData.userInfo.aimWeight = target;
+        App.globalData.userInfo.aimWeight = target;
         this.setData({ showOnboarding: false });
         this.refreshAll();
         wx.showToast({ title: '已开始记录', icon: 'success' });

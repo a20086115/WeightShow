@@ -115,10 +115,10 @@
         <view class="form-row onboarding-field">
           <view class="field-copy">
             <text class="field-label">目标体重</text>
-            <text class="field-hint">后续可在资料里修改</text>
+            <text class="field-hint">设定一个阶段目标</text>
           </view>
           <view class="field-input">
-            <input type="digit" value="{{newUserTarget}}" placeholder="可选" bindinput="onNewTargetInput" />
+            <input type="digit" value="{{newUserTarget}}" placeholder="例如 130" bindinput="onNewTargetInput" />
             <text>斤</text>
           </view>
         </view>
