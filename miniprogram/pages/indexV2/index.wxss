@@ -292,18 +292,20 @@
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 14rpx;
-  padding: 16rpx;
+  padding: 14rpx;
 }
 
 .quick-action {
   min-width: 0;
-  min-height: 94rpx;
-  padding: 14rpx 12rpx;
+  min-height: 124rpx;
+  padding: 16rpx 10rpx 14rpx;
   border-radius: 18rpx;
   box-sizing: border-box;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  text-align: left;
+  justify-content: center;
+  text-align: center;
 }
 
 .quick-action.ai {
@@ -320,34 +322,34 @@
 
 .quick-icon {
   flex-shrink: 0;
-  width: 54rpx;
-  height: 54rpx;
-  margin-right: 10rpx;
+  width: 48rpx;
+  height: 48rpx;
+  margin-right: 0;
+  margin-bottom: 10rpx;
 }
 
 .quick-copy {
   min-width: 0;
-  flex: 1;
+  width: 100%;
 }
 
 .quick-title {
   color: #22314a;
-  font-size: 23rpx;
+  font-size: 24rpx;
   font-weight: 800;
   white-space: nowrap;
 }
 
 .quick-subtitle {
-  margin-top: 5rpx;
+  margin-top: 6rpx;
   color: #718095;
-  font-size: 19rpx;
+  font-size: 20rpx;
   line-height: 1.2;
+  white-space: nowrap;
 }
 
 .quick-arrow {
-  flex-shrink: 0;
-  color: #167cff;
-  font-size: 24rpx;
+  display: none;
 }
 
 .group .quick-arrow {
@@ -359,7 +361,7 @@
 }
 
 .stat-row {
-  min-height: 92rpx;
+  min-height: 124rpx;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
 }
@@ -367,6 +369,7 @@
 .stat-item {
   min-width: 0;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   border-right: 1rpx solid #edf1f6;
@@ -378,13 +381,15 @@
 
 .stat-icon {
   flex-shrink: 0;
-  width: 54rpx;
-  height: 54rpx;
-  margin-right: 12rpx;
+  width: 44rpx;
+  height: 44rpx;
+  margin-right: 0;
+  margin-bottom: 10rpx;
 }
 
 .stat-copy {
   min-width: 0;
+  text-align: center;
 }
 
 .stat-value {
@@ -392,6 +397,7 @@
   font-size: 30rpx;
   font-weight: 800;
   line-height: 1.15;
+  white-space: nowrap;
 }
 
 .stat-label {
@@ -459,12 +465,6 @@
 .nudge-secondary {
   background: #ffffff;
   color: #7d8790;
-}
-
-.more-link {
-  color: #167cff;
-  font-size: 25rpx;
-  font-weight: 600;
 }
 
 .chart-box {

@@ -75,25 +75,22 @@
       <image class="quick-icon" src="../../瘦身打卡助手_透明小图标PNG/08_AI分析_机器人图标.png" mode="aspectFit"></image>
       <view class="quick-copy">
         <view class="quick-title">AI分析</view>
-        <view class="quick-subtitle">智能解读数据</view>
+        <view class="quick-subtitle">智能解读</view>
       </view>
-      <van-icon name="arrow" class="quick-arrow" />
     </view>
     <view class="quick-action group" bindtap="openJoinGroupDialog">
       <image class="quick-icon" src="../../瘦身打卡助手_透明小图标PNG/09_加群交流_群聊图标.png" mode="aspectFit"></image>
       <view class="quick-copy">
         <view class="quick-title">加群交流</view>
-        <view class="quick-subtitle">一起打卡更有动力</view>
+        <view class="quick-subtitle">一起打卡</view>
       </view>
-      <van-icon name="arrow" class="quick-arrow" />
     </view>
     <view class="quick-action share" bindtap="openSharePanel">
       <image class="quick-icon" src="../../瘦身打卡助手_透明小图标PNG/10_分享成果_分享图标.png" mode="aspectFit"></image>
       <view class="quick-copy">
         <view class="quick-title">分享成果</view>
-        <view class="quick-subtitle">记录你的变化</view>
+        <view class="quick-subtitle">记录变化</view>
       </view>
-      <van-icon name="arrow" class="quick-arrow" />
     </view>
   </view>
 
@@ -140,7 +137,6 @@
         <view class="card-title">本月趋势</view>
         <view class="card-subtitle">体重变化</view>
       </view>
-      <view class="more-link" bindtap="goAnalysis">AI分析</view>
     </view>
     <view class="chart-empty" wx:if="{{!hasChartData}}">
       记录两次体重后，将生成趋势图
