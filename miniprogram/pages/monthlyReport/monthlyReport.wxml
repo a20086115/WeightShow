@@ -1,6 +1,6 @@
 <view class="page">
   <view class="hero-card">
-    <view class="hero-kicker">{{monthLabel}} · {{reportSourceText}}</view>
+    <view class="hero-kicker">{{periodLabel}} · {{reportSourceText}}</view>
     <view class="hero-title">{{report.overview.title}}</view>
     <view class="hero-desc">{{report.overview.summary}}</view>
     <view class="hero-meta">
@@ -53,7 +53,7 @@
   </view>
 
   <view class="section-card">
-    <view class="section-title">下月行动</view>
+    <view class="section-title">{{nextActionTitle}}</view>
     <view class="advice-item" wx:for="{{report.nextActions}}" wx:key="*this">
       <view class="advice-dot"></view>
       <view>{{item}}</view>

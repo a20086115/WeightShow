@@ -21,7 +21,33 @@ page {
   box-shadow: 0 16rpx 42rpx rgba(31, 54, 86, 0.08);
 }
 
+.scope-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10rpx;
+  padding: 8rpx;
+  border-radius: 20rpx;
+  background: #eaf1f8;
+}
+
+.scope-tab {
+  height: 64rpx;
+  border-radius: 16rpx;
+  color: #627086;
+  font-size: 26rpx;
+  font-weight: 700;
+  line-height: 64rpx;
+  text-align: center;
+}
+
+.scope-tab.active {
+  background: #fff;
+  color: #188be4;
+  box-shadow: 0 8rpx 22rpx rgba(31, 54, 86, 0.08);
+}
+
 .month-panel {
+  margin-top: 18rpx;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -37,6 +63,10 @@ page {
   color: #188be4;
   font-size: 52rpx;
   line-height: 72rpx;
+}
+
+.month-arrow.disabled {
+  opacity: 0;
 }
 
 .month-arrow::after,

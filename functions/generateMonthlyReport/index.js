@@ -7,6 +7,7 @@ cloud.init({
 const db = cloud.database()
 const _ = db.command
 const REPORT_COLLECTION = 'monthlyReports'
+const RECORD_PAGE_SIZE = 1000
 
 let aiInstance = null
 try {
@@ -26,6 +27,10 @@ function pad(num) {
 function getCurrentMonth() {
   const date = new Date()
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}`
+}
+
+function getCurrentYear() {
+  return String(new Date().getFullYear())
 }
 
 function toNumber(value) {
@@ -48,6 +53,62 @@ function formatNumber(value, digits = 1) {
 function normalizeMonth(month) {
   if (typeof month === 'string' && /^\d{4}-\d{2}$/.test(month)) return month
   return getCurrentMonth()
+}
+
+function getMonthLabel(month) {
+  return `${month.slice(0, 4)}年${month.slice(5, 7)}月`
+}
+
+function normalizeYear(year) {
+  if (typeof year === 'string' && /^\d{4}$/.test(year)) return year
+  if (typeof year === 'number' && year >= 2000 && year <= 2100) return String(year)
+  return getCurrentYear()
+}
+
+function normalizeScope(event = {}) {
+  if (event.scope === 'year') return 'year'
+  if (event.scope === 'all') return 'all'
+  return 'month'
+}
+
+function getReportContext(event = {}) {
+  const scope = normalizeScope(event)
+  const month = normalizeMonth(event.month)
+  const year = normalizeYear(event.year || (month ? month.slice(0, 4) : ''))
+  if (scope === 'year') {
+    return {
+      scope,
+      month,
+      year,
+      reportKey: `year:${year}`,
+      periodLabel: `${year}年`,
+      periodName: '年度',
+      actionTitle: '下一阶段行动',
+      confidenceBaseDays: 60
+    }
+  }
+  if (scope === 'all') {
+    return {
+      scope,
+      month,
+      year,
+      reportKey: 'all',
+      periodLabel: '全部记录',
+      periodName: '历史',
+      actionTitle: '长期行动',
+      confidenceBaseDays: 90
+    }
+  }
+  return {
+    scope,
+    month,
+    year: month.slice(0, 4),
+    reportKey: `month:${month}`,
+    periodLabel: getMonthLabel(month),
+    periodName: '月度',
+    actionTitle: '下月行动',
+    confidenceBaseDays: 10
+  }
 }
 
 function getWeekdayStats(records) {
@@ -79,7 +140,31 @@ function getLongestStreak(records) {
   return longest
 }
 
-function buildMetrics(month, userInfo, records) {
+function buildMonthStats(records) {
+  const monthMap = {}
+  records.forEach((record) => {
+    const month = String(record.date).slice(0, 7)
+    if (!monthMap[month]) monthMap[month] = []
+    monthMap[month].push(record)
+  })
+  return Object.keys(monthMap).sort().map((month) => {
+    const monthRecords = monthMap[month]
+      .filter((item) => toNumber(item.weight) !== null)
+      .sort((a, b) => String(a.date).localeCompare(String(b.date)))
+    const weights = monthRecords.map((item) => toNumber(item.weight))
+    const first = weights[0] || null
+    const latest = weights.length ? weights[weights.length - 1] : null
+    return {
+      month,
+      checkinDays: monthRecords.length,
+      firstWeight: round(first, 1),
+      latestWeight: round(latest, 1),
+      weightChange: weights.length > 1 ? round(latest - first, 1) : null
+    }
+  })
+}
+
+function buildMetrics(context, userInfo, records) {
   const weightRecords = records
     .filter((item) => toNumber(item.weight) !== null)
     .sort((a, b) => String(a.date).localeCompare(String(b.date)))
@@ -95,7 +180,13 @@ function buildMetrics(month, userInfo, records) {
   const latestBmi = latest !== null && height ? round(latest / 2 / (height * height / 10000), 2) : null
 
   return {
-    month,
+    scope: context.scope,
+    month: context.month,
+    year: context.year,
+    reportKey: context.reportKey,
+    periodLabel: context.periodLabel,
+    periodName: context.periodName,
+    confidenceBaseDays: context.confidenceBaseDays,
     checkinDays: weightRecords.length,
     firstWeight: round(first, 1),
     latestWeight: round(latest, 1),
@@ -107,6 +198,7 @@ function buildMetrics(month, userInfo, records) {
     latestBmi,
     longestStreak: getLongestStreak(weightRecords),
     weekdayStats: getWeekdayStats(weightRecords),
+    monthStats: buildMonthStats(weightRecords),
     records: weightRecords.map((item) => ({
       date: item.date,
       weight: round(item.weight, 1)
@@ -128,19 +220,25 @@ function buildFallbackReport(metrics, source = 'fallback') {
   const changeText = change === null ? '暂无变化' : `${change > 0 ? '+' : ''}${formatNumber(change)}斤`
   const tag = direction === 'down' ? '趋势不错' : direction === 'up' ? '注意波动' : hasRecords ? '保持观察' : '等待记录'
   const summary = hasRecords
-    ? `本月共记录 ${metrics.checkinDays} 天，体重变化 ${changeText}，最新体重 ${formatNumber(metrics.latestWeight)} 斤。`
-    : '本月还没有可分析的体重记录，先完成几次打卡后报告会更有价值。'
+    ? `${metrics.periodLabel}共记录 ${metrics.checkinDays} 天，体重变化 ${changeText}，最新体重 ${formatNumber(metrics.latestWeight)} 斤。`
+    : `${metrics.periodLabel}还没有可分析的体重记录，先完成几次打卡后报告会更有价值。`
+  const periodTitle = metrics.scope === 'month' ? '本月体重报告' : `${metrics.periodName}体重报告`
 
   return {
     version: '1.0',
     month: metrics.month,
-    confidence: metrics.checkinDays >= 10 ? 'medium' : 'low',
+    year: metrics.year,
+    scope: metrics.scope,
+    reportKey: metrics.reportKey,
+    periodLabel: metrics.periodLabel,
+    periodName: metrics.periodName,
+    confidence: metrics.checkinDays >= Math.max(10, metrics.confidenceBaseDays || 10) ? 'medium' : 'low',
     source,
     overview: {
-      title: hasRecords ? '本月体重报告' : '暂无可分析数据',
+      title: hasRecords ? periodTitle : '暂无可分析数据',
       summary,
       tag,
-      score: Math.min(100, Math.round((metrics.checkinDays / 30) * 70) + Math.min(30, metrics.longestStreak * 4))
+      score: Math.min(100, Math.round((metrics.checkinDays / Math.max(10, metrics.confidenceBaseDays || 30)) * 70) + Math.min(30, metrics.longestStreak * 4))
     },
     metrics: {
       checkinDays: metrics.checkinDays,
@@ -154,17 +252,17 @@ function buildFallbackReport(metrics, source = 'fallback') {
       direction,
       volatility: metrics.maxWeight !== null && metrics.minWeight !== null && metrics.maxWeight - metrics.minWeight > 6 ? 'high' : 'medium',
       description: direction === 'down'
-        ? '本月体重整体向下，说明当前执行方式已有正向反馈。'
+        ? `${metrics.periodName}体重整体向下，说明当前执行方式已有正向反馈。`
         : direction === 'up'
-          ? '本月体重有上行波动，建议回看饮食、作息和运动是否被打断。'
-          : '本月体重整体较平稳，可以继续观察细微变化。',
+          ? `${metrics.periodName}体重有上行波动，建议回看饮食、作息和运动是否被打断。`
+          : `${metrics.periodName}体重整体较平稳，可以继续观察细微变化。`,
       highlights: [
         metrics.longestStreak >= 7 ? `最长连续记录 ${metrics.longestStreak} 天，记录习惯不错。` : '记录连续性还可以继续提升。',
         metrics.targetDistance !== null ? `距离目标体重 ${formatNumber(Math.abs(metrics.targetDistance))} 斤。` : '尚未设置目标体重。'
       ]
     },
     habit: {
-      summary: metrics.checkinDays >= 15 ? '本月记录频率较好，数据具备参考价值。' : '本月记录次数偏少，建议先提升记录完整度。',
+      summary: metrics.checkinDays >= 15 ? `${metrics.periodName}记录频率较好，数据具备参考价值。` : `${metrics.periodName}记录次数偏少，建议先提升记录完整度。`,
       weekdayInsight: getWeekdayInsight(metrics.weekdayStats),
       suggestion: '建议固定早晨空腹称重，减少饮食和水分带来的误差。'
     },
@@ -181,7 +279,7 @@ function buildFallbackReport(metrics, source = 'fallback') {
       }
     ],
     nextActions: [
-      '下月先完成连续 7 天记录',
+      metrics.scope === 'month' ? '下月先完成连续 7 天记录' : '下一阶段先完成连续 7 天记录',
       '固定每天同一时间称重',
       direction === 'up' ? '优先减少晚间加餐，稳定睡眠' : '保持当前节奏，不要过度压缩饮食'
     ],
@@ -189,7 +287,7 @@ function buildFallbackReport(metrics, source = 'fallback') {
       ? '你已经用记录看见了变化，接下来继续把节奏稳住。'
       : '不用急着证明自己，先把每天的记录留下来。',
     share: {
-      title: `${metrics.month} AI 月度报告`,
+      title: `${metrics.periodLabel} AI${metrics.periodName}报告`,
       summary
     }
   }
@@ -205,7 +303,7 @@ function getWeekdayInsight(weekdayStats) {
 }
 
 function buildPrompt(metrics) {
-  return `你是一个体重管理小程序的 AI 月度报告助手。请根据用户真实打卡数据，生成克制、具体、非医疗诊断的中文月度报告。
+  return `你是一个体重管理小程序的 AI${metrics.periodName}报告助手。请根据用户真实打卡数据，生成克制、具体、非医疗诊断的中文${metrics.periodName}报告。
 
 要求：
 1. 只能输出 JSON，不要 markdown，不要解释。
@@ -214,11 +312,15 @@ function buildPrompt(metrics) {
 4. 建议必须具体、可执行，避免空话。
 5. 不要承诺减肥效果，不做医疗建议。
 6. weightChange 为负数代表体重下降。
+7. 当前报告范围是：${metrics.periodLabel}，不要写成其他周期。
 
 返回 JSON 结构：
 {
   "version": "1.0",
   "month": "YYYY-MM",
+  "year": "YYYY",
+  "scope": "month|year|all",
+  "periodLabel": "",
   "confidence": "low|medium|high",
   "overview": { "title": "", "summary": "", "tag": "", "score": 0 },
   "metrics": { "checkinDays": 0, "weightChange": 0, "latestWeight": 0, "minWeight": 0, "maxWeight": 0, "targetDistance": 0 },
@@ -258,6 +360,11 @@ function normalizeAiReport(report, metrics) {
     source: 'ai',
     version: '1.0',
     month: metrics.month,
+    year: metrics.year,
+    scope: metrics.scope,
+    reportKey: metrics.reportKey,
+    periodLabel: metrics.periodLabel,
+    periodName: metrics.periodName,
     metrics: {
       ...fallback.metrics,
       ...(safe.metrics || {}),
@@ -282,6 +389,10 @@ function stripPrivateReportDoc(doc) {
   return {
     _id: doc._id,
     month: doc.month,
+    year: doc.year,
+    scope: doc.scope,
+    reportKey: doc.reportKey,
+    periodLabel: doc.periodLabel,
     source: doc.source,
     report: doc.report,
     metrics: doc.metrics,
@@ -296,26 +407,42 @@ async function getSharedReport(reportId) {
   return stripPrivateReportDoc(res.data)
 }
 
-async function getCachedReport(openId, month) {
-  const res = await db.collection(REPORT_COLLECTION)
-    .where({ openId, month })
+async function getCachedReport(openId, context) {
+  const query = context.scope === 'month'
+    ? { openId, reportKey: context.reportKey }
+    : { openId, reportKey: context.reportKey }
+  let res = await db.collection(REPORT_COLLECTION)
+    .where(query)
     .orderBy('updatedAt', 'desc')
     .limit(1)
     .get()
-  return stripPrivateReportDoc((res.data || [])[0])
+  let cached = stripPrivateReportDoc((res.data || [])[0])
+  if (!cached && context.scope === 'month') {
+    res = await db.collection(REPORT_COLLECTION)
+      .where({ openId, month: context.month })
+      .orderBy('updatedAt', 'desc')
+      .limit(1)
+      .get()
+    cached = stripPrivateReportDoc((res.data || [])[0])
+  }
+  return cached
 }
 
-async function saveReport(openId, month, report, metrics) {
+async function saveReport(openId, context, report, metrics) {
   const data = {
     openId,
-    month,
+    month: context.month,
+    year: context.year,
+    scope: context.scope,
+    reportKey: context.reportKey,
+    periodLabel: context.periodLabel,
     source: report.source || 'ai',
     report,
     metrics,
     updatedAt: db.serverDate()
   }
   const oldRes = await db.collection(REPORT_COLLECTION)
-    .where({ openId, month })
+    .where({ openId, reportKey: context.reportKey })
     .orderBy('updatedAt', 'desc')
     .limit(1)
     .get()
@@ -331,6 +458,37 @@ async function saveReport(openId, month, report, metrics) {
     }
   })
   return addRes._id
+}
+
+async function fetchRecords(openId, context) {
+  let where = { openId }
+  if (context.scope === 'month') {
+    where = {
+      openId,
+      date: _.and(_.gte(`${context.month}-01`), _.lte(`${context.month}-31`))
+    }
+  } else if (context.scope === 'year') {
+    where = {
+      openId,
+      date: _.and(_.gte(`${context.year}-01-01`), _.lte(`${context.year}-12-31`))
+    }
+  }
+
+  const records = []
+  let skip = 0
+  while (true) {
+    const res = await db.collection('records')
+      .where(where)
+      .orderBy('date', 'asc')
+      .skip(skip)
+      .limit(RECORD_PAGE_SIZE)
+      .get()
+    const data = res.data || []
+    records.push(...data)
+    if (data.length < RECORD_PAGE_SIZE) break
+    skip += RECORD_PAGE_SIZE
+  }
+  return records
 }
 
 async function generateAiReport(metrics) {
@@ -353,7 +511,7 @@ async function generateAiReport(metrics) {
     const parsed = extractJson(result && result.text)
     return normalizeAiReport(parsed, metrics)
   } catch (error) {
-    console.error('AI 月报生成失败，使用真实数据兜底:', error)
+    console.error('AI 报告生成失败，使用真实数据兜底:', error)
     return buildFallbackReport(metrics, 'fallback')
   }
 }
@@ -380,9 +538,9 @@ exports.main = async (event) => {
       }
     }
 
-    const month = normalizeMonth(event.month)
+    const context = getReportContext(event)
     if (!event.force) {
-      const cached = await getCachedReport(openId, month)
+      const cached = await getCachedReport(openId, context)
       if (cached && cached.report) {
         return {
           ok: true,
@@ -397,20 +555,14 @@ exports.main = async (event) => {
 
     const [userRes, recordsRes] = await Promise.all([
       db.collection('users').where({ openId }).limit(1).get(),
-      db.collection('records')
-        .where({
-          openId,
-          date: _.and(_.gte(`${month}-01`), _.lte(`${month}-31`))
-        })
-        .orderBy('date', 'asc')
-        .get()
+      fetchRecords(openId, context)
     ])
 
     const userInfo = (userRes.data && userRes.data[0]) || {}
-    const records = (recordsRes.data || []).filter((item) => item && item.date && item.weight)
-    const metrics = buildMetrics(month, userInfo, records)
+    const records = (recordsRes || []).filter((item) => item && item.date && item.weight)
+    const metrics = buildMetrics(context, userInfo, records)
     const report = await generateAiReport(metrics)
-    const savedReportId = await saveReport(openId, month, report, metrics)
+    const savedReportId = await saveReport(openId, context, report, metrics)
 
     return {
       ok: true,
@@ -422,9 +574,9 @@ exports.main = async (event) => {
     }
   } catch (error) {
     console.error('generateMonthlyReport failed:', error)
-    const month = normalizeMonth(event && event.month)
+    const context = getReportContext(event || {})
     const fallback = buildFallbackReport({
-      month,
+      ...context,
       checkinDays: 0,
       weightChange: null,
       latestWeight: null,

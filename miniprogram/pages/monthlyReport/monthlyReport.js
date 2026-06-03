@@ -31,11 +31,49 @@ function getMonthLabel(month) {
   return dayjs(`${month}-01`).format('YYYY年MM月');
 }
 
-function getDefaultReport(month) {
+function getCurrentYear() {
+  return String(new Date().getFullYear());
+}
+
+function getReportContext(options = {}) {
+  const scope = options.scope === 'year' || options.scope === 'all' ? options.scope : 'month';
+  const month = options.month || formatMonth(new Date());
+  const year = options.year || month.slice(0, 4) || getCurrentYear();
+  if (scope === 'year') {
+    return {
+      scope,
+      month,
+      year,
+      periodLabel: `${year}年`,
+      reportName: '年度报告',
+      nextActionTitle: '下一阶段行动'
+    };
+  }
+  if (scope === 'all') {
+    return {
+      scope,
+      month,
+      year,
+      periodLabel: '全部记录',
+      reportName: '历史报告',
+      nextActionTitle: '长期行动'
+    };
+  }
+  return {
+    scope,
+    month,
+    year: month.slice(0, 4),
+    periodLabel: getMonthLabel(month),
+    reportName: '月度报告',
+    nextActionTitle: '下月行动'
+  };
+}
+
+function getDefaultReport(context) {
   return {
     source: 'loading',
     overview: {
-      title: 'AI 月度报告',
+      title: `AI ${context.reportName}`,
       summary: '正在生成报告...',
       tag: '生成中',
       score: '--'
@@ -61,7 +99,7 @@ function getDefaultReport(month) {
     nextActions: [],
     encouragement: '',
     share: {
-      title: `${getMonthLabel(month)} AI 月度报告`,
+      title: `${context.periodLabel} AI ${context.reportName}`,
       summary: ''
     },
     display: {
@@ -76,35 +114,35 @@ function getDefaultReport(month) {
   };
 }
 
-function normalizeReport(report, month) {
+function normalizeReport(report, context) {
   const safe = report || {};
   const metrics = safe.metrics || {};
   const weightChange = toNumber(metrics.weightChange);
   const targetDistance = toNumber(metrics.targetDistance);
 
   return {
-    ...getDefaultReport(month),
+    ...getDefaultReport(context),
     ...safe,
     overview: {
-      ...getDefaultReport(month).overview,
+      ...getDefaultReport(context).overview,
       ...(safe.overview || {})
     },
     metrics: {
-      ...getDefaultReport(month).metrics,
+      ...getDefaultReport(context).metrics,
       ...metrics
     },
     trend: {
-      ...getDefaultReport(month).trend,
+      ...getDefaultReport(context).trend,
       ...(safe.trend || {})
     },
     habit: {
-      ...getDefaultReport(month).habit,
+      ...getDefaultReport(context).habit,
       ...(safe.habit || {})
     },
     insights: Array.isArray(safe.insights) ? safe.insights : [],
     nextActions: Array.isArray(safe.nextActions) ? safe.nextActions : [],
     share: {
-      ...getDefaultReport(month).share,
+      ...getDefaultReport(context).share,
       ...(safe.share || {})
     },
     display: {
@@ -126,24 +164,32 @@ function normalizeReport(report, month) {
 Page({
   data: {
     currentMonth: formatMonth(new Date()),
-    monthLabel: getMonthLabel(formatMonth(new Date())),
+    currentYear: getCurrentYear(),
+    scope: 'month',
+    periodLabel: getMonthLabel(formatMonth(new Date())),
+    reportName: '月度报告',
+    nextActionTitle: '下月行动',
     reportId: '',
     sharedReportId: '',
     isSharedReport: false,
     loading: true,
     reportSourceText: 'AI 生成中',
-    report: getDefaultReport(formatMonth(new Date()))
+    report: getDefaultReport(getReportContext())
   },
 
   onLoad(options) {
-    const currentMonth = options.month || this.data.currentMonth;
+    const context = getReportContext(options);
     const sharedReportId = options.reportId || options.id || '';
     this.setData({
-      currentMonth,
-      monthLabel: getMonthLabel(currentMonth),
+      currentMonth: context.month,
+      currentYear: context.year,
+      scope: context.scope,
+      periodLabel: context.periodLabel,
+      reportName: context.reportName,
+      nextActionTitle: context.nextActionTitle,
       sharedReportId,
       isSharedReport: !!sharedReportId,
-      report: getDefaultReport(currentMonth)
+      report: getDefaultReport(context)
     });
     if (App.initUserInfo) {
       App.initUserInfo(() => this.loadAiReport());
@@ -161,7 +207,9 @@ Page({
     const data = this.data.sharedReportId && !force
       ? { reportId: this.data.sharedReportId }
       : {
+          scope: this.data.scope,
           month: this.data.currentMonth,
+          year: this.data.currentYear,
           force
         };
 
@@ -170,9 +218,20 @@ Page({
       data
     }).then((res) => {
       const result = res.result || {};
-      const report = normalizeReport(result.report, this.data.currentMonth);
+      const context = getReportContext({
+        scope: result.report && result.report.scope ? result.report.scope : this.data.scope,
+        month: result.report && result.report.month ? result.report.month : this.data.currentMonth,
+        year: result.report && result.report.year ? result.report.year : this.data.currentYear
+      });
+      const report = normalizeReport(result.report, context);
       this.setData({
         loading: false,
+        scope: context.scope,
+        currentMonth: context.month,
+        currentYear: context.year,
+        periodLabel: context.periodLabel,
+        reportName: context.reportName,
+        nextActionTitle: context.nextActionTitle,
         reportId: result.reportId || this.data.reportId,
         isSharedReport: !!result.shared,
         report,
@@ -186,9 +245,14 @@ Page({
         wx.showToast({ title: 'AI 暂不可用，已展示兜底报告', icon: 'none' });
       }
     }).catch(() => {
+      const context = getReportContext({
+        scope: this.data.scope,
+        month: this.data.currentMonth,
+        year: this.data.currentYear
+      });
       this.setData({
         loading: false,
-        report: normalizeReport(null, this.data.currentMonth),
+        report: normalizeReport(null, context),
         reportSourceText: '智能兜底'
       });
       wx.showToast({ title: '报告生成失败', icon: 'none' });
@@ -199,7 +263,7 @@ Page({
     if (this.data.loading) return;
     wx.showModal({
       title: '重新生成报告',
-      content: '会基于当前数据重新调用 AI 生成，并覆盖本月已保存报告。',
+      content: `会基于当前数据重新调用 AI 生成，并覆盖当前${this.data.reportName}。`,
       confirmColor: '#188be4',
       success: (res) => {
         if (res.confirm) {
@@ -215,18 +279,18 @@ Page({
   onShareAppMessage() {
     const reportId = this.data.reportId || this.data.sharedReportId;
     return {
-      title: this.data.report.share.title || `${this.data.monthLabel} AI 月度报告`,
+      title: this.data.report.share.title || `${this.data.periodLabel} AI ${this.data.reportName}`,
       path: reportId
         ? `/pages/monthlyReport/monthlyReport?reportId=${reportId}`
-        : `/pages/monthlyReport/monthlyReport?month=${this.data.currentMonth}`
+        : `/pages/monthlyReport/monthlyReport?scope=${this.data.scope}&month=${this.data.currentMonth}&year=${this.data.currentYear}`
     };
   },
 
   onShareTimeline() {
     const reportId = this.data.reportId || this.data.sharedReportId;
     return {
-      title: this.data.report.share.summary || this.data.report.share.title || `${this.data.monthLabel} AI 月度报告`,
-      query: reportId ? `reportId=${reportId}` : `month=${this.data.currentMonth}`
+      title: this.data.report.share.summary || this.data.report.share.title || `${this.data.periodLabel} AI ${this.data.reportName}`,
+      query: reportId ? `reportId=${reportId}` : `scope=${this.data.scope}&month=${this.data.currentMonth}&year=${this.data.currentYear}`
     };
   }
 });

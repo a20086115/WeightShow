@@ -1,5 +1,6 @@
 import dayjs from '../../utils/dayjs.min.js';
 import * as echarts from '../../ec-canvas/echarts';
+import { cloud as CF } from '../../utils/cloudFunctionPromise.js';
 
 const App = getApp();
 const REWARDED_AD_UNIT_ID = 'adunit-5b1f040ecca8e89c';
@@ -11,6 +12,10 @@ function pad(num) {
 
 function formatMonth(date) {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}`;
+}
+
+function getCurrentYear() {
+  return String(new Date().getFullYear());
 }
 
 function toNumber(value) {
@@ -48,11 +53,22 @@ function getMonthLabel(month) {
   return dayjs(`${month}-01`).format('YYYY年MM月');
 }
 
+function getYearLabel(year) {
+  return `${year}年`;
+}
+
 Page({
   data: {
+    scope: 'month',
     currentMonth: formatMonth(new Date()),
-    monthLabel: getMonthLabel(formatMonth(new Date())),
+    currentYear: getCurrentYear(),
+    periodTitle: getMonthLabel(formatMonth(new Date())),
+    periodSubtitle: '体重、BMI、打卡习惯分析',
+    reportTitle: 'AI 月度报告',
+    reportSubtitle: '看完激励广告后生成，可分享朋友圈',
+    reportButtonText: '生成',
     records: [],
+    allRecords: [],
     summary: {
       days: 0,
       changeText: '--',
@@ -61,7 +77,7 @@ Page({
       latestBmi: '--'
     },
     scoreTitle: '等待记录',
-    scoreDesc: '本月记录越完整，分析越准确。',
+    scoreDesc: '记录越完整，分析越准确。',
     habitScore: 0,
     weekdayStats: weekNames.map((name) => ({ name, count: 0, percent: 0 })),
     insights: [],
@@ -73,15 +89,20 @@ Page({
 
   onLoad(options) {
     const currentMonth = options.month || this.data.currentMonth;
+    const currentYear = options.year || currentMonth.slice(0, 4) || this.data.currentYear;
+    const scope = options.scope === 'year' || options.scope === 'all' ? options.scope : 'month';
     this.setData({
+      scope,
       currentMonth,
-      monthLabel: getMonthLabel(currentMonth)
+      currentYear
+    }, () => {
+      this.updatePeriodText();
+      if (App.initUserInfo) {
+        App.initUserInfo(() => this.loadRecords());
+      } else {
+        this.loadRecords();
+      }
     });
-    if (App.initUserInfo) {
-      App.initUserInfo(() => this.loadMonthRecords());
-    } else {
-      this.loadMonthRecords();
-    }
     this.initRewardedAd();
   },
 
@@ -96,7 +117,7 @@ Page({
     });
     this.rewardedAd.onClose((res) => {
       if (res && res.isEnded) {
-        this.goMonthlyReport();
+        this.goAiReport();
       } else {
         wx.showToast({ title: '完整观看后才能生成报告', icon: 'none' });
       }
@@ -106,6 +127,42 @@ Page({
     });
   },
 
+  updatePeriodText() {
+    const scope = this.data.scope;
+    const map = {
+      month: {
+        periodTitle: getMonthLabel(this.data.currentMonth),
+        periodSubtitle: '本月体重、BMI、打卡习惯分析',
+        reportTitle: 'AI 月度报告',
+        reportSubtitle: '基于本月记录生成，可分享朋友圈'
+      },
+      year: {
+        periodTitle: getYearLabel(this.data.currentYear),
+        periodSubtitle: '今年趋势、节奏和关键变化分析',
+        reportTitle: 'AI 年度报告',
+        reportSubtitle: '基于今年记录生成年度总结'
+      },
+      all: {
+        periodTitle: '全部记录',
+        periodSubtitle: '长期体重变化和打卡习惯分析',
+        reportTitle: 'AI 全部报告',
+        reportSubtitle: '基于全部历史记录生成长期分析'
+      }
+    };
+    this.setData({
+      ...map[scope],
+      reportButtonText: '生成'
+    });
+  },
+
+  loadRecords() {
+    if (this.data.scope === 'month') {
+      this.loadMonthRecords();
+      return;
+    }
+    this.loadAllRecords();
+  },
+
   loadMonthRecords() {
     wx.cloud.callFunction({
       name: 'getWeightRecordsByMonth',
@@ -113,13 +170,42 @@ Page({
         month: this.data.currentMonth
       }
     }).then((res) => {
-      const records = ((res.result && res.result.data) || [])
-        .filter((item) => item && item.date && item.weight)
-        .sort((a, b) => a.date.localeCompare(b.date));
+      const records = this.normalizeRecords((res.result && res.result.data) || []);
       this.applyRecords(records);
     }).catch(() => {
       wx.showToast({ title: '分析加载失败', icon: 'none' });
     });
+  },
+
+  loadAllRecords() {
+    const applyFromAll = (records) => {
+      const source = this.data.scope === 'year'
+        ? records.filter((item) => item.date.indexOf(`${this.data.currentYear}-`) === 0)
+        : records;
+      this.applyRecords(source);
+    };
+
+    if (this.data.allRecords.length) {
+      applyFromAll(this.data.allRecords);
+      return;
+    }
+
+    CF.listAll('records', { openId: true }, 'date', 'asc', 10000).then((res) => {
+      const result = res.result || {};
+      const allRecords = this.normalizeRecords(result.data || []);
+      this.setData({ allRecords }, () => applyFromAll(allRecords));
+      if (result.hasMore) {
+        wx.showToast({ title: '记录较多，已显示前10000条', icon: 'none' });
+      }
+    }).catch(() => {
+      wx.showToast({ title: '分析加载失败', icon: 'none' });
+    });
+  },
+
+  normalizeRecords(records) {
+    return (records || [])
+      .filter((item) => item && item.date && item.weight)
+      .sort((a, b) => a.date.localeCompare(b.date));
   },
 
   applyRecords(records) {
@@ -166,10 +252,22 @@ Page({
 
   buildHabitScore(records) {
     if (!records.length) return 0;
-    const monthDays = dayjs(`${this.data.currentMonth}-01`).daysInMonth();
-    const checkinScore = Math.min(70, Math.round((records.length / monthDays) * 70));
+    const periodDays = this.getScorePeriodDays(records);
+    const checkinScore = Math.min(70, Math.round((records.length / periodDays) * 70));
     const stabilityScore = this.getStableDays(records) >= 7 ? 30 : Math.min(30, this.getStableDays(records) * 4);
     return Math.min(100, checkinScore + stabilityScore);
+  },
+
+  getScorePeriodDays(records) {
+    if (this.data.scope === 'month') {
+      return dayjs(`${this.data.currentMonth}-01`).daysInMonth();
+    }
+    if (this.data.scope === 'year') {
+      const year = Number(this.data.currentYear);
+      return new Date(year, 1, 29).getMonth() === 1 ? 366 : 365;
+    }
+    if (records.length < 2) return 1;
+    return Math.max(dayjs(records[records.length - 1].date).diff(dayjs(records[0].date), 'day') + 1, 1);
   },
 
   getStableDays(records) {
@@ -204,20 +302,29 @@ Page({
   },
 
   buildInsights(records) {
+    const scopeText = this.data.scope === 'month'
+      ? '本月'
+      : this.data.scope === 'year'
+        ? '今年'
+        : '长期';
     if (!records.length) {
-      return ['先完成 3 次以上记录，系统就能看出你的基础趋势。'];
+      return [`${scopeText}暂无记录，先完成 3 次以上记录，系统就能看出基础趋势。`];
     }
     const insights = [];
     const weights = records.map((item) => toNumber(item.weight)).filter((item) => item !== null);
     const diff = weights[weights.length - 1] - weights[0];
     const stableDays = this.getStableDays(records);
 
-    if (diff < 0) {
-      insights.push(`本月体重下降 ${Math.abs(diff).toFixed(1)} 斤，继续保持当前节奏。`);
-    } else if (diff > 0) {
-      insights.push(`本月体重上升 ${diff.toFixed(1)} 斤，建议优先稳定饮食和睡眠。`);
+    if (records.length >= 2) {
+      if (diff < 0) {
+        insights.push(`${scopeText}体重下降 ${Math.abs(diff).toFixed(1)} 斤，继续保持当前节奏。`);
+      } else if (diff > 0) {
+        insights.push(`${scopeText}体重上升 ${diff.toFixed(1)} 斤，建议优先稳定饮食和睡眠。`);
+      } else {
+        insights.push(`${scopeText}体重基本持平，可以通过运动量或饮食结构做小幅优化。`);
+      }
     } else {
-      insights.push('本月体重基本持平，可以通过运动量或饮食结构做小幅优化。');
+      insights.push(`${scopeText}只有 1 次记录，先积累到 2 次以上再看变化。`);
     }
 
     if (stableDays >= 7) {
@@ -236,10 +343,10 @@ Page({
   updateScoreText() {
     const score = this.data.habitScore;
     let scoreTitle = '等待记录';
-    let scoreDesc = '本月记录越完整，分析越准确。';
+    let scoreDesc = '记录越完整，分析越准确。';
     if (score >= 80) {
       scoreTitle = '执行稳定';
-      scoreDesc = '记录习惯不错，月报会更有参考价值。';
+      scoreDesc = '记录习惯不错，AI 报告会更有参考价值。';
     } else if (score >= 50) {
       scoreTitle = '正在变稳';
       scoreDesc = '已经有趋势了，再补一点连续性会更好。';
@@ -262,7 +369,11 @@ Page({
       this.ecComponent = this.selectComponent('#analysis-chart');
       if (!this.ecComponent) return;
 
-      const xData = records.map((item) => dayjs(item.date).format('DD'));
+      const xData = records.map((item) => {
+        if (this.data.scope === 'month') return dayjs(item.date).format('DD');
+        if (this.data.scope === 'year') return dayjs(item.date).format('MM/DD');
+        return dayjs(item.date).format('YY/MM/DD');
+      });
       const weightData = records.map((item) => toNumber(item.weight));
       const aimWeight = toNumber(App.globalData.userInfo && App.globalData.userInfo.aimWeight);
       const axisValues = aimWeight ? weightData.concat([aimWeight]) : weightData;
@@ -309,13 +420,25 @@ Page({
   },
 
   shiftMonth(offset) {
+    if (this.data.scope === 'all') return;
+    if (this.data.scope === 'year') {
+      const currentYear = String(Number(this.data.currentYear) + offset);
+      this.setData({ currentYear }, () => {
+        this.updatePeriodText();
+        this.loadRecords();
+      });
+      return;
+    }
     const date = dayjs(`${this.data.currentMonth}-01`).toDate();
     date.setMonth(date.getMonth() + offset);
     const currentMonth = formatMonth(date);
     this.setData({
       currentMonth,
-      monthLabel: getMonthLabel(currentMonth)
-    }, () => this.loadMonthRecords());
+      currentYear: currentMonth.slice(0, 4)
+    }, () => {
+      this.updatePeriodText();
+      this.loadRecords();
+    });
   },
 
   prevMonth() {
@@ -326,13 +449,22 @@ Page({
     this.shiftMonth(1);
   },
 
+  changeScope(e) {
+    const scope = e.currentTarget.dataset.scope;
+    if (scope === this.data.scope) return;
+    this.setData({ scope }, () => {
+      this.updatePeriodText();
+      this.loadRecords();
+    });
+  },
+
   watchReportAd() {
     if (!REWARDED_AD_UNIT_ID) {
       wx.showModal({
         title: '开发预览',
-        content: '激励广告位 ID 尚未配置，当前直接进入 AI 月度报告。上线前填入广告位后会要求完整观看。',
+        content: '激励广告位 ID 尚未配置，当前直接进入 AI 报告。上线前填入广告位后会要求完整观看。',
         showCancel: false,
-        success: () => this.goMonthlyReport()
+        success: () => this.goAiReport()
       });
       return;
     }
@@ -345,9 +477,9 @@ Page({
     });
   },
 
-  goMonthlyReport() {
+  goAiReport() {
     wx.navigateTo({
-      url: `/pages/monthlyReport/monthlyReport?month=${this.data.currentMonth}`
+      url: `/pages/monthlyReport/monthlyReport?scope=${this.data.scope}&month=${this.data.currentMonth}&year=${this.data.currentYear}`
     });
   }
 });
