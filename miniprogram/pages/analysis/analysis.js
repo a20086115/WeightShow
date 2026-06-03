@@ -252,53 +252,59 @@ Page({
 
   initChart() {
     const records = this.data.records;
-    if (records.length < 2) return;
-    if (!this.ecComponent) {
+    if (records.length < 2) {
+      this.ecComponent = null;
+      this.chart = null;
+      return;
+    }
+
+    wx.nextTick(() => {
       this.ecComponent = this.selectComponent('#analysis-chart');
-    }
-    if (!this.ecComponent) return;
+      if (!this.ecComponent) return;
 
-    const xData = records.map((item) => dayjs(item.date).format('DD'));
-    const weightData = records.map((item) => toNumber(item.weight));
-    const aimWeight = toNumber(App.globalData.userInfo && App.globalData.userInfo.aimWeight);
-    const axisValues = aimWeight ? weightData.concat([aimWeight]) : weightData;
-    const series = [
-      { name: '体重', type: 'line', smooth: true, symbolSize: 6, lineStyle: { width: 3 }, areaStyle: { opacity: 0.12 }, data: weightData }
-    ];
-    if (aimWeight) {
-      series.push({
-        name: '目标体重',
-        type: 'line',
-        symbol: 'none',
-        label: {
-          show: true,
-          position: 'right',
-          formatter: '目标',
-          color: '#1fb9a5',
-          fontSize: 10
-        },
-        lineStyle: { width: 2, type: 'dashed', color: '#1fb9a5' },
-        data: weightData.map(() => aimWeight)
-      });
-    }
+      const xData = records.map((item) => dayjs(item.date).format('DD'));
+      const weightData = records.map((item) => toNumber(item.weight));
+      const aimWeight = toNumber(App.globalData.userInfo && App.globalData.userInfo.aimWeight);
+      const axisValues = aimWeight ? weightData.concat([aimWeight]) : weightData;
+      const series = [
+        { name: '体重', type: 'line', smooth: true, symbolSize: 6, lineStyle: { width: 3 }, areaStyle: { opacity: 0.12 }, data: weightData }
+      ];
+      if (aimWeight) {
+        series.push({
+          name: '目标体重',
+          type: 'line',
+          symbol: 'none',
+          label: {
+            show: true,
+            position: 'right',
+            formatter: '目标',
+            color: '#1fb9a5',
+            fontSize: 10
+          },
+          lineStyle: { width: 2, type: 'dashed', color: '#1fb9a5' },
+          data: weightData.map(() => aimWeight)
+        });
+      }
 
-    this.ecComponent.init((canvas, width, heightPx, dpr) => {
-      const chart = echarts.init(canvas, null, {
-        width,
-        height: heightPx,
-        devicePixelRatio: dpr || 1
+      this.ecComponent.init((canvas, width, heightPx, dpr) => {
+        if (!canvas || !width || !heightPx) return null;
+        const chart = echarts.init(canvas, null, {
+          width,
+          height: heightPx,
+          devicePixelRatio: dpr || 1
+        });
+        chart.setOption({
+          color: ['#188be4'],
+          grid: { left: 34, right: 42, top: 36, bottom: 28 },
+          legend: aimWeight ? { data: ['体重', '目标体重'], top: 4, itemWidth: 14, itemHeight: 8, textStyle: { fontSize: 11 } } : undefined,
+          tooltip: { trigger: 'axis' },
+          xAxis: { type: 'category', data: xData, boundaryGap: false, axisLabel: { fontSize: 10, hideOverlap: true } },
+          yAxis: { type: 'value', scale: true, min: getAxisMin(axisValues), max: getAxisMax(axisValues), axisLabel: { fontSize: 10 } },
+          series
+        });
+        this.chart = chart;
+        return chart;
       });
-      chart.setOption({
-        color: ['#188be4'],
-        grid: { left: 34, right: 42, top: 36, bottom: 28 },
-        legend: aimWeight ? { data: ['体重', '目标体重'], top: 4, itemWidth: 14, itemHeight: 8, textStyle: { fontSize: 11 } } : undefined,
-        tooltip: { trigger: 'axis' },
-        xAxis: { type: 'category', data: xData, boundaryGap: false, axisLabel: { fontSize: 10, hideOverlap: true } },
-        yAxis: { type: 'value', scale: true, min: getAxisMin(axisValues), max: getAxisMax(axisValues), axisLabel: { fontSize: 10 } },
-        series
-      });
-      this.chart = chart;
-      return chart;
     });
   },
 
