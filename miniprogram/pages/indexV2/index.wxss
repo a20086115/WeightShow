@@ -50,6 +50,10 @@
 }
 
 .checkin-btn::after,
+.share-entry-btn::after,
+.share-option::after,
+.nudge-primary::after,
+.nudge-secondary::after,
 .primary-action::after,
 .secondary-action::after,
 .primary-checkin-action::after,
@@ -60,6 +64,33 @@
 .checkin-plus {
   font-size: 30rpx;
   font-weight: 700;
+}
+
+.overview-actions {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+}
+
+.share-entry-btn {
+  height: 62rpx;
+  margin: 0;
+  padding: 0 18rpx;
+  border: 1rpx solid #cfe7fb;
+  border-radius: 31rpx;
+  background: #f3f9ff;
+  color: #188be4;
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  font-size: 24rpx;
+  font-weight: 700;
+  line-height: 62rpx;
+}
+
+.share-entry-icon {
+  font-size: 28rpx;
 }
 
 .overview-main {
@@ -223,6 +254,66 @@
   font-size: 22rpx;
 }
 
+.share-nudge {
+  min-height: 112rpx;
+  margin-top: 24rpx;
+  padding: 20rpx 22rpx;
+  border-radius: 22rpx;
+  background: #f3faf8;
+  border: 1rpx solid #dff2ed;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18rpx;
+}
+
+.share-nudge-copy {
+  min-width: 0;
+}
+
+.share-nudge-title {
+  color: #1f2d3d;
+  font-size: 27rpx;
+  font-weight: 800;
+}
+
+.share-nudge-desc {
+  margin-top: 6rpx;
+  color: #6d8a85;
+  font-size: 23rpx;
+}
+
+.share-nudge-actions {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+}
+
+.nudge-primary,
+.nudge-secondary {
+  height: 58rpx;
+  margin: 0;
+  padding: 0 18rpx;
+  border: 0;
+  border-radius: 29rpx;
+  font-size: 23rpx;
+  font-weight: 800;
+  line-height: 58rpx;
+}
+
+.nudge-primary {
+  background: #188be4;
+  color: #ffffff;
+  box-shadow: 0 8rpx 16rpx rgba(24, 139, 228, 0.18);
+}
+
+.nudge-secondary {
+  background: #ffffff;
+  color: #7d8790;
+}
+
 .more-link {
   color: #188be4;
   font-size: 25rpx;
@@ -235,6 +326,11 @@
 }
 
 .chart-box ec-canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.chart-hidden-placeholder {
   width: 100%;
   height: 100%;
 }
@@ -750,6 +846,140 @@
   color: #8a97a3;
   font-size: 28rpx;
   line-height: 72rpx;
+}
+
+.share-mask {
+  position: fixed;
+  z-index: 100002;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: rgba(20, 32, 45, 0.44);
+  display: flex;
+  align-items: flex-end;
+}
+
+.share-sheet {
+  position: relative;
+  width: 100%;
+  padding: 18rpx 28rpx 34rpx;
+  border-radius: 30rpx 30rpx 0 0;
+  background: #ffffff;
+  box-sizing: border-box;
+  box-shadow: 0 -16rpx 44rpx rgba(24, 54, 87, 0.18);
+}
+
+.share-sheet-handle {
+  width: 72rpx;
+  height: 8rpx;
+  margin: 0 auto 22rpx;
+  border-radius: 999rpx;
+  background: #d8e1ea;
+}
+
+.share-sheet-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20rpx;
+}
+
+.share-sheet-title {
+  color: #1f2d3d;
+  font-size: 36rpx;
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+.share-sheet-desc {
+  margin-top: 8rpx;
+  color: #657381;
+  font-size: 25rpx;
+}
+
+.share-sheet-close {
+  width: 54rpx;
+  height: 54rpx;
+  border-radius: 50%;
+  background: #f2f6fa;
+  color: #8a97a3;
+  font-size: 36rpx;
+  line-height: 50rpx;
+  text-align: center;
+}
+
+.share-option-list {
+  margin-top: 24rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.share-option {
+  min-height: 112rpx;
+  margin: 0;
+  padding: 18rpx 20rpx;
+  border: 1rpx solid #edf2f7;
+  border-radius: 22rpx;
+  background: #f8fbfe;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  text-align: left;
+  line-height: normal;
+}
+
+.share-option-icon {
+  flex-shrink: 0;
+  width: 68rpx;
+  height: 68rpx;
+  margin-right: 18rpx;
+  border-radius: 22rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 34rpx;
+}
+
+.share-option-icon.friend {
+  background: #188be4;
+}
+
+.share-option-icon.timeline {
+  background: #20b7a7;
+}
+
+.share-option-copy {
+  min-width: 0;
+  flex: 1;
+}
+
+.share-option-title {
+  color: #1f2d3d;
+  font-size: 28rpx;
+  font-weight: 800;
+}
+
+.share-option-desc {
+  margin-top: 8rpx;
+  color: #8a97a3;
+  font-size: 23rpx;
+}
+
+.share-option-arrow {
+  flex-shrink: 0;
+  margin-left: 14rpx;
+  color: #b0bac5;
+  font-size: 28rpx;
+}
+
+.share-sheet-note {
+  padding: 4rpx 8rpx 0;
+  color: #9aa6b2;
+  font-size: 22rpx;
+  line-height: 1.5;
 }
 
 .helper-text {

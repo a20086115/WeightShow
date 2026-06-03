@@ -15,10 +15,16 @@
         <view class="card-title">体重概览</view>
         <view class="card-subtitle">{{selectedDateText}}</view>
       </view>
-      <button class="checkin-btn" bindtap="openCheckin">
-        <text class="checkin-plus">＋</text>
-        <text>{{hasSelectedRecord ? '修改记录' : '今日打卡'}}</text>
-      </button>
+      <view class="overview-actions">
+        <button class="share-entry-btn" bindtap="openSharePanel">
+          <van-icon name="share-o" class="share-entry-icon" />
+          <text>分享成果</text>
+        </button>
+        <button class="checkin-btn" bindtap="openCheckin">
+          <text class="checkin-plus">＋</text>
+          <text>{{hasSelectedRecord ? '修改记录' : '今日打卡'}}</text>
+        </button>
+      </view>
     </view>
 
     <view class="overview-main">
@@ -67,6 +73,17 @@
         <view class="stat-label">本月变化</view>
       </view>
     </view>
+
+    <view class="share-nudge" wx:if="{{showShareNudge}}">
+      <view class="share-nudge-copy">
+        <view class="share-nudge-title">今天已打卡</view>
+        <view class="share-nudge-desc">要不要分享一下成果？</view>
+      </view>
+      <view class="share-nudge-actions">
+        <button class="nudge-primary" bindtap="openSharePanel">分享成果</button>
+        <button class="nudge-secondary" bindtap="dismissShareNudge">暂不</button>
+      </view>
+    </view>
   </view>
 
   <view class="trend-card">
@@ -81,7 +98,8 @@
       记录两次体重后，将生成趋势图
     </view>
     <view class="chart-box" wx:else>
-      <ec-canvas id="trend-chart" canvas-id="trend-chart" ec="{{ec}}"></ec-canvas>
+      <ec-canvas wx:if="{{!showSharePanel}}" id="trend-chart" canvas-id="trend-chart" ec="{{ec}}"></ec-canvas>
+      <view wx:else class="chart-hidden-placeholder"></view>
     </view>
   </view>
 
@@ -256,6 +274,45 @@
         BMI = 体重(kg) / 身高(m)²，只是健康参考指标之一，建议结合腰围、体脂和身体状态一起看。
       </view>
       <button class="primary-action" bindtap="closeBmiInfo">知道了</button>
+    </view>
+  </view>
+
+  <view class="share-mask" wx:if="{{showSharePanel}}" bindtap="closeSharePanel">
+    <view class="share-sheet" catchtap="noop">
+      <view class="share-sheet-handle"></view>
+      <view class="share-sheet-head">
+        <view>
+          <view class="share-sheet-title">分享成果</view>
+          <view class="share-sheet-desc">{{sharePreviewText}}</view>
+        </view>
+        <view class="share-sheet-close" bindtap="closeSharePanel">×</view>
+      </view>
+
+      <view class="share-option-list">
+        <button class="share-option" open-type="share" bindtap="closeSharePanel">
+          <view class="share-option-icon friend">
+            <van-icon name="friends-o" />
+          </view>
+          <view class="share-option-copy">
+            <view class="share-option-title">分享给好友</view>
+            <view class="share-option-desc">发给朋友或群聊，一起打卡</view>
+          </view>
+          <van-icon name="arrow" class="share-option-arrow" />
+        </button>
+
+        <view class="share-option" bindtap="guideShareTimeline">
+          <view class="share-option-icon timeline">
+            <van-icon name="photo-o" />
+          </view>
+          <view class="share-option-copy">
+            <view class="share-option-title">分享到朋友圈</view>
+            <view class="share-option-desc">使用右上角菜单发布卡片</view>
+          </view>
+          <van-icon name="arrow" class="share-option-arrow" />
+        </view>
+
+        <view class="share-sheet-note">当前分享的是小程序卡片，标题会按本月变化自动生成。</view>
+      </view>
     </view>
   </view>
 </view>

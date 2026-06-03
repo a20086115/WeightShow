@@ -76,7 +76,10 @@ Page({
     showOnboarding: false,
     showCheckinDialog: false,
     showBmiDialog: false,
+    showSharePanel: false,
+    showShareNudge: false,
     bmiMarkerPosition: 0,
+    sharePreviewText: '记录每天变化，一起打卡吧',
     subscribeChecked: true,
     reminderTime: dayjs().format('HH:mm'),
     visibleReminderTimePicker: false,
@@ -91,6 +94,11 @@ Page({
   },
 
   onLoad() {
+    if (wx.showShareMenu) {
+      wx.showShareMenu({
+        menus: ['shareAppMessage', 'shareTimeline']
+      });
+    }
     App.initUserInfo(() => {
       this.refreshAll();
     });
@@ -192,6 +200,7 @@ Page({
       monthCheckinDays: records.length,
       targetText: targetInfo.text,
       targetProgress: targetInfo.progress,
+      sharePreviewText: this.getShareTitle(records),
       hasSelectedRecord: !!selected,
       checkinWeight: selected ? selected.weight : '',
       checkinWeightKg: selected && selected.weight ? formatWeight(toNumber(selected.weight) / 2) : ''
@@ -256,6 +265,22 @@ Page({
       text: `${sign}${diff.toFixed(1)}斤`,
       className: diff > 0 ? 'month-up' : diff < 0 ? 'month-down' : ''
     };
+  },
+
+  getShareTitle(records) {
+    const sourceRecords = records || this.data.records.filter((item) => item.weight);
+    if (sourceRecords.length >= 2) {
+      const first = toNumber(sourceRecords[0].weight);
+      const last = toNumber(sourceRecords[sourceRecords.length - 1].weight);
+      const loss = first - last;
+      if (Number.isFinite(loss) && loss > 0) {
+        return `本月已瘦${loss.toFixed(1)}斤，一起打卡！`;
+      }
+    }
+    if (sourceRecords.length > 0) {
+      return '记录每天变化，一起打卡吧';
+    }
+    return '瘦身打卡助手';
   },
 
   getTargetInfo(records, latest, aimWeight) {
@@ -460,6 +485,39 @@ Page({
     this.setData({ showBmiDialog: false });
   },
 
+  openSharePanel() {
+    this.setData({
+      showSharePanel: true,
+      showShareNudge: false,
+      sharePreviewText: this.getShareTitle()
+    });
+  },
+
+  closeSharePanel() {
+    this.setData({ showSharePanel: false }, () => {
+      this.initTrendChart();
+    });
+  },
+
+  dismissShareNudge() {
+    this.setData({ showShareNudge: false });
+  },
+
+  noop() {},
+
+  guideShareTimeline() {
+    this.setData({ showSharePanel: false }, () => {
+      this.initTrendChart();
+      wx.showModal({
+        title: '分享到朋友圈',
+        content: '请点击右上角"..."菜单，选择"分享到朋友圈"',
+        showCancel: false,
+        confirmText: '知道了',
+        confirmColor: '#188be4'
+      });
+    });
+  },
+
   requestCheckinSubscribe() {
     if (!this.data.subscribeChecked || !wx.requestSubscribeMessage) return;
     wx.requestSubscribeMessage({
@@ -552,12 +610,17 @@ Page({
       weightKg: Number((weight / 2).toFixed(2))
     };
     this.requestCheckinSubscribe();
-    const request = this.data.hasSelectedRecord
-      ? CF.update('records', { openId: true, date: this.data.selectedDate }, data)
-      : CF.insert('records', data);
+    const isNewCheckin = !this.data.hasSelectedRecord;
+    const isTodayCheckin = this.data.selectedDate === formatDate(new Date());
+    const request = isNewCheckin
+      ? CF.insert('records', data)
+      : CF.update('records', { openId: true, date: this.data.selectedDate }, data);
 
     request.then(() => {
-      this.setData({ showCheckinDialog: false });
+      this.setData({
+        showCheckinDialog: false,
+        showShareNudge: isNewCheckin && isTodayCheckin
+      });
       this.loadMonthRecords();
       wx.showToast({ title: '已保存', icon: 'success' });
     });
@@ -565,14 +628,14 @@ Page({
 
   onShareAppMessage() {
     return {
-      title: '记录每天变化，一起打卡吧',
+      title: this.getShareTitle(),
       path: '/pages/indexV2/index'
     };
   },
 
   onShareTimeline() {
     return {
-      title: '记录每天变化，一起打卡吧'
+      title: this.getShareTitle()
     };
   }
 });
