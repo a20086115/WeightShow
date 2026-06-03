@@ -14,6 +14,14 @@
     <button class="month-arrow {{scope === 'all' ? 'disabled' : ''}}" bindtap="nextMonth">›</button>
   </view>
 
+  <view class="report-entry" wx:if="{{scope === 'month'}}">
+    <view>
+      <view class="entry-title">AI 月度报告</view>
+      <view class="entry-subtitle">基于本月记录生成，可分享朋友圈</view>
+    </view>
+    <button class="entry-button" bindtap="watchReportAd">生成</button>
+  </view>
+
   <view class="trend-card">
     <view class="section-head">
       <view>
@@ -54,6 +62,34 @@
         <text>最高体重</text>
       </view>
     </view>
+  </view>
+
+  <view class="score-card">
+    <view class="score-left">
+      <view class="score-label">记录状态</view>
+      <view class="score-title">{{scoreTitle}}</view>
+      <view class="score-desc">{{scoreDesc}}</view>
+    </view>
+    <view class="score-ring">
+      <text>{{habitScore}}</text>
+      <text>分</text>
+    </view>
+  </view>
+
+  <view class="habit-card">
+    <view class="section-title">打卡习惯</view>
+    <view class="weekday-row" wx:for="{{weekdayStats}}" wx:key="name">
+      <view class="weekday-name">{{item.name}}</view>
+      <view class="weekday-track">
+        <view class="weekday-fill" style="width: {{item.percent}}%"></view>
+      </view>
+      <view class="weekday-count">{{item.count}}</view>
+    </view>
+  </view>
+
+  <view class="insight-card">
+    <view class="section-title">建议</view>
+    <view class="insight-line" wx:for="{{insights}}" wx:key="*this">{{item}}</view>
   </view>
 
   <view class="list-head" wx:if="{{scope === 'month'}}">

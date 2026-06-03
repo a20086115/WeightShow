@@ -1,8 +1,6 @@
 {
-  "navigationBarTitleText": "更多分析",
+  "navigationBarTitleText": "记录分析",
   "navigationBarBackgroundColor": "#188be4",
   "navigationBarTextStyle": "white",
-  "usingComponents": {
-    "ec-canvas": "../../ec-canvas/ec-canvas"
-  }
+  "usingComponents": {}
 }

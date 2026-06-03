@@ -3,6 +3,7 @@ import * as echarts from '../../ec-canvas/echarts';
 import { cloud as CF } from '../../utils/cloudFunctionPromise.js';
 
 const App = getApp();
+const REWARDED_AD_UNIT_ID = 'adunit-5b1f040ecca8e89c';
 const weekNames = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
 
 function pad(num) {
@@ -56,6 +57,11 @@ Page({
     trendSubtitle: '按每日记录展示体重变化',
     chartGranularity: 'day',
     hasTrendData: false,
+    scoreTitle: '等待记录',
+    scoreDesc: '记录越完整，分析越准确。',
+    habitScore: 0,
+    weekdayStats: weekNames.map((name) => ({ name, count: 0, percent: 0 })),
+    insights: [],
     ec: {
       lazyLoad: true
     },
@@ -92,10 +98,28 @@ Page({
     } else {
       this.loadRecords();
     }
+    this.initRewardedAd();
   },
 
   onReady() {
     this.ecComponent = this.selectComponent('#records-chart');
+  },
+
+  initRewardedAd() {
+    if (!REWARDED_AD_UNIT_ID || !wx.createRewardedVideoAd) return;
+    this.rewardedAd = wx.createRewardedVideoAd({
+      adUnitId: REWARDED_AD_UNIT_ID
+    });
+    this.rewardedAd.onClose((res) => {
+      if (res && res.isEnded) {
+        this.goMonthlyReport();
+      } else {
+        wx.showToast({ title: '完整观看后才能生成报告', icon: 'none' });
+      }
+    });
+    this.rewardedAd.onError(() => {
+      wx.showToast({ title: '广告暂时不可用，请稍后再试', icon: 'none' });
+    });
   },
 
   loadRecords() {
@@ -169,9 +193,15 @@ Page({
       trendSubtitle: '按每日记录展示体重变化',
       chartGranularity: 'day',
       hasTrendData: this.buildTrendPoints(records).length >= 2,
+      habitScore: this.buildHabitScore(records),
+      weekdayStats: this.buildWeekdayStats(records),
+      insights: this.buildInsights(records),
       periodTitle: getMonthLabel(this.data.currentMonth),
       periodSubtitle: `共 ${records.length} 天记录`
-    }, () => this.initTrendChart(records));
+    }, () => {
+      this.updateScoreText();
+      this.initTrendChart(records);
+    });
   },
 
   applyArchiveRecords() {
@@ -186,9 +216,15 @@ Page({
       summaryTitle: this.data.scope === 'year' ? '本年变化' : '累计变化',
       trendSubtitle: this.getTrendSubtitle(),
       hasTrendData: this.buildTrendPoints(source).length >= 2,
+      habitScore: this.buildHabitScore(source),
+      weekdayStats: this.buildWeekdayStats(source),
+      insights: this.buildInsights(source),
       periodTitle: this.data.scope === 'year' ? getYearLabel(this.data.currentYear) : '全部记录',
       periodSubtitle: this.data.scope === 'year' ? `共 ${source.length} 天记录` : `累计 ${source.length} 天记录`
-    }, () => this.initTrendChart(source));
+    }, () => {
+      this.updateScoreText();
+      this.initTrendChart(source);
+    });
   },
 
   buildTrendPoints(records) {
@@ -214,6 +250,121 @@ Page({
       label: this.data.scope === 'year' ? dayjs(`${month}-01`).format('MM月') : dayjs(`${month}-01`).format('YY/MM'),
       value: toNumber(monthMap[month].weight)
     })).filter((item) => item.value !== null);
+  },
+
+  buildHabitScore(records) {
+    if (!records.length) return 0;
+    const periodDays = this.getScorePeriodDays(records);
+    const checkinScore = Math.min(70, Math.round((records.length / periodDays) * 70));
+    const stabilityScore = this.getStableDays(records) >= 7 ? 30 : Math.min(30, this.getStableDays(records) * 4);
+    return Math.min(100, checkinScore + stabilityScore);
+  },
+
+  getScorePeriodDays(records) {
+    if (this.data.scope === 'month') {
+      return dayjs(`${this.data.currentMonth}-01`).daysInMonth();
+    }
+    if (this.data.scope === 'year') {
+      const year = Number(this.data.currentYear);
+      return new Date(year, 1, 29).getMonth() === 1 ? 366 : 365;
+    }
+    const validRecords = this.normalizeRecords(records);
+    if (validRecords.length < 2) return 1;
+    return Math.max(dayjs(validRecords[validRecords.length - 1].date).diff(dayjs(validRecords[0].date), 'day') + 1, 1);
+  },
+
+  getStableDays(records) {
+    const validRecords = this.normalizeRecords(records);
+    if (!validRecords.length) return 0;
+    const dates = validRecords.map((item) => item.date);
+    let longest = 1;
+    let current = 1;
+    for (let index = 1; index < dates.length; index += 1) {
+      const prev = dayjs(dates[index - 1]);
+      const currentDate = dayjs(dates[index]);
+      if (currentDate.diff(prev, 'day') === 1) {
+        current += 1;
+        longest = Math.max(longest, current);
+      } else {
+        current = 1;
+      }
+    }
+    return longest;
+  },
+
+  buildWeekdayStats(records) {
+    const counts = weekNames.map((name) => ({ name, count: 0, percent: 0 }));
+    records.forEach((record) => {
+      const index = new Date(record.date.replace(/-/g, '/')).getDay();
+      counts[index].count += 1;
+    });
+    const max = Math.max(...counts.map((item) => item.count), 1);
+    return counts.map((item) => ({
+      ...item,
+      percent: Math.round((item.count / max) * 100)
+    }));
+  },
+
+  buildInsights(records) {
+    const scopeText = this.data.scope === 'month'
+      ? '本月'
+      : this.data.scope === 'year'
+        ? '今年'
+        : '累计';
+    if (!records.length) {
+      return [`${scopeText}暂无记录，先完成 3 次以上打卡，系统就能看出基础趋势。`];
+    }
+
+    const validRecords = this.normalizeRecords(records);
+    const weights = validRecords.map((item) => toNumber(item.weight)).filter((item) => item !== null);
+    if (!weights.length) {
+      return [`${scopeText}暂无有效体重数据，补充记录后会生成分析。`];
+    }
+
+    const insights = [];
+    const diff = weights[weights.length - 1] - weights[0];
+    const stableDays = this.getStableDays(validRecords);
+
+    if (validRecords.length >= 2) {
+      if (diff < 0) {
+        insights.push(`${scopeText}体重下降 ${Math.abs(diff).toFixed(1)} 斤，当前趋势不错。`);
+      } else if (diff > 0) {
+        insights.push(`${scopeText}体重上升 ${diff.toFixed(1)} 斤，建议优先稳定饮食和睡眠。`);
+      } else {
+        insights.push(`${scopeText}体重基本持平，可以通过运动量或饮食结构做小幅优化。`);
+      }
+    } else {
+      insights.push(`${scopeText}只有 1 次记录，先积累到 2 次以上再看变化。`);
+    }
+
+    if (stableDays >= 7) {
+      insights.push(`最长连续记录 ${stableDays} 天，习惯已经开始成型。`);
+    } else {
+      insights.push('建议先把连续记录做到 7 天，数据连续后更容易发现问题。');
+    }
+
+    if (validRecords.length < 10) {
+      insights.push('记录次数偏少，不必急着追求大变化，先让数据完整起来。');
+    }
+
+    return insights;
+  },
+
+  updateScoreText() {
+    const score = this.data.habitScore;
+    let scoreTitle = '等待记录';
+    let scoreDesc = '记录越完整，分析越准确。';
+    if (score >= 80) {
+      scoreTitle = '执行稳定';
+      scoreDesc = '记录习惯不错，报告会更有参考价值。';
+    } else if (score >= 50) {
+      scoreTitle = '正在变稳';
+      scoreDesc = '已经有趋势了，再补一点连续性会更好。';
+    } else if (score > 0) {
+      scoreTitle = '刚刚开始';
+      scoreDesc = '先别追求完美，保持记录比偶尔用力更重要。';
+    }
+    this.setData({ scoreTitle, scoreDesc });
   },
 
   initTrendChart(records) {
@@ -437,6 +588,35 @@ Page({
         trendSubtitle: this.getTrendSubtitle(),
         hasTrendData: this.buildTrendPoints(this.data.records).length >= 2
       }, () => this.initTrendChart(this.data.records));
+    });
+  },
+
+  watchReportAd() {
+    if (this.data.scope !== 'month') {
+      wx.showToast({ title: '请切到本月生成月报', icon: 'none' });
+      return;
+    }
+    if (!REWARDED_AD_UNIT_ID) {
+      wx.showModal({
+        title: '开发预览',
+        content: '激励广告位 ID 尚未配置，当前直接进入 AI 月度报告。上线前填入广告位后会要求完整观看。',
+        showCancel: false,
+        success: () => this.goMonthlyReport()
+      });
+      return;
+    }
+    if (!this.rewardedAd) {
+      wx.showToast({ title: '广告初始化失败', icon: 'none' });
+      return;
+    }
+    this.rewardedAd.show().catch(() => {
+      this.rewardedAd.load().then(() => this.rewardedAd.show());
+    });
+  },
+
+  goMonthlyReport() {
+    wx.navigateTo({
+      url: `/pages/monthlyReport/monthlyReport?month=${this.data.currentMonth}`
     });
   },
 

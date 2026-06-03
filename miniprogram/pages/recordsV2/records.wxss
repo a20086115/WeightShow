@@ -10,8 +10,12 @@ page {
 }
 
 .month-panel,
+.report-entry,
 .trend-card,
 .summary-card,
+.score-card,
+.habit-card,
+.insight-card,
 .empty-card,
 .record-item {
   background: #fff;
@@ -43,6 +47,7 @@ page {
 }
 
 .month-arrow::after,
+.entry-button::after,
 .record-actions button::after,
 .primary-action::after,
 .secondary-action::after {
@@ -94,6 +99,41 @@ page {
   background: #fff;
   color: #188be4;
   box-shadow: 0 8rpx 22rpx rgba(31, 54, 86, 0.08);
+}
+
+.report-entry {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20rpx;
+  margin-top: 22rpx;
+  padding: 26rpx 28rpx;
+}
+
+.entry-title {
+  color: #172033;
+  font-size: 32rpx;
+  font-weight: 800;
+}
+
+.entry-subtitle,
+.score-desc {
+  margin-top: 6rpx;
+  color: #7a8799;
+  font-size: 24rpx;
+}
+
+.entry-button {
+  flex-shrink: 0;
+  width: 144rpx;
+  height: 68rpx;
+  margin: 0;
+  border-radius: 34rpx;
+  background: linear-gradient(135deg, #188be4, #1fb9a5);
+  color: #fff;
+  font-size: 28rpx;
+  font-weight: 700;
+  line-height: 68rpx;
 }
 
 .summary-card {
@@ -232,6 +272,105 @@ page {
   margin-top: 6rpx;
   color: #7a8799;
   font-size: 22rpx;
+}
+
+.score-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24rpx;
+  margin-top: 22rpx;
+  padding: 30rpx;
+}
+
+.score-left {
+  flex: 1;
+  min-width: 0;
+}
+
+.score-label {
+  color: #7a8799;
+  font-size: 24rpx;
+}
+
+.score-title {
+  margin-top: 8rpx;
+  color: #172033;
+  font-size: 38rpx;
+  font-weight: 800;
+}
+
+.score-ring {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 142rpx;
+  height: 142rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #188be4, #1fb9a5);
+  color: #fff;
+}
+
+.score-ring text:first-child {
+  font-size: 42rpx;
+  font-weight: 800;
+}
+
+.score-ring text:last-child {
+  font-size: 22rpx;
+}
+
+.habit-card,
+.insight-card {
+  margin-top: 22rpx;
+  padding: 28rpx;
+}
+
+.weekday-row {
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+  margin-top: 24rpx;
+}
+
+.weekday-name {
+  width: 70rpx;
+  color: #596579;
+  font-size: 24rpx;
+}
+
+.weekday-track {
+  flex: 1;
+  height: 16rpx;
+  overflow: hidden;
+  border-radius: 999rpx;
+  background: #ecf1f6;
+}
+
+.weekday-fill {
+  height: 100%;
+  border-radius: 999rpx;
+  background: linear-gradient(90deg, #188be4, #1fb9a5);
+}
+
+.weekday-count {
+  width: 42rpx;
+  color: #172033;
+  font-size: 24rpx;
+  font-weight: 700;
+  text-align: right;
+}
+
+.insight-line {
+  margin-top: 18rpx;
+  padding: 20rpx;
+  border-radius: 18rpx;
+  background: #f6f8fb;
+  color: #344157;
+  font-size: 26rpx;
+  line-height: 1.55;
 }
 
 .list-head {
