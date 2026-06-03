@@ -1,17 +1,30 @@
 .page {
   min-height: 100vh;
-  padding: 22rpx 22rpx 40rpx;
-  background: #f5f8fb;
+  padding: 18rpx 22rpx 40rpx;
+  background: #f6f8fb;
   box-sizing: border-box;
 }
 
+.calendar-section {
+  margin-top: 8rpx;
+}
+
 .overview-card,
+.quick-actions,
+.stats-card,
 .trend-card {
-  margin-top: 22rpx;
-  padding: 26rpx;
+  margin-top: 18rpx;
+  padding: 20rpx;
   background: #ffffff;
-  border-radius: 16rpx;
-  box-shadow: 0 10rpx 28rpx rgba(24, 139, 228, 0.08);
+  border: 1rpx solid #eef3f8;
+  border-radius: 18rpx;
+  box-shadow: 0 12rpx 26rpx rgba(32, 58, 84, 0.08);
+  box-sizing: border-box;
+}
+
+.overview-card {
+  margin-top: 8rpx;
+  padding: 18rpx 18rpx 20rpx;
 }
 
 .overview-head,
@@ -22,31 +35,31 @@
 }
 
 .card-title {
-  color: #1f2d3d;
-  font-size: 32rpx;
+  color: #21304a;
+  font-size: 30rpx;
   font-weight: 700;
 }
 
 .card-subtitle {
-  margin-top: 8rpx;
-  color: #8a97a3;
-  font-size: 24rpx;
+  margin-top: 6rpx;
+  color: #75849a;
+  font-size: 23rpx;
 }
 
 .checkin-btn {
-  height: 64rpx;
+  height: 58rpx;
   margin: 0;
-  padding: 0 24rpx;
+  padding: 0 20rpx;
   border: 0;
-  border-radius: 32rpx;
-  background: #188be4;
+  border-radius: 29rpx;
+  background: #167cff;
   color: #ffffff;
-  box-shadow: 0 10rpx 18rpx rgba(24, 139, 228, 0.26);
+  box-shadow: 0 10rpx 18rpx rgba(22, 124, 255, 0.22);
   display: flex;
   align-items: center;
   gap: 8rpx;
-  font-size: 25rpx;
-  line-height: 64rpx;
+  font-size: 24rpx;
+  line-height: 58rpx;
 }
 
 .checkin-btn::after,
@@ -57,7 +70,8 @@
 .primary-action::after,
 .secondary-action::after,
 .primary-checkin-action::after,
-.secondary-checkin-action::after {
+.secondary-checkin-action::after,
+.quick-action::after {
   border: 0;
 }
 
@@ -94,74 +108,95 @@
 }
 
 .overview-main {
-  margin-top: 30rpx;
+  margin-top: 18rpx;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 20rpx;
+  gap: 14rpx;
 }
 
-.weight-main,
-.bmi-panel {
+.metric-card {
+  position: relative;
   min-width: 0;
-  min-height: 170rpx;
-  padding: 22rpx;
-  border-radius: 14rpx;
+  min-height: 184rpx;
+  padding: 22rpx 20rpx 20rpx;
+  border-radius: 18rpx;
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 .weight-main {
-  background: #f3f9ff;
+  background: linear-gradient(135deg, #effdf7 0%, #f5fbff 58%, #ffffff 100%);
+  border: 1rpx solid #ddf4ec;
 }
 
 .bmi-panel {
-  background: #fff7f8;
+  background: linear-gradient(135deg, #faf2ff 0%, #f7f2ff 60%, #ffffff 100%);
+  border: 1rpx solid #ece0ff;
 }
 
-.metric-label {
-  color: #7d8790;
-  font-size: 24rpx;
+.metric-card-top {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  color: #24415c;
+  font-size: 25rpx;
+  font-weight: 700;
+}
+
+.metric-icon {
+  flex-shrink: 0;
+  width: 34rpx;
+  height: 34rpx;
+  margin-right: 10rpx;
 }
 
 .weight-value {
-  margin-top: 8rpx;
-  color: #1f2d3d;
+  position: relative;
+  z-index: 2;
+  margin-top: 10rpx;
+  color: #102b4c;
   font-weight: 800;
 }
 
 .weight-value text:first-child {
-  font-size: 68rpx;
-  line-height: 76rpx;
+  font-size: 70rpx;
+  line-height: 78rpx;
 }
 
 .weight-unit {
   margin-left: 6rpx;
-  color: #53616f;
-  font-size: 28rpx;
+  color: #1f2d3d;
+  font-size: 26rpx;
+  font-weight: 700;
 }
 
 .change-chip,
 .bmi-tag {
+  position: relative;
+  z-index: 2;
   display: inline-flex;
   align-items: center;
-  height: 38rpx;
-  margin-top: 10rpx;
-  padding: 0 14rpx;
-  border-radius: 19rpx;
+  height: 40rpx;
+  margin-top: 8rpx;
+  padding: 0 16rpx;
+  border-radius: 20rpx;
   font-size: 22rpx;
+  font-weight: 700;
 }
 
 .change-down,
 .month-down {
-  color: #15a675;
+  color: #18ad73;
 }
 
 .change-up,
 .month-up {
-  color: #f15b6c;
+  color: #ff4f68;
 }
 
 .change-chip.change-down {
-  background: #eaf8f2;
+  background: #dff8eb;
 }
 
 .change-chip.change-up {
@@ -169,48 +204,71 @@
 }
 
 .bmi-value {
-  margin-top: 14rpx;
-  color: #ff5d6c;
-  font-size: 40rpx;
+  position: relative;
+  z-index: 2;
+  margin-top: 10rpx;
+  color: #6a35ff;
+  font-size: 66rpx;
+  line-height: 76rpx;
   font-weight: 800;
 }
 
 .bmi-tag {
-  background: #ffe9ec;
-  color: #ff5d6c;
+  background: #fff0f2;
+  color: #ff4f68;
 }
 
 .bmi-tag.normal {
-  background: #eaf8f2;
-  color: #15a675;
+  background: #e9f8ef;
+  color: #18ad73;
 }
 
 .bmi-label {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  padding-right: 2rpx;
 }
 
 .info-dot {
+  margin-left: auto;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 32rpx;
-  height: 32rpx;
+  width: 30rpx;
+  height: 30rpx;
   border-radius: 50%;
-  background: #fff;
-  color: #ff5d6c;
-  font-size: 22rpx;
+  background: rgba(255, 255, 255, 0.82);
+  color: #7d4cff;
+  font-size: 20rpx;
   font-weight: 800;
 }
 
+.card-curve {
+  display: none;
+}
+
+.curve-line {
+  display: none;
+}
+
+.curve-dot {
+  display: none;
+}
+
+.weight-curve {
+  color: #26ccb5;
+}
+
+.bmi-curve {
+  color: #9b75ff;
+}
+
 .target-block {
-  margin-top: 24rpx;
+  margin-top: 18rpx;
 }
 
 .target-line {
-  color: #657381;
+  color: #51627a;
   font-size: 23rpx;
+  font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -219,44 +277,133 @@
 .progress-track {
   height: 12rpx;
   margin-top: 12rpx;
-  border-radius: 6rpx;
-  background: #eaf2fa;
+  border-radius: 999rpx;
+  background: #e8edf5;
   overflow: hidden;
 }
 
 .progress-fill {
   height: 100%;
-  border-radius: 6rpx;
-  background: #188be4;
+  border-radius: 999rpx;
+  background: #167cff;
+}
+
+.quick-actions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14rpx;
+  padding: 16rpx;
+}
+
+.quick-action {
+  min-width: 0;
+  min-height: 94rpx;
+  padding: 14rpx 12rpx;
+  border-radius: 18rpx;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  text-align: left;
+}
+
+.quick-action.ai {
+  background: #f2f8ff;
+}
+
+.quick-action.group {
+  background: #f1fbf1;
+}
+
+.quick-action.share {
+  background: #fff6ed;
+}
+
+.quick-icon {
+  flex-shrink: 0;
+  width: 54rpx;
+  height: 54rpx;
+  margin-right: 10rpx;
+}
+
+.quick-copy {
+  min-width: 0;
+  flex: 1;
+}
+
+.quick-title {
+  color: #22314a;
+  font-size: 23rpx;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.quick-subtitle {
+  margin-top: 5rpx;
+  color: #718095;
+  font-size: 19rpx;
+  line-height: 1.2;
+}
+
+.quick-arrow {
+  flex-shrink: 0;
+  color: #167cff;
+  font-size: 24rpx;
+}
+
+.group .quick-arrow {
+  color: #1ba85a;
+}
+
+.share .quick-arrow {
+  color: #ff8a2a;
 }
 
 .stat-row {
-  margin-top: 26rpx;
-  padding-top: 22rpx;
-  border-top: 1rpx solid #eef2f6;
+  min-height: 92rpx;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
 }
 
 .stat-item {
-  text-align: center;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-right: 1rpx solid #edf1f6;
+}
+
+.stat-item:last-child {
+  border-right: 0;
+}
+
+.stat-icon {
+  flex-shrink: 0;
+  width: 54rpx;
+  height: 54rpx;
+  margin-right: 12rpx;
+}
+
+.stat-copy {
+  min-width: 0;
 }
 
 .stat-value {
-  color: #1f2d3d;
+  color: #21304a;
   font-size: 30rpx;
   font-weight: 800;
+  line-height: 1.15;
 }
 
 .stat-label {
-  margin-top: 8rpx;
-  color: #8a97a3;
-  font-size: 22rpx;
+  margin-top: 4rpx;
+  color: #718095;
+  font-size: 21rpx;
+  white-space: nowrap;
 }
 
 .share-nudge {
   min-height: 112rpx;
-  margin-top: 24rpx;
+  margin-top: 18rpx;
   padding: 20rpx 22rpx;
   border-radius: 22rpx;
   background: #f3faf8;
@@ -304,9 +451,9 @@
 }
 
 .nudge-primary {
-  background: #188be4;
+  background: #167cff;
   color: #ffffff;
-  box-shadow: 0 8rpx 16rpx rgba(24, 139, 228, 0.18);
+  box-shadow: 0 8rpx 16rpx rgba(22, 124, 255, 0.18);
 }
 
 .nudge-secondary {
@@ -315,7 +462,7 @@
 }
 
 .more-link {
-  color: #188be4;
+  color: #167cff;
   font-size: 25rpx;
   font-weight: 600;
 }
@@ -342,6 +489,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.join-group-dialog {
+  max-height: 850rpx;
+  overflow: scroll;
+}
+
+.join-group-image {
+  width: 100%;
+  display: block;
 }
 
 .onboarding-mask {

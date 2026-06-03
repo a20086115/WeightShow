@@ -78,6 +78,8 @@ Page({
     showBmiDialog: false,
     showSharePanel: false,
     showShareNudge: false,
+    visibleJoinGroup: false,
+    htmlImage: 'cloud://release-ba24f3.7265-release-ba24f3-1257780911/activity.png',
     bmiMarkerPosition: 0,
     sharePreviewText: '记录每天变化，一起打卡吧',
     subscribeChecked: true,
@@ -504,6 +506,37 @@ Page({
   },
 
   noop() {},
+
+  openJoinGroupDialog() {
+    CF.get('notice', {}).then((res) => {
+      const list = res.result && res.result.data ? res.result.data : [];
+      const latestNotice = list[0];
+      this.setData({
+        htmlImage: latestNotice && latestNotice.image ? latestNotice.image : this.data.htmlImage,
+        visibleJoinGroup: true
+      });
+    }).catch(() => {
+      this.setData({ visibleJoinGroup: true });
+    });
+  },
+
+  closeJoinGroup(e) {
+    this.setData({ visibleJoinGroup: false }, () => {
+      this.initTrendChart();
+    });
+    if (!e || e.detail !== 'confirm') return;
+    wx.cloud.downloadFile({
+      fileID: this.data.htmlImage,
+      success: () => {
+        wx.showToast({
+          title: '保存二维码成功',
+          icon: 'success',
+          duration: 2000
+        });
+      },
+      fail: console.error
+    });
+  },
 
   guideShareTimeline() {
     this.setData({ showSharePanel: false }, () => {
