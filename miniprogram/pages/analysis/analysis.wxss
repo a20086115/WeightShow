@@ -206,12 +206,40 @@ page {
 
 .section-head {
   display: flex;
+  align-items: flex-start;
   justify-content: space-between;
+  gap: 18rpx;
 }
 
 .section-title {
   font-size: 32rpx;
   font-weight: 800;
+}
+
+.granularity-tabs {
+  display: flex;
+  flex-shrink: 0;
+  padding: 6rpx;
+  border-radius: 16rpx;
+  background: #edf3f8;
+}
+
+.granularity-tab {
+  min-width: 72rpx;
+  height: 48rpx;
+  padding: 0 12rpx;
+  border-radius: 12rpx;
+  color: #627086;
+  font-size: 22rpx;
+  font-weight: 700;
+  line-height: 48rpx;
+  text-align: center;
+}
+
+.granularity-tab.active {
+  background: #fff;
+  color: #188be4;
+  box-shadow: 0 6rpx 16rpx rgba(31, 54, 86, 0.08);
 }
 
 .chart-box {
@@ -276,4 +304,81 @@ page {
   color: #344157;
   font-size: 26rpx;
   line-height: 1.55;
+}
+
+.style-mask {
+  position: fixed;
+  z-index: 1000;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(18, 28, 42, 0.48);
+}
+
+.style-sheet {
+  width: 100%;
+  padding: 18rpx 28rpx 36rpx;
+  border-radius: 30rpx 30rpx 0 0;
+  background: #fff;
+  box-sizing: border-box;
+  box-shadow: 0 -16rpx 44rpx rgba(24, 54, 87, 0.18);
+}
+
+.style-sheet-handle {
+  width: 72rpx;
+  height: 8rpx;
+  margin: 0 auto 22rpx;
+  border-radius: 999rpx;
+  background: #d8e1ea;
+}
+
+.style-sheet-title {
+  color: #172033;
+  font-size: 36rpx;
+  font-weight: 800;
+}
+
+.style-sheet-subtitle {
+  margin-top: 8rpx;
+  color: #7a8799;
+  font-size: 24rpx;
+}
+
+.style-option {
+  min-height: 106rpx;
+  margin-top: 18rpx;
+  padding: 20rpx 22rpx;
+  border-radius: 20rpx;
+  background: #f6f8fb;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18rpx;
+}
+
+.style-option-title {
+  color: #172033;
+  font-size: 30rpx;
+  font-weight: 800;
+}
+
+.style-option-desc {
+  margin-top: 8rpx;
+  color: #7a8799;
+  font-size: 24rpx;
+  line-height: 1.45;
+}
+
+.style-option-mark {
+  flex-shrink: 0;
+  padding: 8rpx 16rpx;
+  border-radius: 999rpx;
+  background: #edf6ff;
+  color: #188be4;
+  font-size: 22rpx;
+  font-weight: 800;
 }

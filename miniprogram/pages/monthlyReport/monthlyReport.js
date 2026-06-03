@@ -69,6 +69,16 @@ function getReportContext(options = {}) {
   };
 }
 
+function getReportStyle(options = {}) {
+  if (options.style === 'encourage' || options.reportStyle === 'encourage') {
+    return { value: 'encourage', label: '鼓励' };
+  }
+  if (options.style === 'roast' || options.reportStyle === 'roast') {
+    return { value: 'roast', label: '毒嘴' };
+  }
+  return { value: 'professional', label: '专业' };
+}
+
 function getDefaultReport(context) {
   return {
     source: 'loading',
@@ -169,6 +179,8 @@ Page({
     periodLabel: getMonthLabel(formatMonth(new Date())),
     reportName: '月度报告',
     nextActionTitle: '下月行动',
+    reportStyle: 'professional',
+    reportStyleLabel: '专业',
     reportId: '',
     sharedReportId: '',
     isSharedReport: false,
@@ -179,6 +191,7 @@ Page({
 
   onLoad(options) {
     const context = getReportContext(options);
+    const reportStyle = getReportStyle(options);
     const sharedReportId = options.reportId || options.id || '';
     this.setData({
       currentMonth: context.month,
@@ -187,6 +200,8 @@ Page({
       periodLabel: context.periodLabel,
       reportName: context.reportName,
       nextActionTitle: context.nextActionTitle,
+      reportStyle: reportStyle.value,
+      reportStyleLabel: reportStyle.label,
       sharedReportId,
       isSharedReport: !!sharedReportId,
       report: getDefaultReport(context)
@@ -210,6 +225,7 @@ Page({
           scope: this.data.scope,
           month: this.data.currentMonth,
           year: this.data.currentYear,
+          style: this.data.reportStyle,
           force
         };
 
@@ -223,6 +239,9 @@ Page({
         month: result.report && result.report.month ? result.report.month : this.data.currentMonth,
         year: result.report && result.report.year ? result.report.year : this.data.currentYear
       });
+      const reportStyle = getReportStyle({
+        style: result.report && result.report.reportStyle ? result.report.reportStyle : this.data.reportStyle
+      });
       const report = normalizeReport(result.report, context);
       this.setData({
         loading: false,
@@ -232,6 +251,8 @@ Page({
         periodLabel: context.periodLabel,
         reportName: context.reportName,
         nextActionTitle: context.nextActionTitle,
+        reportStyle: reportStyle.value,
+        reportStyleLabel: reportStyle.label,
         reportId: result.reportId || this.data.reportId,
         isSharedReport: !!result.shared,
         report,
@@ -282,7 +303,7 @@ Page({
       title: this.data.report.share.title || `${this.data.periodLabel} AI ${this.data.reportName}`,
       path: reportId
         ? `/pages/monthlyReport/monthlyReport?reportId=${reportId}`
-        : `/pages/monthlyReport/monthlyReport?scope=${this.data.scope}&month=${this.data.currentMonth}&year=${this.data.currentYear}`
+        : `/pages/monthlyReport/monthlyReport?scope=${this.data.scope}&month=${this.data.currentMonth}&year=${this.data.currentYear}&style=${this.data.reportStyle}`
     };
   },
 
@@ -290,7 +311,7 @@ Page({
     const reportId = this.data.reportId || this.data.sharedReportId;
     return {
       title: this.data.report.share.summary || this.data.report.share.title || `${this.data.periodLabel} AI ${this.data.reportName}`,
-      query: reportId ? `reportId=${reportId}` : `scope=${this.data.scope}&month=${this.data.currentMonth}&year=${this.data.currentYear}`
+      query: reportId ? `reportId=${reportId}` : `scope=${this.data.scope}&month=${this.data.currentMonth}&year=${this.data.currentYear}&style=${this.data.reportStyle}`
     };
   }
 });

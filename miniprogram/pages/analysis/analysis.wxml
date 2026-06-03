@@ -57,11 +57,15 @@
     <view class="section-head">
       <view>
         <view class="section-title">趋势细节</view>
-        <view class="section-subtitle">用体重波动看执行是否稳定</view>
+        <view class="section-subtitle">{{trendSubtitle}}</view>
+      </view>
+      <view class="granularity-tabs" wx:if="{{scope !== 'month'}}">
+        <view class="granularity-tab {{chartGranularity === 'day' ? 'active' : ''}}" data-granularity="day" bindtap="changeGranularity">按天</view>
+        <view class="granularity-tab {{chartGranularity === 'month' ? 'active' : ''}}" data-granularity="month" bindtap="changeGranularity">按月</view>
       </view>
     </view>
     <view class="chart-empty" wx:if="{{!hasChartData}}">记录两次以上会更有参考价值</view>
-    <view class="chart-box" wx:else>
+    <view class="chart-box" wx:elif="{{!showStyleSheet}}">
       <ec-canvas id="analysis-chart" canvas-id="analysis-chart" ec="{{ec}}"></ec-canvas>
     </view>
   </view>
@@ -80,5 +84,34 @@
   <view class="insight-card">
     <view class="section-title">建议</view>
     <view class="insight-line" wx:for="{{insights}}" wx:key="*this">{{item}}</view>
+  </view>
+
+  <view class="style-mask" wx:if="{{showStyleSheet}}" bindtap="closeStyleSheet">
+    <view class="style-sheet" catchtap="noop">
+      <view class="style-sheet-handle"></view>
+      <view class="style-sheet-title">选择报告风格</view>
+      <view class="style-sheet-subtitle">选好风格后观看广告，生成对应 AI 报告</view>
+      <view class="style-option" data-style="professional" bindtap="selectReportStyle">
+        <view>
+          <view class="style-option-title">专业</view>
+          <view class="style-option-desc">克制清晰，偏数据分析</view>
+        </view>
+        <view class="style-option-mark" wx:if="{{reportStyle === 'professional'}}">已选</view>
+      </view>
+      <view class="style-option" data-style="encourage" bindtap="selectReportStyle">
+        <view>
+          <view class="style-option-title">鼓励</view>
+          <view class="style-option-desc">温暖积极，适合需要一点动力的时候</view>
+        </view>
+        <view class="style-option-mark" wx:if="{{reportStyle === 'encourage'}}">已选</view>
+      </view>
+      <view class="style-option" data-style="roast" bindtap="selectReportStyle">
+        <view>
+          <view class="style-option-title">毒嘴</view>
+          <view class="style-option-desc">善意吐槽，嘴上不饶人但不制造焦虑</view>
+        </view>
+        <view class="style-option-mark" wx:if="{{reportStyle === 'roast'}}">已选</view>
+      </view>
+    </view>
   </view>
 </view>

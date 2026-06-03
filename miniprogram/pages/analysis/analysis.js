@@ -67,6 +67,10 @@ Page({
     reportTitle: 'AI 月度报告',
     reportSubtitle: '看完激励广告后生成，可分享朋友圈',
     reportButtonText: '生成',
+    reportStyle: 'professional',
+    showStyleSheet: false,
+    chartGranularity: 'day',
+    trendSubtitle: '按每日记录展示体重变化',
     records: [],
     allRecords: [],
     summary: {
@@ -116,6 +120,7 @@ Page({
       adUnitId: REWARDED_AD_UNIT_ID
     });
     this.rewardedAd.onClose((res) => {
+      this.adReportRequested = false;
       if (res && res.isEnded) {
         this.goAiReport();
       } else {
@@ -123,7 +128,8 @@ Page({
       }
     });
     this.rewardedAd.onError(() => {
-      wx.showToast({ title: '广告暂时不可用，请稍后再试', icon: 'none' });
+      if (!this.adReportRequested) return;
+      this.enterReportAfterAdError();
     });
   },
 
@@ -134,19 +140,22 @@ Page({
         periodTitle: getMonthLabel(this.data.currentMonth),
         periodSubtitle: '本月体重、BMI、打卡习惯分析',
         reportTitle: 'AI 月度报告',
-        reportSubtitle: '基于本月记录生成，可分享朋友圈'
+        reportSubtitle: '基于本月记录生成，可分享朋友圈',
+        trendSubtitle: '按每日记录展示体重变化'
       },
       year: {
         periodTitle: getYearLabel(this.data.currentYear),
         periodSubtitle: '今年趋势、节奏和关键变化分析',
         reportTitle: 'AI 年度报告',
-        reportSubtitle: '基于今年记录生成年度总结'
+        reportSubtitle: '基于今年记录生成年度总结',
+        trendSubtitle: this.getTrendSubtitle()
       },
       all: {
         periodTitle: '全部记录',
         periodSubtitle: '长期体重变化和打卡习惯分析',
         reportTitle: 'AI 全部报告',
-        reportSubtitle: '基于全部历史记录生成长期分析'
+        reportSubtitle: '基于全部历史记录生成长期分析',
+        trendSubtitle: this.getTrendSubtitle()
       }
     };
     this.setData({
@@ -215,7 +224,7 @@ Page({
       habitScore: this.buildHabitScore(records),
       weekdayStats: this.buildWeekdayStats(records),
       insights: this.buildInsights(records),
-      hasChartData: records.length > 1
+      hasChartData: this.buildTrendPoints(records).length > 1
     }, () => {
       this.updateScoreText();
       this.initChart();
@@ -357,9 +366,45 @@ Page({
     this.setData({ scoreTitle, scoreDesc });
   },
 
+  buildTrendPoints(records) {
+    const validRecords = this.normalizeRecords(records);
+    if (this.data.scope === 'month' || this.data.chartGranularity === 'day') {
+      return validRecords.map((record) => ({
+        label: this.data.scope === 'month'
+          ? dayjs(record.date).format('DD')
+          : this.data.scope === 'year'
+            ? dayjs(record.date).format('MM/DD')
+            : dayjs(record.date).format('YY/MM/DD'),
+        value: toNumber(record.weight)
+      })).filter((item) => item.value !== null);
+    }
+
+    const monthMap = {};
+    validRecords.forEach((record) => {
+      const month = record.date.slice(0, 7);
+      monthMap[month] = record;
+    });
+
+    return Object.keys(monthMap).sort().map((month) => ({
+      label: this.data.scope === 'year' ? dayjs(`${month}-01`).format('MM月') : dayjs(`${month}-01`).format('YY/MM'),
+      value: toNumber(monthMap[month].weight)
+    })).filter((item) => item.value !== null);
+  },
+
+  getTrendSubtitle() {
+    if (this.data.scope === 'month') {
+      return '按每日记录展示体重变化';
+    }
+    if (this.data.chartGranularity === 'day') {
+      return this.data.scope === 'year' ? '按每日记录展示今年体重变化' : '按每日记录展示长期体重变化';
+    }
+    return this.data.scope === 'year' ? '按月份展示今年体重变化' : '按月份展示长期体重变化';
+  },
+
   initChart() {
-    const records = this.data.records;
-    if (records.length < 2) {
+    if (this.data.showStyleSheet) return;
+    const points = this.buildTrendPoints(this.data.records);
+    if (points.length < 2) {
       this.ecComponent = null;
       this.chart = null;
       return;
@@ -369,12 +414,8 @@ Page({
       this.ecComponent = this.selectComponent('#analysis-chart');
       if (!this.ecComponent) return;
 
-      const xData = records.map((item) => {
-        if (this.data.scope === 'month') return dayjs(item.date).format('DD');
-        if (this.data.scope === 'year') return dayjs(item.date).format('MM/DD');
-        return dayjs(item.date).format('YY/MM/DD');
-      });
-      const weightData = records.map((item) => toNumber(item.weight));
+      const xData = points.map((item) => item.label);
+      const weightData = points.map((item) => item.value);
       const aimWeight = toNumber(App.globalData.userInfo && App.globalData.userInfo.aimWeight);
       const axisValues = aimWeight ? weightData.concat([aimWeight]) : weightData;
       const series = [
@@ -452,13 +493,58 @@ Page({
   changeScope(e) {
     const scope = e.currentTarget.dataset.scope;
     if (scope === this.data.scope) return;
-    this.setData({ scope }, () => {
+    this.setData({ scope, chartGranularity: 'day' }, () => {
       this.updatePeriodText();
       this.loadRecords();
     });
   },
 
+  changeGranularity(e) {
+    const chartGranularity = e.currentTarget.dataset.granularity;
+    if (chartGranularity === this.data.chartGranularity) return;
+    this.setData({
+      chartGranularity
+    }, () => {
+      this.setData({
+        trendSubtitle: this.getTrendSubtitle(),
+        hasChartData: this.buildTrendPoints(this.data.records).length > 1
+      }, () => this.initChart());
+    });
+  },
+
+  openStyleSheet() {
+    this.setData({ showStyleSheet: true });
+  },
+
+  closeStyleSheet() {
+    this.setData({ showStyleSheet: false }, () => this.initChart());
+  },
+
+  noop() {},
+
+  selectReportStyle(e) {
+    const reportStyle = e.currentTarget.dataset.style || 'professional';
+    this.setData({
+      reportStyle,
+      showStyleSheet: false
+    }, () => {
+      this.initChart();
+      this.startReportFlow();
+    });
+  },
+
+  enterReportAfterAdError() {
+    if (this.adErrorFallbackNavigated) return;
+    this.adErrorFallbackNavigated = true;
+    this.adReportRequested = false;
+    this.goAiReport();
+  },
+
   watchReportAd() {
+    this.openStyleSheet();
+  },
+
+  startReportFlow() {
     if (!REWARDED_AD_UNIT_ID) {
       wx.showModal({
         title: '开发预览',
@@ -469,17 +555,21 @@ Page({
       return;
     }
     if (!this.rewardedAd) {
-      wx.showToast({ title: '广告初始化失败', icon: 'none' });
+      this.goAiReport();
       return;
     }
+    this.adReportRequested = true;
+    this.adErrorFallbackNavigated = false;
     this.rewardedAd.show().catch(() => {
-      this.rewardedAd.load().then(() => this.rewardedAd.show());
+      this.rewardedAd.load()
+        .then(() => this.rewardedAd.show())
+        .catch(() => this.enterReportAfterAdError());
     });
   },
 
   goAiReport() {
     wx.navigateTo({
-      url: `/pages/monthlyReport/monthlyReport?scope=${this.data.scope}&month=${this.data.currentMonth}&year=${this.data.currentYear}`
+      url: `/pages/monthlyReport/monthlyReport?scope=${this.data.scope}&month=${this.data.currentMonth}&year=${this.data.currentYear}&style=${this.data.reportStyle}`
     });
   }
 });

@@ -71,16 +71,30 @@ function normalizeScope(event = {}) {
   return 'month'
 }
 
+function normalizeReportStyle(event = {}) {
+  if (event.style === 'encourage' || event.reportStyle === 'encourage') {
+    return { value: 'encourage', label: '鼓励', prompt: '语气温暖、积极、像教练一样鼓励用户，坚持指出事实但多给信心。' }
+  }
+  if (event.style === 'roast' || event.reportStyle === 'roast') {
+    return { value: 'roast', label: '毒嘴', prompt: '语气要更犀利、更直接，像严格但关心人的损友教练。可以吐槽偷懒、拖延、反复横跳、三天热度等行为，用短句、反问和辛辣比喻戳破借口；但必须基于数据，保持善意，不羞辱外貌、不做人身攻击、不制造焦虑。' }
+  }
+  return { value: 'professional', label: '专业', prompt: '语气专业、克制、清晰，像严谨的数据分析师。' }
+}
+
 function getReportContext(event = {}) {
   const scope = normalizeScope(event)
   const month = normalizeMonth(event.month)
   const year = normalizeYear(event.year || (month ? month.slice(0, 4) : ''))
+  const reportStyle = normalizeReportStyle(event)
   if (scope === 'year') {
     return {
       scope,
+      reportStyle: reportStyle.value,
+      reportStyleLabel: reportStyle.label,
+      reportStylePrompt: reportStyle.prompt,
       month,
       year,
-      reportKey: `year:${year}`,
+      reportKey: `year:${year}:${reportStyle.value}`,
       periodLabel: `${year}年`,
       periodName: '年度',
       actionTitle: '下一阶段行动',
@@ -90,9 +104,12 @@ function getReportContext(event = {}) {
   if (scope === 'all') {
     return {
       scope,
+      reportStyle: reportStyle.value,
+      reportStyleLabel: reportStyle.label,
+      reportStylePrompt: reportStyle.prompt,
       month,
       year,
-      reportKey: 'all',
+      reportKey: `all:${reportStyle.value}`,
       periodLabel: '全部记录',
       periodName: '历史',
       actionTitle: '长期行动',
@@ -101,9 +118,12 @@ function getReportContext(event = {}) {
   }
   return {
     scope,
+    reportStyle: reportStyle.value,
+    reportStyleLabel: reportStyle.label,
+    reportStylePrompt: reportStyle.prompt,
     month,
     year: month.slice(0, 4),
-    reportKey: `month:${month}`,
+    reportKey: `month:${month}:${reportStyle.value}`,
     periodLabel: getMonthLabel(month),
     periodName: '月度',
     actionTitle: '下月行动',
@@ -186,6 +206,9 @@ function buildMetrics(context, userInfo, records) {
     reportKey: context.reportKey,
     periodLabel: context.periodLabel,
     periodName: context.periodName,
+    reportStyle: context.reportStyle,
+    reportStyleLabel: context.reportStyleLabel,
+    reportStylePrompt: context.reportStylePrompt,
     confidenceBaseDays: context.confidenceBaseDays,
     checkinDays: weightRecords.length,
     firstWeight: round(first, 1),
@@ -232,6 +255,8 @@ function buildFallbackReport(metrics, source = 'fallback') {
     reportKey: metrics.reportKey,
     periodLabel: metrics.periodLabel,
     periodName: metrics.periodName,
+    reportStyle: metrics.reportStyle,
+    reportStyleLabel: metrics.reportStyleLabel,
     confidence: metrics.checkinDays >= Math.max(10, metrics.confidenceBaseDays || 10) ? 'medium' : 'low',
     source,
     overview: {
@@ -303,7 +328,7 @@ function getWeekdayInsight(weekdayStats) {
 }
 
 function buildPrompt(metrics) {
-  return `你是一个体重管理小程序的 AI${metrics.periodName}报告助手。请根据用户真实打卡数据，生成克制、具体、非医疗诊断的中文${metrics.periodName}报告。
+  return `你是一个体重管理小程序的 AI${metrics.periodName}报告助手。请根据用户真实打卡数据，生成具体、有风格、非医疗诊断的中文${metrics.periodName}报告。
 
 要求：
 1. 只能输出 JSON，不要 markdown，不要解释。
@@ -313,6 +338,7 @@ function buildPrompt(metrics) {
 5. 不要承诺减肥效果，不做医疗建议。
 6. weightChange 为负数代表体重下降。
 7. 当前报告范围是：${metrics.periodLabel}，不要写成其他周期。
+8. 当前报告风格是：${metrics.reportStyleLabel}。${metrics.reportStylePrompt}
 
 返回 JSON 结构：
 {
@@ -320,6 +346,7 @@ function buildPrompt(metrics) {
   "month": "YYYY-MM",
   "year": "YYYY",
   "scope": "month|year|all",
+  "reportStyle": "professional|encourage|roast",
   "periodLabel": "",
   "confidence": "low|medium|high",
   "overview": { "title": "", "summary": "", "tag": "", "score": 0 },
@@ -365,6 +392,8 @@ function normalizeAiReport(report, metrics) {
     reportKey: metrics.reportKey,
     periodLabel: metrics.periodLabel,
     periodName: metrics.periodName,
+    reportStyle: metrics.reportStyle,
+    reportStyleLabel: metrics.reportStyleLabel,
     metrics: {
       ...fallback.metrics,
       ...(safe.metrics || {}),
@@ -391,6 +420,8 @@ function stripPrivateReportDoc(doc) {
     month: doc.month,
     year: doc.year,
     scope: doc.scope,
+    reportStyle: doc.reportStyle,
+    reportStyleLabel: doc.reportStyleLabel,
     reportKey: doc.reportKey,
     periodLabel: doc.periodLabel,
     source: doc.source,
@@ -408,15 +439,25 @@ async function getSharedReport(reportId) {
 }
 
 async function getCachedReport(openId, context) {
-  const query = context.scope === 'month'
-    ? { openId, reportKey: context.reportKey }
-    : { openId, reportKey: context.reportKey }
   let res = await db.collection(REPORT_COLLECTION)
-    .where(query)
+    .where({ openId, reportKey: context.reportKey })
     .orderBy('updatedAt', 'desc')
     .limit(1)
     .get()
   let cached = stripPrivateReportDoc((res.data || [])[0])
+  if (!cached && context.reportStyle === 'professional') {
+    const legacyKey = context.scope === 'month'
+      ? `month:${context.month}`
+      : context.scope === 'year'
+        ? `year:${context.year}`
+        : 'all'
+    res = await db.collection(REPORT_COLLECTION)
+      .where({ openId, reportKey: legacyKey })
+      .orderBy('updatedAt', 'desc')
+      .limit(1)
+      .get()
+    cached = stripPrivateReportDoc((res.data || [])[0])
+  }
   if (!cached && context.scope === 'month') {
     res = await db.collection(REPORT_COLLECTION)
       .where({ openId, month: context.month })
@@ -434,6 +475,8 @@ async function saveReport(openId, context, report, metrics) {
     month: context.month,
     year: context.year,
     scope: context.scope,
+    reportStyle: context.reportStyle,
+    reportStyleLabel: context.reportStyleLabel,
     reportKey: context.reportKey,
     periodLabel: context.periodLabel,
     source: report.source || 'ai',

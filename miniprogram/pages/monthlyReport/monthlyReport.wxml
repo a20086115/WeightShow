@@ -1,6 +1,6 @@
 <view class="page">
   <view class="hero-card">
-    <view class="hero-kicker">{{periodLabel}} · {{reportSourceText}}</view>
+    <view class="hero-kicker">{{periodLabel}} · {{reportStyleLabel}} · {{reportSourceText}}</view>
     <view class="hero-title">{{report.overview.title}}</view>
     <view class="hero-desc">{{report.overview.summary}}</view>
     <view class="hero-meta">
@@ -68,4 +68,12 @@
   <button class="share-button" open-type="share">分享给朋友</button>
   <button class="refresh-button" wx:if="{{!isSharedReport}}" bindtap="regenerateReport">重新生成</button>
   <view class="timeline-tip">右上角菜单可分享到朋友圈</view>
+
+  <view class="loading-mask" wx:if="{{loading}}">
+    <view class="loading-card">
+      <view class="loading-spinner"></view>
+      <view class="loading-title">AI 报告生成中</view>
+      <view class="loading-text">正在整理记录并生成{{reportStyleLabel}}风格内容...</view>
+    </view>
+  </view>
 </view>
