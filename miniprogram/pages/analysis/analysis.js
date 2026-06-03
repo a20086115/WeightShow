@@ -1,3 +1,10 @@
+import dayjs from '../../utils/dayjs.min.js';
+import * as echarts from '../../ec-canvas/echarts';
+
+const App = getApp();
+const REWARDED_AD_UNIT_ID = 'adunit-5b1f040ecca8e89c';
+const weekNames = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+
 function pad(num) {
   return String(num).padStart(2, '0');
 }
@@ -6,11 +13,341 @@ function formatMonth(date) {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}`;
 }
 
+function toNumber(value) {
+  const num = parseFloat(value);
+  return Number.isFinite(num) ? num : null;
+}
+
+function formatWeight(value) {
+  const num = toNumber(value);
+  if (num === null) return '--';
+  return Number.isInteger(num) ? String(num) : num.toFixed(1);
+}
+
+function getAxisMin(values, minPadding = 4) {
+  const nums = values.filter((item) => item !== null && Number.isFinite(item));
+  if (!nums.length) return undefined;
+  const min = Math.min(...nums);
+  const max = Math.max(...nums);
+  const range = max - min;
+  const padding = Math.max(minPadding, range * 0.12);
+  return Math.floor(min - padding);
+}
+
+function getAxisMax(values, minPadding = 4) {
+  const nums = values.filter((item) => item !== null && Number.isFinite(item));
+  if (!nums.length) return undefined;
+  const min = Math.min(...nums);
+  const max = Math.max(...nums);
+  const range = max - min;
+  const padding = Math.max(minPadding, range * 0.12);
+  return Math.ceil(max + padding);
+}
+
+function getMonthLabel(month) {
+  return dayjs(`${month}-01`).format('YYYY年MM月');
+}
+
 Page({
+  data: {
+    currentMonth: formatMonth(new Date()),
+    monthLabel: getMonthLabel(formatMonth(new Date())),
+    records: [],
+    summary: {
+      days: 0,
+      changeText: '--',
+      changeClass: '',
+      avgWeight: '--',
+      latestBmi: '--'
+    },
+    scoreTitle: '等待记录',
+    scoreDesc: '本月记录越完整，分析越准确。',
+    habitScore: 0,
+    weekdayStats: weekNames.map((name) => ({ name, count: 0, percent: 0 })),
+    insights: [],
+    hasChartData: false,
+    ec: {
+      lazyLoad: true
+    }
+  },
+
   onLoad(options) {
-    const currentMonth = options.month || formatMonth(new Date());
-    wx.redirectTo({
-      url: `/pages/recordsV2/records?month=${currentMonth}`
+    const currentMonth = options.month || this.data.currentMonth;
+    this.setData({
+      currentMonth,
+      monthLabel: getMonthLabel(currentMonth)
+    });
+    if (App.initUserInfo) {
+      App.initUserInfo(() => this.loadMonthRecords());
+    } else {
+      this.loadMonthRecords();
+    }
+    this.initRewardedAd();
+  },
+
+  onReady() {
+    this.ecComponent = this.selectComponent('#analysis-chart');
+  },
+
+  initRewardedAd() {
+    if (!REWARDED_AD_UNIT_ID || !wx.createRewardedVideoAd) return;
+    this.rewardedAd = wx.createRewardedVideoAd({
+      adUnitId: REWARDED_AD_UNIT_ID
+    });
+    this.rewardedAd.onClose((res) => {
+      if (res && res.isEnded) {
+        this.goMonthlyReport();
+      } else {
+        wx.showToast({ title: '完整观看后才能生成报告', icon: 'none' });
+      }
+    });
+    this.rewardedAd.onError(() => {
+      wx.showToast({ title: '广告暂时不可用，请稍后再试', icon: 'none' });
+    });
+  },
+
+  loadMonthRecords() {
+    wx.cloud.callFunction({
+      name: 'getWeightRecordsByMonth',
+      data: {
+        month: this.data.currentMonth
+      }
+    }).then((res) => {
+      const records = ((res.result && res.result.data) || [])
+        .filter((item) => item && item.date && item.weight)
+        .sort((a, b) => a.date.localeCompare(b.date));
+      this.applyRecords(records);
+    }).catch(() => {
+      wx.showToast({ title: '分析加载失败', icon: 'none' });
+    });
+  },
+
+  applyRecords(records) {
+    this.setData({
+      records,
+      summary: this.buildSummary(records),
+      habitScore: this.buildHabitScore(records),
+      weekdayStats: this.buildWeekdayStats(records),
+      insights: this.buildInsights(records),
+      hasChartData: records.length > 1
+    }, () => {
+      this.updateScoreText();
+      this.initChart();
+    });
+  },
+
+  buildSummary(records) {
+    if (!records.length) {
+      return {
+        days: 0,
+        changeText: '--',
+        changeClass: '',
+        avgWeight: '--',
+        latestBmi: '--'
+      };
+    }
+
+    const height = toNumber(App.globalData.userInfo && App.globalData.userInfo.height);
+    const weights = records.map((item) => toNumber(item.weight)).filter((item) => item !== null);
+    const first = weights[0];
+    const latest = weights[weights.length - 1];
+    const diff = latest - first;
+    const avg = weights.reduce((sum, item) => sum + item, 0) / weights.length;
+    const bmi = latest && height ? latest / 2 / (height * height / 10000) : null;
+
+    return {
+      days: records.length,
+      changeText: records.length > 1 ? `${diff > 0 ? '+' : ''}${diff.toFixed(1)}斤` : '首条记录',
+      changeClass: diff > 0 ? 'up' : diff < 0 ? 'down' : '',
+      avgWeight: `${formatWeight(avg)}斤`,
+      latestBmi: bmi ? bmi.toFixed(2) : '--'
+    };
+  },
+
+  buildHabitScore(records) {
+    if (!records.length) return 0;
+    const monthDays = dayjs(`${this.data.currentMonth}-01`).daysInMonth();
+    const checkinScore = Math.min(70, Math.round((records.length / monthDays) * 70));
+    const stabilityScore = this.getStableDays(records) >= 7 ? 30 : Math.min(30, this.getStableDays(records) * 4);
+    return Math.min(100, checkinScore + stabilityScore);
+  },
+
+  getStableDays(records) {
+    if (!records.length) return 0;
+    const dates = records.map((item) => item.date);
+    let longest = 1;
+    let current = 1;
+    for (let index = 1; index < dates.length; index += 1) {
+      const prev = dayjs(dates[index - 1]);
+      const currentDate = dayjs(dates[index]);
+      if (currentDate.diff(prev, 'day') === 1) {
+        current += 1;
+        longest = Math.max(longest, current);
+      } else {
+        current = 1;
+      }
+    }
+    return longest;
+  },
+
+  buildWeekdayStats(records) {
+    const counts = weekNames.map((name) => ({ name, count: 0, percent: 0 }));
+    records.forEach((record) => {
+      const index = new Date(record.date.replace(/-/g, '/')).getDay();
+      counts[index].count += 1;
+    });
+    const max = Math.max(...counts.map((item) => item.count), 1);
+    return counts.map((item) => ({
+      ...item,
+      percent: Math.round((item.count / max) * 100)
+    }));
+  },
+
+  buildInsights(records) {
+    if (!records.length) {
+      return ['先完成 3 次以上记录，系统就能看出你的基础趋势。'];
+    }
+    const insights = [];
+    const weights = records.map((item) => toNumber(item.weight)).filter((item) => item !== null);
+    const diff = weights[weights.length - 1] - weights[0];
+    const stableDays = this.getStableDays(records);
+
+    if (diff < 0) {
+      insights.push(`本月体重下降 ${Math.abs(diff).toFixed(1)} 斤，继续保持当前节奏。`);
+    } else if (diff > 0) {
+      insights.push(`本月体重上升 ${diff.toFixed(1)} 斤，建议优先稳定饮食和睡眠。`);
+    } else {
+      insights.push('本月体重基本持平，可以通过运动量或饮食结构做小幅优化。');
+    }
+
+    if (stableDays >= 7) {
+      insights.push(`最长连续记录 ${stableDays} 天，习惯已经开始成型。`);
+    } else {
+      insights.push('建议先把连续记录做到 7 天，数据连续后更容易发现问题。');
+    }
+
+    if (records.length < 10) {
+      insights.push('记录次数偏少，不必急着追求大变化，先让数据完整起来。');
+    }
+
+    return insights;
+  },
+
+  updateScoreText() {
+    const score = this.data.habitScore;
+    let scoreTitle = '等待记录';
+    let scoreDesc = '本月记录越完整，分析越准确。';
+    if (score >= 80) {
+      scoreTitle = '执行稳定';
+      scoreDesc = '记录习惯不错，月报会更有参考价值。';
+    } else if (score >= 50) {
+      scoreTitle = '正在变稳';
+      scoreDesc = '已经有趋势了，再补一点连续性会更好。';
+    } else if (score > 0) {
+      scoreTitle = '刚刚开始';
+      scoreDesc = '先别追求完美，保持记录比偶尔用力更重要。';
+    }
+    this.setData({ scoreTitle, scoreDesc });
+  },
+
+  initChart() {
+    const records = this.data.records;
+    if (records.length < 2) {
+      this.ecComponent = null;
+      this.chart = null;
+      return;
+    }
+
+    wx.nextTick(() => {
+      this.ecComponent = this.selectComponent('#analysis-chart');
+      if (!this.ecComponent) return;
+
+      const xData = records.map((item) => dayjs(item.date).format('DD'));
+      const weightData = records.map((item) => toNumber(item.weight));
+      const aimWeight = toNumber(App.globalData.userInfo && App.globalData.userInfo.aimWeight);
+      const axisValues = aimWeight ? weightData.concat([aimWeight]) : weightData;
+      const series = [
+        { name: '体重', type: 'line', smooth: true, symbolSize: 6, lineStyle: { width: 3 }, areaStyle: { opacity: 0.12 }, data: weightData }
+      ];
+      if (aimWeight) {
+        series.push({
+          name: '目标体重',
+          type: 'line',
+          symbol: 'none',
+          label: {
+            show: true,
+            position: 'right',
+            formatter: '目标',
+            color: '#1fb9a5',
+            fontSize: 10
+          },
+          lineStyle: { width: 2, type: 'dashed', color: '#1fb9a5' },
+          data: weightData.map(() => aimWeight)
+        });
+      }
+
+      this.ecComponent.init((canvas, width, heightPx, dpr) => {
+        if (!canvas || !width || !heightPx) return null;
+        const chart = echarts.init(canvas, null, {
+          width,
+          height: heightPx,
+          devicePixelRatio: dpr || 1
+        });
+        chart.setOption({
+          color: ['#188be4'],
+          grid: { left: 34, right: 42, top: 36, bottom: 28 },
+          legend: aimWeight ? { data: ['体重', '目标体重'], top: 4, itemWidth: 14, itemHeight: 8, textStyle: { fontSize: 11 } } : undefined,
+          tooltip: { trigger: 'axis' },
+          xAxis: { type: 'category', data: xData, boundaryGap: false, axisLabel: { fontSize: 10, hideOverlap: true } },
+          yAxis: { type: 'value', scale: true, min: getAxisMin(axisValues), max: getAxisMax(axisValues), axisLabel: { fontSize: 10 } },
+          series
+        });
+        this.chart = chart;
+        return chart;
+      });
+    });
+  },
+
+  shiftMonth(offset) {
+    const date = dayjs(`${this.data.currentMonth}-01`).toDate();
+    date.setMonth(date.getMonth() + offset);
+    const currentMonth = formatMonth(date);
+    this.setData({
+      currentMonth,
+      monthLabel: getMonthLabel(currentMonth)
+    }, () => this.loadMonthRecords());
+  },
+
+  prevMonth() {
+    this.shiftMonth(-1);
+  },
+
+  nextMonth() {
+    this.shiftMonth(1);
+  },
+
+  watchReportAd() {
+    if (!REWARDED_AD_UNIT_ID) {
+      wx.showModal({
+        title: '开发预览',
+        content: '激励广告位 ID 尚未配置，当前直接进入 AI 月度报告。上线前填入广告位后会要求完整观看。',
+        showCancel: false,
+        success: () => this.goMonthlyReport()
+      });
+      return;
+    }
+    if (!this.rewardedAd) {
+      wx.showToast({ title: '广告初始化失败', icon: 'none' });
+      return;
+    }
+    this.rewardedAd.show().catch(() => {
+      this.rewardedAd.load().then(() => this.rewardedAd.show());
+    });
+  },
+
+  goMonthlyReport() {
+    wx.navigateTo({
+      url: `/pages/monthlyReport/monthlyReport?month=${this.data.currentMonth}`
     });
   }
 });

@@ -393,7 +393,7 @@ Page({
 
   goAnalysis() {
     wx.navigateTo({
-      url: `/pages/recordsV2/records?month=${this.data.currentMonth}`
+      url: `/pages/analysis/analysis?month=${this.data.currentMonth}`
     });
   },
 

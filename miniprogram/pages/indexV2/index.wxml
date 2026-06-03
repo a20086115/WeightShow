@@ -92,7 +92,7 @@
         <view class="card-title">本月趋势</view>
         <view class="card-subtitle">体重变化</view>
       </view>
-      <view class="more-link" bindtap="goAnalysis">记录分析</view>
+      <view class="more-link" bindtap="goAnalysis">更多分析</view>
     </view>
     <view class="chart-empty" wx:if="{{!hasChartData}}">
       记录两次体重后，将生成趋势图

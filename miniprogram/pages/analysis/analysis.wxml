@@ -1,3 +1,78 @@
 <view class="page">
-  <view class="redirect-text">正在打开记录分析...</view>
+  <view class="month-panel">
+    <button class="month-arrow" bindtap="prevMonth">‹</button>
+    <view class="month-center">
+      <view class="month-title">{{monthLabel}}</view>
+      <view class="month-subtitle">体重、BMI、打卡习惯分析</view>
+    </view>
+    <button class="month-arrow" bindtap="nextMonth">›</button>
+  </view>
+
+  <view class="report-entry">
+    <view>
+      <view class="entry-title">AI 月度报告</view>
+      <view class="entry-subtitle">看完激励广告后生成，可分享朋友圈</view>
+    </view>
+    <button class="entry-button" bindtap="watchReportAd">生成</button>
+  </view>
+
+  <view class="score-card">
+    <view class="score-left">
+      <view class="score-label">本月状态</view>
+      <view class="score-title">{{scoreTitle}}</view>
+      <view class="score-desc">{{scoreDesc}}</view>
+    </view>
+    <view class="score-ring">
+      <text>{{habitScore}}</text>
+      <text>分</text>
+    </view>
+  </view>
+
+  <view class="metric-grid">
+    <view class="metric-card">
+      <text>{{summary.days}}</text>
+      <text>打卡天数</text>
+    </view>
+    <view class="metric-card">
+      <text class="{{summary.changeClass}}">{{summary.changeText}}</text>
+      <text>体重变化</text>
+    </view>
+    <view class="metric-card">
+      <text>{{summary.avgWeight}}</text>
+      <text>平均体重</text>
+    </view>
+    <view class="metric-card">
+      <text>{{summary.latestBmi}}</text>
+      <text>最新 BMI</text>
+    </view>
+  </view>
+
+  <view class="chart-card">
+    <view class="section-head">
+      <view>
+        <view class="section-title">趋势细节</view>
+        <view class="section-subtitle">用体重波动看执行是否稳定</view>
+      </view>
+    </view>
+    <view class="chart-empty" wx:if="{{!hasChartData}}">记录两次以上会更有参考价值</view>
+    <view class="chart-box" wx:else>
+      <ec-canvas id="analysis-chart" canvas-id="analysis-chart" ec="{{ec}}"></ec-canvas>
+    </view>
+  </view>
+
+  <view class="habit-card">
+    <view class="section-title">打卡习惯</view>
+    <view class="weekday-row" wx:for="{{weekdayStats}}" wx:key="name">
+      <view class="weekday-name">{{item.name}}</view>
+      <view class="weekday-track">
+        <view class="weekday-fill" style="width: {{item.percent}}%"></view>
+      </view>
+      <view class="weekday-count">{{item.count}}</view>
+    </view>
+  </view>
+
+  <view class="insight-card">
+    <view class="section-title">建议</view>
+    <view class="insight-line" wx:for="{{insights}}" wx:key="*this">{{item}}</view>
+  </view>
 </view>
