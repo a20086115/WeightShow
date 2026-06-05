@@ -15,9 +15,17 @@
   justify-content: space-between;
 }
 
+.month-nav {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  min-width: 0;
+}
+
 .month-title {
   font-size: 34rpx;
   font-weight: 700;
+  white-space: nowrap;
 }
 
 .month-arrow {
@@ -31,13 +39,8 @@
   line-height: 1;
 }
 
-.head-actions {
-  display: flex;
-  align-items: center;
-  gap: 10rpx;
-}
-
 .records-btn {
+  flex-shrink: 0;
   height: 56rpx;
   padding: 0 18rpx;
   border-radius: 28rpx;

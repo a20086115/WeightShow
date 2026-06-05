@@ -71,6 +71,8 @@
 .secondary-action::after,
 .primary-checkin-action::after,
 .secondary-checkin-action::after,
+.success-primary::after,
+.success-secondary::after,
 .quick-action::after {
   border: 0;
 }
@@ -708,6 +710,267 @@
   box-shadow: 0 12rpx 24rpx rgba(24, 139, 228, 0.24);
 }
 
+.success-mask {
+  position: fixed;
+  z-index: 100003;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding: 92rpx 44rpx 40rpx;
+  background: rgba(7, 18, 31, 0.66);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.success-dialog-card {
+  position: relative;
+  width: 100%;
+  max-height: 88vh;
+  padding: 112rpx 42rpx 30rpx;
+  border: 1rpx solid rgba(219, 236, 255, 0.95);
+  border-radius: 34rpx;
+  background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+  box-sizing: border-box;
+  overflow: visible;
+  box-shadow: 0 34rpx 86rpx rgba(3, 18, 38, 0.3);
+}
+
+.success-hero-icon {
+  position: absolute;
+  top: -120rpx;
+  left: 50%;
+  z-index: 2;
+  width: 270rpx;
+  height: 214rpx;
+  transform: translateX(-50%);
+  display: block;
+}
+
+.success-close {
+  position: absolute;
+  top: 32rpx;
+  right: 30rpx;
+  width: 54rpx;
+  height: 54rpx;
+  border: 1rpx solid #e1e7ee;
+  border-radius: 50%;
+  background: #f7f9fb;
+  color: #a0a8b4;
+  font-size: 36rpx;
+  line-height: 48rpx;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.success-title {
+  color: #101b2f;
+  font-size: 56rpx;
+  font-weight: 900;
+  line-height: 1.2;
+  text-align: center;
+  letter-spacing: 0;
+}
+
+.success-subtitle {
+  margin-top: 10rpx;
+  color: #738196;
+  font-size: 28rpx;
+  text-align: center;
+}
+
+.success-weight-card {
+  position: relative;
+  margin-top: 30rpx;
+  padding: 34rpx 26rpx 32rpx;
+  border: 1rpx solid #c7ddff;
+  border-radius: 28rpx;
+  background: linear-gradient(145deg, #f6fbff 0%, #ffffff 54%, #f1f8ff 100%);
+  box-shadow: inset 0 0 38rpx rgba(41, 131, 255, 0.05);
+  overflow: hidden;
+}
+
+.success-weight-card::after {
+  position: absolute;
+  right: -90rpx;
+  bottom: -54rpx;
+  width: 300rpx;
+  height: 150rpx;
+  border: 1rpx solid rgba(69, 154, 255, 0.1);
+  border-radius: 50%;
+  content: "";
+}
+
+.success-weight-value {
+  position: relative;
+  z-index: 1;
+  color: #0d73ff;
+  font-weight: 800;
+  line-height: 1;
+  text-align: center;
+}
+
+.success-weight-value text:first-child {
+  font-size: 104rpx;
+  font-weight: 900;
+  letter-spacing: 4rpx;
+}
+
+.success-weight-unit {
+  margin-left: 12rpx;
+  color: #101b2f;
+  font-size: 34rpx;
+  font-weight: 800;
+}
+
+.success-weight-label {
+  position: relative;
+  z-index: 1;
+  margin-top: 14rpx;
+  color: #778598;
+  font-size: 28rpx;
+  font-weight: 700;
+  text-align: center;
+}
+
+.success-bmi {
+  position: relative;
+  z-index: 1;
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 100%;
+  margin: 20rpx auto 0;
+  padding: 10rpx 22rpx;
+  border-radius: 999rpx;
+  background: #dceaff;
+  color: #0f73ff;
+  font-size: 24rpx;
+  font-weight: 800;
+  box-sizing: border-box;
+}
+
+.success-bmi.normal {
+  background: #dcf7eb;
+  color: #15a66e;
+}
+
+.success-stats {
+  margin-top: 22rpx;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16rpx;
+}
+
+.success-stat-card {
+  min-width: 0;
+  min-height: 164rpx;
+  padding: 20rpx 10rpx 16rpx;
+  border: 1rpx solid #dfeeff;
+  border-radius: 22rpx;
+  background: linear-gradient(180deg, #f9fcff 0%, #ffffff 100%);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.success-stat-card:nth-child(2) {
+  border-color: #dff1e8;
+  background: linear-gradient(180deg, #f8fffb 0%, #ffffff 100%);
+}
+
+.success-stat-card:nth-child(3) {
+  border-color: #ffe8d0;
+  background: linear-gradient(180deg, #fffaf5 0%, #ffffff 100%);
+}
+
+.success-stat-icon {
+  width: 54rpx;
+  height: 54rpx;
+  margin-bottom: 12rpx;
+  display: block;
+}
+
+.success-stat-label {
+  color: #4c5a6d;
+  font-size: 24rpx;
+  line-height: 1.2;
+}
+
+.success-stat-text {
+  min-width: 0;
+  max-width: 100%;
+  margin-top: 8rpx;
+  color: #101b2f;
+  font-size: 32rpx;
+  font-weight: 900;
+  line-height: 1.15;
+  white-space: nowrap;
+}
+
+.success-encourage {
+  margin-top: 26rpx;
+  color: #19a85e;
+  font-size: 28rpx;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.success-actions {
+  margin-top: 28rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.success-primary,
+.success-secondary {
+  height: 84rpx;
+  margin: 0;
+  border-radius: 42rpx;
+  font-size: 30rpx;
+  font-weight: 900;
+  line-height: 84rpx;
+}
+
+.success-primary {
+  border: 0;
+  background: linear-gradient(90deg, #0d6cff 0%, #0f83ff 100%);
+  color: #ffffff;
+  box-shadow: 0 14rpx 28rpx rgba(13, 108, 255, 0.28);
+}
+
+.success-secondary {
+  border: 1rpx solid #167cff;
+  background: #ffffff;
+  color: #167cff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.success-share-icon {
+  width: 36rpx;
+  height: 34rpx;
+  margin-right: 10rpx;
+  display: block;
+}
+
+.success-footer-close {
+  margin-top: 20rpx;
+  color: #5e6673;
+  font-size: 28rpx;
+  line-height: 44rpx;
+  text-align: center;
+}
+
 .onboarding-title {
   color: #1f2d3d;
   font-size: 40rpx;
@@ -1266,4 +1529,1736 @@
   color: #657381;
   font-size: 25rpx;
   line-height: 1.6;
+}
+
+/* 首页日历与趋势图之间的今日行动区 */
+.overview-card {
+  margin-top: 8rpx;
+  padding: 24rpx 26rpx 22rpx;
+  border-radius: 24rpx;
+}
+
+.today-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18rpx;
+}
+
+.today-title-wrap {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+}
+
+.today-title-icon {
+  flex-shrink: 0;
+  width: 54rpx;
+  height: 54rpx;
+  margin-right: 12rpx;
+  border-radius: 16rpx;
+  background: #167cff;
+  box-shadow: 0 8rpx 18rpx rgba(22, 124, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.today-title-icon image {
+  width: 36rpx;
+  height: 36rpx;
+}
+
+.today-title {
+  color: #21304a;
+  font-size: 32rpx;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.checkin-btn {
+  flex-shrink: 0;
+  height: 60rpx;
+  padding: 0 24rpx;
+  border-radius: 30rpx;
+  font-size: 25rpx;
+  font-weight: 800;
+  line-height: 60rpx;
+}
+
+.checkin-btn.checked {
+  background: #20b776;
+  box-shadow: 0 10rpx 18rpx rgba(32, 183, 118, 0.2);
+}
+
+.checkin-plus {
+  font-size: 28rpx;
+}
+
+.today-metrics {
+  margin-top: 24rpx;
+  display: grid;
+  grid-template-columns: 1.05fr 1.45fr 0.92fr;
+  align-items: center;
+}
+
+.today-weight,
+.today-progress,
+.today-target {
+  min-width: 0;
+}
+
+.today-weight {
+  padding-right: 24rpx;
+}
+
+.today-progress {
+  padding: 0 28rpx;
+  border-left: 1rpx solid #e7edf5;
+  border-right: 1rpx solid #e7edf5;
+}
+
+.today-target {
+  padding-left: 28rpx;
+}
+
+.today-label {
+  color: #75849a;
+  font-size: 24rpx;
+  font-weight: 700;
+}
+
+.weight-value {
+  margin-top: 8rpx;
+}
+
+.weight-value text:first-child {
+  font-size: 66rpx;
+  line-height: 72rpx;
+}
+
+.bmi-pill {
+  max-width: 184rpx;
+  height: 42rpx;
+  margin-top: 10rpx;
+  padding: 0 14rpx;
+  border-radius: 21rpx;
+  background: #f0f4fa;
+  color: #657381;
+  font-size: 22rpx;
+  font-weight: 700;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.bmi-pill-status {
+  margin-left: 12rpx;
+  color: #ff5d2d;
+}
+
+.bmi-pill.normal .bmi-pill-status {
+  color: #18ad73;
+}
+
+.loss-value {
+  margin-top: 8rpx;
+  color: #20b776;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.loss-value text:first-child {
+  font-size: 54rpx;
+}
+
+.loss-value.month-up {
+  color: #ff4f68;
+}
+
+.loss-unit,
+.target-unit {
+  margin-left: 6rpx;
+  color: #1f2d3d;
+  font-size: 24rpx;
+  font-weight: 700;
+}
+
+.target-goal {
+  margin-top: 10rpx;
+  color: #718095;
+  font-size: 22rpx;
+  font-weight: 700;
+}
+
+.target-value {
+  margin-top: 12rpx;
+  color: #102b4c;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.target-value text:first-child {
+  font-size: 50rpx;
+}
+
+.progress-track {
+  height: 12rpx;
+  margin-top: 16rpx;
+  border-radius: 999rpx;
+  background: #edf1f5;
+}
+
+.progress-fill {
+  background: #20b776;
+}
+
+.quick-actions {
+  margin-top: 18rpx;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+.quick-action {
+  min-height: 104rpx;
+  padding: 18rpx 14rpx;
+  border-radius: 20rpx;
+  flex-direction: row;
+  justify-content: flex-start;
+  text-align: left;
+  box-shadow: 0 10rpx 24rpx rgba(32, 58, 84, 0.06);
+}
+
+.quick-icon {
+  width: 56rpx;
+  height: 56rpx;
+  margin-right: 12rpx;
+  margin-bottom: 0;
+}
+
+.quick-copy {
+  flex: 1;
+  width: auto;
+}
+
+.quick-title {
+  font-size: 25rpx;
+}
+
+.quick-arrow {
+  display: inline-flex;
+  flex-shrink: 0;
+  margin-left: 6rpx;
+  color: #9aa6b2;
+  font-size: 24rpx;
+}
+
+/* 更贴近参考图的首页中段视觉 */
+.overview-card {
+  margin-top: 16rpx;
+  padding: 24rpx 28rpx 26rpx;
+  border: 1rpx solid #eef4fb;
+  border-radius: 28rpx;
+  box-shadow: 0 12rpx 30rpx rgba(41, 85, 132, 0.08);
+}
+
+.today-title-icon {
+  width: 52rpx;
+  height: 52rpx;
+  margin-right: 12rpx;
+  border-radius: 14rpx;
+  background: linear-gradient(180deg, #2d8dff 0%, #0e6fff 100%);
+  box-shadow: 0 8rpx 18rpx rgba(22, 124, 255, 0.22);
+}
+
+.today-title-icon image {
+  width: 34rpx;
+  height: 34rpx;
+}
+
+.today-title {
+  color: #1f2d3d;
+  font-size: 34rpx;
+  font-weight: 800;
+}
+
+.checkin-btn {
+  height: 58rpx;
+  min-width: 134rpx;
+  padding: 0 22rpx;
+  border-radius: 999rpx;
+  background: linear-gradient(180deg, #2b8cff 0%, #0c73ff 100%);
+  box-shadow: 0 10rpx 22rpx rgba(22, 124, 255, 0.25);
+  gap: 8rpx;
+  font-size: 24rpx;
+  line-height: 58rpx;
+}
+
+.checkin-btn.checked {
+  background: linear-gradient(180deg, #2fd383 0%, #19b86b 100%);
+  box-shadow: 0 10rpx 22rpx rgba(32, 183, 118, 0.22);
+}
+
+.today-metrics {
+  margin-top: 24rpx;
+  grid-template-columns: 1.12fr 1.34fr 0.92fr;
+}
+
+.today-weight {
+  padding-right: 26rpx;
+}
+
+.today-progress {
+  padding: 0 30rpx;
+  border-left-color: #e8edf5;
+  border-right-color: #e8edf5;
+}
+
+.today-target {
+  padding-left: 30rpx;
+}
+
+.today-label {
+  color: #6f7f95;
+  font-size: 23rpx;
+  font-weight: 700;
+}
+
+.weight-value {
+  margin-top: 8rpx;
+}
+
+.weight-value text:first-child {
+  font-size: 68rpx;
+  line-height: 74rpx;
+  letter-spacing: 0;
+}
+
+.bmi-pill {
+  max-width: 194rpx;
+  height: 42rpx;
+  margin-top: 12rpx;
+  padding: 0 14rpx;
+  border-radius: 999rpx;
+  background: #eef3f9;
+  color: #647386;
+  font-size: 22rpx;
+}
+
+.bmi-pill-status {
+  margin-left: 12rpx;
+  color: #ff6a2a;
+}
+
+.loss-value {
+  margin-top: 9rpx;
+  color: #20c56b;
+}
+
+.loss-value text:first-child {
+  font-size: 58rpx;
+  line-height: 64rpx;
+}
+
+.loss-unit,
+.target-unit {
+  font-size: 24rpx;
+}
+
+.progress-track {
+  height: 13rpx;
+  margin-top: 16rpx;
+  background: #edf0f4;
+}
+
+.progress-fill {
+  background: linear-gradient(90deg, #22cf7c 0%, #19bc66 100%);
+}
+
+.target-goal {
+  margin-top: 11rpx;
+  color: #708096;
+  font-size: 22rpx;
+}
+
+.target-value {
+  margin-top: 13rpx;
+}
+
+.target-value text:first-child {
+  font-size: 54rpx;
+  line-height: 62rpx;
+}
+
+.quick-actions {
+  margin-top: 16rpx;
+  gap: 14rpx;
+}
+
+.quick-action {
+  min-height: 104rpx;
+  padding: 16rpx 14rpx;
+  border: 1rpx solid rgba(255, 255, 255, 0.7);
+  border-radius: 22rpx;
+  box-shadow: 0 10rpx 24rpx rgba(42, 84, 126, 0.06);
+}
+
+.quick-action.ai {
+  background: linear-gradient(135deg, #eef7ff 0%, #f7fbff 100%);
+}
+
+.quick-action.group {
+  background: linear-gradient(135deg, #effbf2 0%, #f7fff8 100%);
+}
+
+.quick-action.share {
+  background: linear-gradient(135deg, #fff4e9 0%, #fffaf4 100%);
+}
+
+.quick-icon-bubble {
+  flex-shrink: 0;
+  width: 64rpx;
+  height: 64rpx;
+  margin-right: 12rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.88);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 0 0 1rpx rgba(255, 255, 255, 0.78), 0 8rpx 18rpx rgba(40, 91, 140, 0.1);
+}
+
+.ai .quick-icon-bubble {
+  box-shadow: inset 0 0 0 1rpx rgba(255, 255, 255, 0.78), 0 8rpx 18rpx rgba(22, 124, 255, 0.16);
+}
+
+.group .quick-icon-bubble {
+  box-shadow: inset 0 0 0 1rpx rgba(255, 255, 255, 0.78), 0 8rpx 18rpx rgba(32, 183, 118, 0.16);
+}
+
+.share .quick-icon-bubble {
+  box-shadow: inset 0 0 0 1rpx rgba(255, 255, 255, 0.78), 0 8rpx 18rpx rgba(255, 138, 42, 0.16);
+}
+
+.quick-icon {
+  width: 44rpx;
+  height: 44rpx;
+  margin: 0;
+}
+
+.quick-copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.quick-title {
+  color: #1f2d3d;
+  font-size: 26rpx;
+  font-weight: 800;
+}
+
+.quick-subtitle {
+  margin-top: 6rpx;
+  color: #738197;
+  font-size: 20rpx;
+}
+
+.quick-arrow {
+  margin-left: 4rpx;
+  color: #95a2b3;
+  font-size: 24rpx;
+}
+
+.trend-card {
+  margin-top: 18rpx;
+}
+
+/* 蓝色氛围版首页中段 */
+.middle-showcase {
+  position: relative;
+  margin: 12rpx -22rpx 0;
+  padding: 22rpx 22rpx 24rpx;
+  background:
+    radial-gradient(circle at 14% 24%, rgba(255, 255, 255, 0.72) 0, rgba(255, 255, 255, 0) 24%),
+    radial-gradient(circle at 88% 12%, rgba(255, 255, 255, 0.55) 0, rgba(255, 255, 255, 0) 22%),
+    linear-gradient(135deg, #7dc9ff 0%, #bde9ff 45%, #eefbff 100%);
+  overflow: hidden;
+}
+
+.middle-showcase::before,
+.middle-showcase::after {
+  content: "";
+  position: absolute;
+  border-radius: 999rpx;
+  pointer-events: none;
+}
+
+.middle-showcase::before {
+  width: 520rpx;
+  height: 180rpx;
+  left: -120rpx;
+  top: 120rpx;
+  background: rgba(255, 255, 255, 0.28);
+  transform: rotate(-18deg);
+}
+
+.middle-showcase::after {
+  width: 460rpx;
+  height: 150rpx;
+  right: -120rpx;
+  bottom: 70rpx;
+  background: rgba(255, 255, 255, 0.22);
+  transform: rotate(-14deg);
+}
+
+.middle-glow {
+  position: absolute;
+  z-index: 0;
+  border-radius: 999rpx;
+  background: rgba(255, 255, 255, 0.36);
+  filter: blur(2rpx);
+}
+
+.middle-glow.one {
+  width: 180rpx;
+  height: 180rpx;
+  left: -44rpx;
+  top: 18rpx;
+}
+
+.middle-glow.two {
+  width: 220rpx;
+  height: 220rpx;
+  right: -64rpx;
+  top: -38rpx;
+}
+
+.middle-showcase .overview-card {
+  position: relative;
+  z-index: 1;
+  margin-top: 0;
+  padding: 34rpx 34rpx 32rpx;
+  border: 1rpx solid rgba(255, 255, 255, 0.82);
+  border-radius: 36rpx;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 22rpx 42rpx rgba(43, 105, 163, 0.16);
+  overflow: hidden;
+}
+
+.middle-showcase .overview-card::before {
+  content: "";
+  position: absolute;
+  left: 20rpx;
+  top: 18rpx;
+  right: 20rpx;
+  height: 120rpx;
+  border-radius: 999rpx;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0));
+  pointer-events: none;
+}
+
+.card-sparkle {
+  position: absolute;
+  z-index: 1;
+  color: rgba(255, 255, 255, 0.95);
+  text-shadow: 0 0 10rpx rgba(77, 173, 255, 0.35);
+}
+
+.star-a {
+  top: 38rpx;
+  right: 210rpx;
+  font-size: 28rpx;
+}
+
+.star-b {
+  top: 70rpx;
+  right: 180rpx;
+  font-size: 18rpx;
+}
+
+.middle-showcase .today-card-head,
+.middle-showcase .today-metrics,
+.middle-showcase .today-progress-footer {
+  position: relative;
+  z-index: 2;
+}
+
+.middle-showcase .today-title-icon {
+  width: 72rpx;
+  height: 72rpx;
+  margin-right: 14rpx;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.middle-showcase .today-title {
+  color: #081639;
+  font-size: 40rpx;
+  font-weight: 800;
+}
+
+.middle-showcase .checkin-btn {
+  height: 66rpx;
+  min-width: 146rpx;
+  padding: 0 26rpx;
+  border: 1rpx solid rgba(21, 119, 255, 0.14);
+  border-radius: 999rpx;
+  background: #eaf4ff;
+  color: #1478ff;
+  box-shadow: 0 8rpx 20rpx rgba(20, 120, 255, 0.12);
+  font-size: 27rpx;
+  line-height: 66rpx;
+}
+
+.middle-showcase .checkin-btn.checked {
+  border-color: rgba(55, 191, 120, 0.14);
+  background: #eaf9f0;
+  color: #12a660;
+  box-shadow: 0 8rpx 20rpx rgba(22, 153, 92, 0.1);
+}
+
+.middle-showcase .checkin-plus {
+  width: 34rpx;
+  height: 34rpx;
+  border-radius: 50%;
+  background: currentColor;
+  color: #ffffff;
+  font-size: 22rpx;
+  line-height: 34rpx;
+  text-align: center;
+}
+
+.middle-showcase .today-metrics {
+  margin-top: 38rpx;
+  grid-template-columns: 1.16fr 0.88fr 1.12fr;
+}
+
+.middle-showcase .today-weight {
+  padding-right: 28rpx;
+}
+
+.middle-showcase .today-progress {
+  min-height: 148rpx;
+  padding: 0 28rpx;
+  border-left: 1rpx solid #e4eaf3;
+  border-right: 1rpx solid #e4eaf3;
+}
+
+.middle-showcase .today-target {
+  min-height: 148rpx;
+  padding-left: 30rpx;
+}
+
+.middle-showcase .today-label {
+  color: #66789a;
+  font-size: 25rpx;
+  font-weight: 700;
+}
+
+.middle-showcase .target-label {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.target-edit-icon {
+  color: #7788a8;
+  font-size: 24rpx;
+}
+
+.target-hint {
+  margin-top: 8rpx;
+  color: #7280a0;
+  font-size: 22rpx;
+}
+
+.middle-showcase .weight-value {
+  margin-top: 14rpx;
+}
+
+.middle-showcase .weight-value text:first-child {
+  color: #061335;
+  font-size: 78rpx;
+  line-height: 84rpx;
+  text-shadow: 0 4rpx 8rpx rgba(9, 31, 74, 0.08);
+}
+
+.middle-showcase .weight-unit,
+.middle-showcase .loss-unit,
+.middle-showcase .target-unit {
+  color: #516180;
+  font-size: 28rpx;
+  font-weight: 700;
+}
+
+.today-chip-row {
+  margin-top: 24rpx;
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+}
+
+.middle-showcase .bmi-pill {
+  max-width: none;
+  height: 56rpx;
+  margin-top: 0;
+  padding: 0 18rpx;
+  border: 2rpx solid #5f9cff;
+  border-radius: 999rpx;
+  background: rgba(255, 255, 255, 0.7);
+  color: #2278ff;
+  font-size: 25rpx;
+}
+
+.bmi-arrow {
+  margin-left: 4rpx;
+  font-size: 20rpx;
+}
+
+.status-pill {
+  height: 52rpx;
+  padding: 0 18rpx;
+  border-radius: 999rpx;
+  background: #fff1e9;
+  color: #ff6a2a;
+  font-size: 25rpx;
+  font-weight: 800;
+  line-height: 52rpx;
+}
+
+.status-pill.normal {
+  background: #eaf9f0;
+  color: #14a95f;
+}
+
+.middle-showcase .loss-value {
+  margin-top: 16rpx;
+  color: #17bf67;
+}
+
+.middle-showcase .loss-value text:first-child {
+  font-size: 76rpx;
+  line-height: 82rpx;
+}
+
+.middle-showcase .loss-value.month-up {
+  color: #ff4f68;
+}
+
+.middle-showcase .target-value {
+  margin-top: 12rpx;
+}
+
+.middle-showcase .target-value text:first-child {
+  color: #061335;
+  font-size: 66rpx;
+  line-height: 74rpx;
+}
+
+.today-progress-footer {
+  margin-top: 28rpx;
+  padding-left: 268rpx;
+}
+
+.middle-showcase .progress-track {
+  height: 16rpx;
+  margin-top: 0;
+  border-radius: 999rpx;
+  background: #e9edf4;
+  box-shadow: inset 0 1rpx 2rpx rgba(20, 42, 80, 0.04);
+}
+
+.middle-showcase .progress-fill {
+  border-radius: 999rpx;
+  background: linear-gradient(90deg, #19c96d 0%, #17b95f 100%);
+  box-shadow: 0 4rpx 12rpx rgba(25, 201, 109, 0.28);
+}
+
+.progress-meta {
+  margin-top: 18rpx;
+  color: #627494;
+  font-size: 25rpx;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.progress-percent {
+  margin-left: 8rpx;
+  color: #16bd64;
+  font-size: 31rpx;
+  font-weight: 800;
+}
+
+.middle-showcase .quick-actions {
+  position: relative;
+  z-index: 1;
+  margin-top: 24rpx;
+  gap: 18rpx;
+}
+
+.middle-showcase .quick-action {
+  min-height: 150rpx;
+  padding: 22rpx 20rpx;
+  border: 1rpx solid rgba(255, 255, 255, 0.82);
+  border-radius: 28rpx;
+  box-shadow: 0 16rpx 30rpx rgba(46, 99, 150, 0.16);
+}
+
+.middle-showcase .quick-action.ai {
+  background: rgba(244, 250, 255, 0.92);
+}
+
+.middle-showcase .quick-action.group {
+  background: rgba(242, 253, 246, 0.92);
+}
+
+.middle-showcase .quick-action.share {
+  background: rgba(255, 247, 236, 0.94);
+}
+
+.middle-showcase .quick-icon-bubble {
+  width: 76rpx;
+  height: 76rpx;
+  margin-right: 14rpx;
+  background: rgba(255, 255, 255, 0.86);
+}
+
+.middle-showcase .quick-icon {
+  width: 62rpx;
+  height: 62rpx;
+}
+
+.middle-showcase .quick-title {
+  color: #111d38;
+  font-size: 30rpx;
+}
+
+.middle-showcase .quick-subtitle {
+  margin-top: 10rpx;
+  color: #5d6d8a;
+  font-size: 24rpx;
+}
+
+.middle-showcase .quick-arrow {
+  color: #5f6f8c;
+  font-size: 28rpx;
+}
+
+.middle-showcase + .share-nudge,
+.middle-showcase + .share-nudge + .trend-card,
+.middle-showcase + .trend-card {
+  margin-top: 18rpx;
+}
+
+/* 今日卡三列与底部横线 */
+.middle-showcase .today-metrics {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.middle-showcase .today-weight,
+.middle-showcase .today-progress,
+.middle-showcase .today-target {
+  min-height: 108rpx;
+  padding: 0 18rpx;
+}
+
+.middle-showcase .today-weight {
+  padding-left: 0;
+}
+
+.middle-showcase .today-target {
+  padding-right: 0;
+}
+
+.middle-showcase .today-progress {
+  border-left: 1rpx solid #e7edf5;
+  border-right: 1rpx solid #e7edf5;
+}
+
+.middle-showcase .today-label {
+  font-size: 21rpx;
+  line-height: 1.2;
+}
+
+.middle-showcase .target-edit-icon {
+  font-size: 22rpx;
+}
+
+.target-hint {
+  display: none;
+}
+
+.middle-showcase .weight-value text:first-child,
+.middle-showcase .loss-value text:first-child,
+.middle-showcase .target-value text:first-child {
+  font-size: 54rpx;
+  line-height: 60rpx;
+}
+
+.middle-showcase .weight-value text:first-child,
+.middle-showcase .target-value text:first-child {
+  color: #061335;
+}
+
+.middle-showcase .loss-value {
+  color: #18bf68;
+}
+
+.middle-showcase .loss-value.month-up {
+  color: #ff4f68;
+}
+
+.today-progress-footer {
+  margin-top: 14rpx;
+  padding-left: 0;
+  display: grid;
+  grid-template-columns: 178rpx minmax(0, 1fr);
+  align-items: center;
+  column-gap: 16rpx;
+}
+
+.today-chip-row {
+  margin-top: 0;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.middle-showcase .bmi-pill {
+  width: 178rpx;
+  height: 40rpx;
+  padding: 0 10rpx;
+  border: 1rpx solid #5f9cff;
+  border-radius: 999rpx;
+  background: #ffffff;
+  color: #2278ff;
+  font-size: 19rpx;
+  font-weight: 700;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+.bmi-divider {
+  margin: 0 5rpx;
+  color: #9aabc2;
+}
+
+.bmi-status-inline {
+  color: #ff6a2a;
+  font-weight: 800;
+}
+
+.bmi-pill.normal .bmi-status-inline {
+  color: #18ad73;
+}
+
+.progress-inline {
+  min-width: 0;
+}
+
+.middle-showcase .progress-track {
+  height: 11rpx;
+  margin-left: 0;
+}
+
+.progress-meta {
+  margin-top: 7rpx;
+  padding-left: 0;
+  color: #627494;
+  font-size: 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.progress-percent {
+  color: #16bd64;
+  font-size: 25rpx;
+}
+
+/* 最终版：首页中段按参考图收敛布局 */
+.middle-showcase {
+  margin: 8rpx 0 0;
+  padding: 0;
+  background: transparent;
+}
+
+.middle-showcase .overview-card {
+  padding: 24rpx 24rpx 22rpx;
+  border-radius: 18rpx;
+}
+
+.middle-showcase .today-title-icon {
+  width: 42rpx;
+  height: 42rpx;
+  margin-right: 10rpx;
+}
+
+.middle-showcase .today-title {
+  font-size: 30rpx;
+}
+
+.middle-showcase .checkin-btn {
+  height: 52rpx;
+  min-width: 116rpx;
+  padding: 0 18rpx;
+  font-size: 22rpx;
+  line-height: 52rpx;
+}
+
+.middle-showcase .checkin-plus {
+  width: 28rpx;
+  height: 28rpx;
+  font-size: 18rpx;
+  line-height: 28rpx;
+}
+
+.middle-showcase .today-metrics {
+  margin-top: 22rpx;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: start;
+}
+
+.middle-showcase .today-weight,
+.middle-showcase .today-progress,
+.middle-showcase .today-target {
+  min-height: 104rpx;
+  padding: 0 22rpx;
+}
+
+.middle-showcase .today-weight {
+  padding-left: 0;
+}
+
+.middle-showcase .today-target {
+  padding-right: 0;
+}
+
+.middle-showcase .today-label {
+  color: #66789a;
+  font-size: 21rpx;
+  font-weight: 700;
+}
+
+.middle-showcase .weight-value,
+.middle-showcase .loss-value,
+.middle-showcase .target-value {
+  margin-top: 8rpx;
+}
+
+.middle-showcase .weight-value text:first-child,
+.middle-showcase .loss-value text:first-child,
+.middle-showcase .target-value text:first-child {
+  font-size: 58rpx;
+  line-height: 64rpx;
+  letter-spacing: 0;
+}
+
+.middle-showcase .weight-value text:first-child,
+.middle-showcase .target-value text:first-child {
+  color: #071436;
+}
+
+.middle-showcase .loss-value {
+  color: #18bf68;
+}
+
+.middle-showcase .loss-value.month-up {
+  color: #ff4f68;
+}
+
+.middle-showcase .weight-unit,
+.middle-showcase .loss-unit,
+.middle-showcase .target-unit {
+  color: #52617e;
+  font-size: 23rpx;
+}
+
+.middle-showcase .target-edit-icon {
+  color: #6d7d98;
+  font-size: 20rpx;
+}
+
+.today-progress-footer {
+  margin-top: 16rpx;
+  padding-left: 0;
+  display: grid;
+  grid-template-columns: 178rpx minmax(0, 1fr);
+  column-gap: 16rpx;
+  align-items: center;
+}
+
+.today-chip-row {
+  margin-top: 0;
+  min-width: 0;
+}
+
+.middle-showcase .bmi-pill {
+  width: 178rpx;
+  height: 44rpx;
+  padding: 0 12rpx;
+  border: 1rpx solid #6ba4ff;
+  border-radius: 999rpx;
+  background: #ffffff;
+  color: #2478ff;
+  font-size: 20rpx;
+  font-weight: 700;
+}
+
+.bmi-divider {
+  margin: 0 6rpx;
+}
+
+.bmi-status-inline {
+  color: #ff6a2a;
+  font-weight: 800;
+}
+
+.bmi-pill.normal .bmi-status-inline {
+  color: #18ad73;
+}
+
+.progress-inline {
+  min-width: 0;
+}
+
+.middle-showcase .progress-track {
+  height: 14rpx;
+  margin-left: 0;
+  border-radius: 999rpx;
+}
+
+.middle-showcase .progress-fill {
+  border-radius: 999rpx;
+}
+
+.progress-meta {
+  margin-top: 8rpx;
+  padding-left: 0;
+  font-size: 21rpx;
+  color: #627494;
+  display: flex;
+  justify-content: space-between;
+}
+
+.progress-percent {
+  font-size: 27rpx;
+}
+
+.middle-showcase .quick-actions {
+  margin-top: 16rpx;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12rpx;
+}
+
+.middle-showcase .quick-action {
+  min-height: 92rpx;
+  padding: 14rpx 12rpx;
+  border-radius: 18rpx;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  text-align: left;
+  box-shadow: 0 8rpx 18rpx rgba(32, 58, 84, 0.06);
+}
+
+.middle-showcase .quick-icon-bubble {
+  width: 52rpx;
+  height: 52rpx;
+  margin: 0 10rpx 0 0;
+}
+
+.middle-showcase .quick-icon {
+  width: 38rpx;
+  height: 38rpx;
+}
+
+.middle-showcase .quick-copy {
+  flex: 1;
+  min-width: 0;
+  width: auto;
+}
+
+.middle-showcase .quick-title {
+  font-size: 23rpx;
+  line-height: 1.15;
+  white-space: nowrap;
+}
+
+.middle-showcase .quick-subtitle {
+  margin-top: 5rpx;
+  font-size: 18rpx;
+  line-height: 1.15;
+  white-space: nowrap;
+}
+
+.middle-showcase .quick-arrow {
+  position: static;
+  flex-shrink: 0;
+  margin-left: 4rpx;
+  font-size: 20rpx;
+}
+
+/* 2026-06 最终校准：比例、入口、趋势图 */
+.middle-showcase .today-card-head {
+  margin-bottom: 0;
+}
+
+.middle-showcase .today-title {
+  font-size: 30rpx;
+  color: #071436;
+}
+
+.middle-showcase .checkin-btn {
+  min-width: 128rpx;
+  height: 52rpx;
+  padding: 0 22rpx;
+  background: #167cff;
+  color: #ffffff;
+  box-shadow: 0 8rpx 16rpx rgba(22, 124, 255, 0.18);
+}
+
+.middle-showcase .checkin-plus {
+  display: none;
+}
+
+.middle-showcase .today-metrics {
+  margin-top: 22rpx;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.middle-showcase .today-weight,
+.middle-showcase .today-progress,
+.middle-showcase .today-target {
+  min-height: 104rpx;
+  padding: 0 22rpx;
+  box-sizing: border-box;
+}
+
+.middle-showcase .today-weight {
+  padding-left: 0;
+}
+
+.middle-showcase .today-target {
+  padding-right: 0;
+}
+
+.middle-showcase .today-progress {
+  border-left: 1rpx solid #e6ecf4;
+  border-right: 1rpx solid #e6ecf4;
+}
+
+.middle-showcase .today-label {
+  display: flex;
+  align-items: center;
+  min-height: 28rpx;
+  color: #66789a;
+  font-size: 22rpx;
+}
+
+.middle-showcase .weight-value,
+.middle-showcase .loss-value,
+.middle-showcase .target-value {
+  margin-top: 8rpx;
+}
+
+.middle-showcase .weight-value text:first-child,
+.middle-showcase .loss-value text:first-child,
+.middle-showcase .target-value text:first-child {
+  font-size: 60rpx;
+  line-height: 66rpx;
+}
+
+.middle-showcase .weight-unit,
+.middle-showcase .loss-unit,
+.middle-showcase .target-unit {
+  font-size: 24rpx;
+}
+
+.today-progress-footer {
+  margin-top: 16rpx;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  column-gap: 16rpx;
+  align-items: center;
+}
+
+.middle-showcase .bmi-pill {
+  width: 100%;
+  height: 44rpx;
+  justify-content: center;
+}
+
+.progress-inline {
+  min-width: 0;
+}
+
+.middle-showcase .progress-track {
+  height: 14rpx;
+  margin-left: 0;
+}
+
+.progress-meta {
+  margin-top: 8rpx;
+  padding-left: 0;
+  font-size: 21rpx;
+}
+
+.progress-percent {
+  font-size: 27rpx;
+}
+
+.middle-showcase .quick-actions {
+  margin-top: 16rpx;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12rpx;
+}
+
+.middle-showcase .quick-action {
+  min-height: 88rpx;
+  padding: 12rpx 12rpx;
+  border-radius: 16rpx;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  text-align: left;
+  box-shadow: 0 8rpx 18rpx rgba(32, 58, 84, 0.06);
+}
+
+.middle-showcase .quick-icon-bubble {
+  width: 48rpx;
+  height: 48rpx;
+  margin: 0 10rpx 0 0;
+}
+
+.middle-showcase .quick-icon {
+  width: 36rpx;
+  height: 36rpx;
+}
+
+.middle-showcase .quick-title {
+  font-size: 23rpx;
+}
+
+.middle-showcase .quick-subtitle {
+  margin-top: 4rpx;
+  font-size: 18rpx;
+}
+
+.middle-showcase .quick-arrow {
+  position: static;
+  margin-left: 4rpx;
+}
+
+.trend-card {
+  padding: 24rpx 24rpx 20rpx;
+  border-radius: 24rpx;
+}
+
+.trend-title-wrap {
+  display: flex;
+  align-items: center;
+}
+
+.trend-title-icon {
+  width: 48rpx;
+  height: 48rpx;
+  margin-right: 12rpx;
+}
+
+.trend-card .card-title {
+  color: #071436;
+  font-size: 34rpx;
+  font-weight: 800;
+}
+
+.trend-more {
+  color: #66789a;
+  font-size: 23rpx;
+  display: flex;
+  align-items: center;
+}
+
+.chart-box {
+  height: 360rpx;
+  margin-top: 8rpx;
+}
+
+/* 小屏修正版：避免 390 宽度下拥挤、竖排和溢出 */
+.middle-showcase {
+  margin: 10rpx -22rpx 0;
+  padding: 18rpx 18rpx 20rpx;
+}
+
+.middle-showcase .overview-card {
+  padding: 24rpx 22rpx 24rpx;
+  border-radius: 30rpx;
+}
+
+.card-sparkle {
+  display: none;
+}
+
+.middle-showcase .today-title-icon {
+  width: 58rpx;
+  height: 58rpx;
+  margin-right: 10rpx;
+}
+
+.middle-showcase .today-title {
+  font-size: 34rpx;
+}
+
+.middle-showcase .checkin-btn {
+  height: 56rpx;
+  min-width: 126rpx;
+  padding: 0 18rpx;
+  font-size: 24rpx;
+  line-height: 56rpx;
+}
+
+.middle-showcase .checkin-plus {
+  width: 30rpx;
+  height: 30rpx;
+  font-size: 20rpx;
+  line-height: 30rpx;
+}
+
+.middle-showcase .today-metrics {
+  margin-top: 26rpx;
+  grid-template-columns: 1.06fr 0.82fr 0.92fr;
+}
+
+.middle-showcase .today-weight {
+  padding-right: 18rpx;
+}
+
+.middle-showcase .today-progress {
+  min-height: 128rpx;
+  padding: 0 18rpx;
+}
+
+.middle-showcase .today-target {
+  min-height: 128rpx;
+  padding-left: 18rpx;
+}
+
+.middle-showcase .today-label {
+  font-size: 22rpx;
+}
+
+.middle-showcase .weight-value {
+  margin-top: 8rpx;
+}
+
+.middle-showcase .weight-value text:first-child {
+  font-size: 64rpx;
+  line-height: 70rpx;
+}
+
+.middle-showcase .weight-unit,
+.middle-showcase .loss-unit,
+.middle-showcase .target-unit {
+  font-size: 24rpx;
+}
+
+.today-chip-row {
+  margin-top: 0;
+  gap: 8rpx;
+  flex-wrap: nowrap;
+}
+
+.middle-showcase .bmi-pill {
+  height: 44rpx;
+  padding: 0 12rpx;
+  border-width: 1rpx;
+  font-size: 22rpx;
+  flex-shrink: 0;
+}
+
+.status-pill {
+  height: 42rpx;
+  min-width: 44rpx;
+  padding: 0 10rpx;
+  font-size: 20rpx;
+  line-height: 42rpx;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.middle-showcase .loss-value {
+  margin-top: 10rpx;
+}
+
+.middle-showcase .loss-value text:first-child {
+  font-size: 54rpx;
+  line-height: 62rpx;
+}
+
+.target-hint {
+  margin-top: 4rpx;
+  font-size: 20rpx;
+  white-space: nowrap;
+}
+
+.middle-showcase .target-value {
+  margin-top: 8rpx;
+}
+
+.middle-showcase .target-value text:first-child {
+  font-size: 54rpx;
+  line-height: 62rpx;
+}
+
+.today-progress-footer {
+  margin-top: 8rpx;
+  padding-left: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  column-gap: 18rpx;
+  align-items: center;
+}
+
+.middle-showcase .progress-track {
+  height: 14rpx;
+  margin-left: 0;
+}
+
+.progress-meta {
+  margin-top: 10rpx;
+  padding-left: 0;
+  font-size: 22rpx;
+}
+
+.progress-percent {
+  font-size: 28rpx;
+}
+
+.middle-showcase .quick-actions {
+  margin-top: 18rpx;
+  gap: 12rpx;
+}
+
+.middle-showcase .quick-action {
+  min-height: 116rpx;
+  padding: 14rpx 10rpx 12rpx;
+  border-radius: 22rpx;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+}
+
+.middle-showcase .quick-icon-bubble {
+  width: 58rpx;
+  height: 58rpx;
+  margin-right: 0;
+  margin-bottom: 8rpx;
+}
+
+.middle-showcase .quick-icon {
+  width: 44rpx;
+  height: 44rpx;
+}
+
+.middle-showcase .quick-copy {
+  width: 100%;
+}
+
+.middle-showcase .quick-title {
+  font-size: 25rpx;
+  white-space: nowrap;
+}
+
+.middle-showcase .quick-subtitle {
+  margin-top: 5rpx;
+  font-size: 20rpx;
+  white-space: nowrap;
+}
+
+.middle-showcase .quick-arrow {
+  position: absolute;
+  right: 10rpx;
+  bottom: 12rpx;
+  font-size: 22rpx;
+}
+
+/* 统一上下节奏：中段不再做独立海报背景 */
+.middle-showcase {
+  margin: 8rpx 0 0;
+  padding: 0;
+  background: transparent;
+  overflow: visible;
+}
+
+.middle-showcase::before,
+.middle-showcase::after,
+.middle-glow {
+  display: none;
+}
+
+.middle-showcase .overview-card {
+  border: 1rpx solid #eef3f8;
+  border-radius: 18rpx;
+  background: #ffffff;
+  box-shadow: 0 12rpx 26rpx rgba(32, 58, 84, 0.08);
+}
+
+.middle-showcase .overview-card::before {
+  display: none;
+}
+
+.middle-showcase .quick-actions {
+  margin-top: 18rpx;
+  padding: 14rpx;
+  border: 1rpx solid #eef3f8;
+  border-radius: 18rpx;
+  background: #ffffff;
+  box-shadow: 0 12rpx 26rpx rgba(32, 58, 84, 0.08);
+  box-sizing: border-box;
+}
+
+.middle-showcase .quick-action {
+  box-shadow: none;
+  border: 0;
+  border-radius: 18rpx;
+}
+
+.middle-showcase + .share-nudge,
+.middle-showcase + .share-nudge + .trend-card,
+.middle-showcase + .trend-card {
+  margin-top: 18rpx;
+}
+
+/* 今日体重卡片间距美化：三列等宽、数值底部对齐、底部分隔更克制 */
+.middle-showcase .overview-card {
+  padding: 26rpx 24rpx 24rpx;
+}
+
+.middle-showcase .today-metrics {
+  margin-top: 26rpx;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: stretch;
+}
+
+.middle-showcase .today-weight,
+.middle-showcase .today-progress,
+.middle-showcase .today-target {
+  min-height: 116rpx;
+  padding: 0 14rpx;
+  display: flex;
+  flex-direction: column;
+}
+
+.middle-showcase .today-weight {
+  padding-left: 0;
+}
+
+.middle-showcase .today-target {
+  padding-right: 0;
+}
+
+.middle-showcase .today-label {
+  min-height: 30rpx;
+  margin-bottom: 0;
+  line-height: 30rpx;
+}
+
+.middle-showcase .weight-value,
+.middle-showcase .loss-value,
+.middle-showcase .target-value {
+  margin-top: auto;
+  padding-top: 10rpx;
+  white-space: nowrap;
+}
+
+.middle-showcase .weight-value text:first-child,
+.middle-showcase .loss-value text:first-child,
+.middle-showcase .target-value text:first-child {
+  font-size: 52rpx;
+  line-height: 1;
+}
+
+.middle-showcase .weight-unit,
+.middle-showcase .loss-unit,
+.middle-showcase .target-unit {
+  font-size: 22rpx;
+}
+
+.today-progress-footer {
+  margin-top: 32rpx;
+  padding-top: 0;
+  border-top: 0;
+}
+
+/* 本月趋势头部图例 */
+.trend-legend {
+  display: flex;
+  align-items: center;
+  gap: 22rpx;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+}
+
+.legend-line {
+  position: relative;
+  width: 32rpx;
+  height: 0;
+  margin-right: 8rpx;
+}
+
+.legend-line.weight {
+  border-top: 4rpx solid #167cff;
+}
+
+.legend-line.weight::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 14rpx;
+  height: 14rpx;
+  border: 3rpx solid #167cff;
+  border-radius: 50%;
+  background: #ffffff;
+  box-sizing: border-box;
+  transform: translate(-50%, -50%);
+}
+
+.legend-line.target {
+  border-top: 4rpx dashed #21c875;
+}
+
+.legend-text {
+  color: #63718a;
+  font-size: 22rpx;
+}
+
+/* 目标进度为负数（增重/偏离目标）时标红提示 */
+.progress-percent.negative {
+  color: #ff4f68;
 }

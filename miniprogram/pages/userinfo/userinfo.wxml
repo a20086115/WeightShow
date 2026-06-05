@@ -74,7 +74,17 @@
   </view>
 
   <view class="save-bar">
-    <van-button custom-class="save-button" type="info" size="large" bindtap="saveData">保存资料</van-button>
+    <view class="save-action">
+      <view class="save-action-copy">
+        <view class="save-action-title">资料确认无误</view>
+        <view class="save-action-desc">保存后同步到健康档案</view>
+      </view>
+      <van-button custom-class="save-button" type="info" size="large" bindtap="saveData">
+        <view class="save-button-inner">
+          <text class="save-button-text">保存资料</text>
+        </view>
+      </van-button>
+    </view>
   </view>
   <van-toast id="van-toast" />
 </view>

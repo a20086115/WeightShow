@@ -11,111 +11,102 @@
     />
   </view>
 
-  <view class="overview-card">
-    <view class="overview-head">
-      <view>
-        <view class="card-title">今日概览</view>
-        <view class="card-subtitle">{{selectedDateText}}</view>
-      </view>
-      <view class="overview-actions">
+  <view class="middle-showcase">
+    <view class="middle-glow one"></view>
+    <view class="middle-glow two"></view>
+    <view class="overview-card">
+      <view class="card-sparkle star-a">✦</view>
+      <view class="card-sparkle star-b">✦</view>
+      <view class="today-card-head">
+        <view class="today-title-wrap">
+          <image class="today-title-icon" src="../../瘦身打卡助手_透明小图标PNG/11_累计打卡_日历图标.png" mode="aspectFit"></image>
+          <view class="today-title">今日体重</view>
+        </view>
         <button class="checkin-btn" bindtap="openCheckin">
-          <text class="checkin-plus">＋</text>
-          <text>{{hasSelectedRecord ? '修改记录' : '今日打卡'}}</text>
+          <text>今日打卡</text>
         </button>
       </view>
+
+      <view class="today-metrics">
+        <view class="today-weight" bindtap="openCheckin">
+          <view class="today-label">今日体重</view>
+          <view class="weight-value">
+            <text>{{displayWeight || '--'}}</text>
+            <text class="weight-unit">斤</text>
+          </view>
+        </view>
+
+        <view class="today-progress">
+          <view class="today-label">{{monthTrendLabel}}</view>
+          <view class="loss-value {{monthChangeClass}}">
+            <text>{{monthLossValue}}</text>
+            <text class="loss-unit">斤</text>
+          </view>
+        </view>
+
+        <view class="today-target" bindtap="goUserInfoTarget">
+          <view class="today-label target-label">
+            <text>本月目标</text>
+            <van-icon name="edit" class="target-edit-icon" />
+          </view>
+          <view class="target-value">
+            <text>{{aimWeightText}}</text>
+            <text class="target-unit">斤</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="today-progress-footer">
+        <view class="today-chip-row">
+          <view class="bmi-pill {{bmiClass}}" catchtap="showBmiInfo">
+            <text>BMI {{bmiValue || '--'}}</text>
+            <text class="bmi-divider">·</text>
+            <text class="bmi-status-inline">{{bmiLabel || '待完善'}}</text>
+            <van-icon name="arrow" class="bmi-arrow" />
+          </view>
+        </view>
+        <view class="progress-inline">
+          <view class="progress-track">
+            <view class="progress-fill" style="width: {{targetProgress}}%"></view>
+          </view>
+          <view class="progress-meta">
+            <text>目标进度 <text class="progress-percent {{targetProgressDisplay < 0 ? 'negative' : ''}}">{{targetProgressDisplay}}%</text></text>
+            <text>还需 {{targetDistanceValue}}斤</text>
+          </view>
+        </view>
+      </view>
     </view>
 
-    <view class="overview-main">
-      <view class="metric-card weight-main" bindtap="openCheckin">
-        <view class="metric-card-top">
-          <image class="metric-icon" src="../../瘦身打卡助手_透明小图标PNG/06_今日体重_称重图标.png" mode="aspectFit"></image>
-          <text>今日体重</text>
+    <view class="quick-actions">
+      <view class="quick-action ai" bindtap="goAnalysis">
+        <view class="quick-icon-bubble">
+          <image class="quick-icon" src="../../瘦身打卡助手_透明小图标PNG/08_AI分析_机器人图标.png" mode="aspectFit"></image>
         </view>
-        <view class="weight-value">
-          <text>{{displayWeight || '--'}}</text>
-          <text class="weight-unit">斤</text>
+        <view class="quick-copy">
+          <view class="quick-title">AI分析</view>
+          <view class="quick-subtitle">智能解读数据</view>
         </view>
-        <view class="change-chip {{todayChangeClass}}" wx:if="{{todayChangeText}}">
-          {{todayChangeText}}
+        <van-icon name="arrow" class="quick-arrow" />
+      </view>
+      <view class="quick-action group" bindtap="openJoinGroupDialog">
+        <view class="quick-icon-bubble">
+          <image class="quick-icon" src="../../瘦身打卡助手_透明小图标PNG/09_加群交流_群聊图标.png" mode="aspectFit"></image>
         </view>
-        <view class="card-curve weight-curve">
-          <view class="curve-line"></view>
-          <view class="curve-dot"></view>
+        <view class="quick-copy">
+          <view class="quick-title">加群交流</view>
+          <view class="quick-subtitle">一起打卡</view>
         </view>
+        <van-icon name="arrow" class="quick-arrow" />
       </view>
-
-      <view class="metric-card bmi-panel" bindtap="showBmiInfo">
-        <view class="metric-card-top bmi-label">
-          <image class="metric-icon" src="../../瘦身打卡助手_透明小图标PNG/07_BMI_体脂图标.png" mode="aspectFit"></image>
-          <text>BMI</text>
-          <text class="info-dot">?</text>
+      <view class="quick-action share" bindtap="openSharePanel">
+        <view class="quick-icon-bubble">
+          <image class="quick-icon" src="../../瘦身打卡助手_透明小图标PNG/10_分享成果_分享图标.png" mode="aspectFit"></image>
         </view>
-        <view class="bmi-value">{{bmiValue || '--'}}</view>
-        <view class="bmi-tag {{bmiClass}}">{{bmiLabel || '待完善'}}</view>
-        <view class="card-curve bmi-curve">
-          <view class="curve-line"></view>
-          <view class="curve-dot"></view>
+        <view class="quick-copy">
+          <view class="quick-title">分享成果</view>
+          <view class="quick-subtitle">记录变化</view>
         </view>
-      </view>
-    </view>
-
-    <view class="target-block" wx:if="{{targetText}}">
-      <view class="target-line">
-        <text>目标进度 {{targetProgress}}%</text>
-        <text>{{targetText}}</text>
-      </view>
-      <view class="progress-track">
-        <view class="progress-fill" style="width: {{targetProgress}}%"></view>
-      </view>
-    </view>
-  </view>
-
-  <view class="quick-actions">
-    <view class="quick-action ai" bindtap="goAnalysis">
-      <image class="quick-icon" src="../../瘦身打卡助手_透明小图标PNG/08_AI分析_机器人图标.png" mode="aspectFit"></image>
-      <view class="quick-copy">
-        <view class="quick-title">AI分析</view>
-        <view class="quick-subtitle">智能解读</view>
-      </view>
-    </view>
-    <view class="quick-action group" bindtap="openJoinGroupDialog">
-      <image class="quick-icon" src="../../瘦身打卡助手_透明小图标PNG/09_加群交流_群聊图标.png" mode="aspectFit"></image>
-      <view class="quick-copy">
-        <view class="quick-title">加群交流</view>
-        <view class="quick-subtitle">一起打卡</view>
-      </view>
-    </view>
-    <view class="quick-action share" bindtap="openSharePanel">
-      <image class="quick-icon" src="../../瘦身打卡助手_透明小图标PNG/10_分享成果_分享图标.png" mode="aspectFit"></image>
-      <view class="quick-copy">
-        <view class="quick-title">分享成果</view>
-        <view class="quick-subtitle">记录变化</view>
-      </view>
-    </view>
-  </view>
-
-  <view class="stats-card">
-    <view class="stat-row">
-      <view class="stat-item">
-        <image class="stat-icon" src="../../瘦身打卡助手_透明小图标PNG/11_累计打卡_日历图标.png" mode="aspectFit"></image>
-        <view class="stat-copy">
-          <view class="stat-value">{{totalCheckinDays}}</view>
-          <view class="stat-label">累计打卡</view>
-        </view>
-      </view>
-      <view class="stat-item">
-        <image class="stat-icon" src="../../瘦身打卡助手_透明小图标PNG/12_本月打卡_日历图标.png" mode="aspectFit"></image>
-        <view class="stat-copy">
-          <view class="stat-value">{{monthCheckinDays}}</view>
-          <view class="stat-label">本月打卡</view>
-        </view>
-      </view>
-      <view class="stat-item">
-        <image class="stat-icon" src="../../瘦身打卡助手_透明小图标PNG/13_本月变化_趋势图标.png" mode="aspectFit"></image>
-        <view class="stat-copy">
-          <view class="stat-value {{monthChangeClass}}">{{monthChangeText}}</view>
-          <view class="stat-label">本月变化</view>
-        </view>
+        <van-icon name="arrow" class="quick-arrow" />
       </view>
     </view>
   </view>
@@ -133,16 +124,26 @@
 
   <view class="trend-card">
     <view class="section-head">
-      <view>
+      <view class="trend-title-wrap">
+        <image class="trend-title-icon" src="../../瘦身打卡助手_透明小图标PNG/13_本月变化_趋势图标.png" mode="aspectFit"></image>
         <view class="card-title">本月趋势</view>
-        <view class="card-subtitle">体重变化</view>
+      </view>
+      <view class="trend-legend">
+        <view class="legend-item">
+          <view class="legend-line weight"></view>
+          <text class="legend-text">体重(斤)</text>
+        </view>
+        <view class="legend-item">
+          <view class="legend-line target"></view>
+          <text class="legend-text">目标(斤)</text>
+        </view>
       </view>
     </view>
     <view class="chart-empty" wx:if="{{!hasChartData}}">
       记录两次体重后，将生成趋势图
     </view>
     <view class="chart-box" wx:else>
-      <ec-canvas wx:if="{{!showSharePanel && !visibleJoinGroup}}" id="trend-chart" canvas-id="trend-chart" ec="{{ec}}"></ec-canvas>
+      <ec-canvas wx:if="{{!showCheckinDialog && !showSharePanel && !visibleJoinGroup && !showCheckinSuccessDialog && !showBmiDialog && !showOnboarding}}" id="trend-chart" canvas-id="trend-chart" ec="{{ec}}"></ec-canvas>
       <view wx:else class="chart-hidden-placeholder"></view>
     </view>
   </view>
@@ -267,6 +268,54 @@
         <button class="secondary-checkin-action" bindtap="closeCheckin">取消</button>
         <button class="primary-checkin-action" bindtap="submitCheckin">{{hasSelectedRecord ? '保存修改' : '完成打卡'}}</button>
       </view>
+    </view>
+  </view>
+
+  <view class="success-mask" wx:if="{{showCheckinSuccessDialog}}" bindtap="closeCheckinSuccess">
+    <view class="success-dialog-card" catchtap="noop">
+      <image class="success-hero-icon" src="../../images/checkin-dialog/success-hero.png" mode="aspectFit"></image>
+      <view class="success-close" bindtap="closeCheckinSuccess">×</view>
+      <view class="success-title">打卡成功</view>
+      <view class="success-subtitle">今天也认真记录啦</view>
+
+      <view class="success-weight-card">
+        <view class="success-weight-value">
+          <text>{{checkinSuccess.weightText || '--'}}</text>
+          <text class="success-weight-unit">斤</text>
+        </view>
+        <view class="success-weight-label">今日体重</view>
+        <view class="success-bmi {{checkinSuccess.bmiClass}}">{{checkinSuccess.bmiText}}</view>
+      </view>
+
+      <view class="success-stats">
+        <view class="success-stat-card">
+          <image class="success-stat-icon" src="../../images/checkin-dialog/calendar.png" mode="aspectFit"></image>
+          <view class="success-stat-label">本月已打卡</view>
+          <view class="success-stat-text">{{checkinSuccess.monthDaysValue || checkinSuccess.monthDaysText}}</view>
+        </view>
+        <view class="success-stat-card">
+          <image class="success-stat-icon" src="../../images/checkin-dialog/trend-down.png" mode="aspectFit"></image>
+          <view class="success-stat-label">本月变化</view>
+          <view class="success-stat-text">{{checkinSuccess.monthChangeValue || checkinSuccess.monthChangeText}}</view>
+        </view>
+        <view class="success-stat-card">
+          <image class="success-stat-icon" src="../../images/checkin-dialog/target.png" mode="aspectFit"></image>
+          <view class="success-stat-label">距目标</view>
+          <view class="success-stat-text">{{checkinSuccess.targetValue || checkinSuccess.targetText}}</view>
+        </view>
+      </view>
+
+      <view class="success-encourage">
+        <text>继续保持，明天再来打卡</text>
+      </view>
+      <view class="success-actions">
+        <button class="success-primary" bindtap="goSuccessAnalysis">查看AI分析</button>
+        <button class="success-secondary" open-type="share" data-share-type="checkin">
+          <image class="success-share-icon" src="../../images/checkin-dialog/share.png" mode="aspectFit"></image>
+          <text>分享给好友</text>
+        </button>
+      </view>
+      <view class="success-footer-close" bindtap="closeCheckinSuccess">关闭</view>
     </view>
   </view>
 

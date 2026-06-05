@@ -1,13 +1,13 @@
 <view class="calendar-card">
   <view class="calendar-head">
-    <view class="month-arrow" bindtap="onPrev">‹</view>
-    <view class="month-title">{{yearMonthText}}</view>
-    <view class="head-actions">
-      <view class="records-btn" bindtap="onRecords">
-        <text class="records-icon">☰</text>
-        <text>全部记录</text>
-      </view>
+    <view class="month-nav">
+      <view class="month-arrow" bindtap="onPrev">‹</view>
+      <view class="month-title">{{yearMonthText}}</view>
       <view class="month-arrow" bindtap="onNext">›</view>
+    </view>
+    <view class="records-btn" bindtap="onRecords">
+      <text class="records-icon">☰</text>
+      <text>全部记录</text>
     </view>
   </view>
 

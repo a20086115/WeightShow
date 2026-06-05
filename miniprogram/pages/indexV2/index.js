@@ -22,10 +22,17 @@ function toNumber(value) {
   return Number.isFinite(num) ? num : null;
 }
 
+/**
+ * 体重数值格式化：统一保留最多两位小数，并去除多余的尾随零。
+ * 例如 182 -> "182"，182.10 -> "182.1"，182.125 -> "182.13"。
+ * @param {string|number} value 待格式化的数值
+ * @returns {string} 格式化后的字符串
+ */
 function formatWeight(value) {
   const num = toNumber(value);
   if (num === null) return '';
-  return Number.isInteger(num) ? String(num) : num.toFixed(1);
+  if (Number.isInteger(num)) return String(num);
+  return parseFloat(num.toFixed(2)).toString();
 }
 
 function getAxisMin(values, minPadding = 4) {
@@ -67,18 +74,25 @@ Page({
     todayChangeClass: '',
     monthChangeText: '--',
     monthChangeClass: '',
+    monthTrendLabel: '已减',
+    monthLossValue: '--',
     totalCheckinDays: '--',
     monthCheckinDays: 0,
     targetText: '',
+    targetDistanceValue: '--',
+    aimWeightText: '--',
     targetProgress: 0,
+    targetProgressDisplay: 0,
     hasSelectedRecord: false,
     hasChartData: false,
     showOnboarding: false,
     showCheckinDialog: false,
+    showCheckinSuccessDialog: false,
     showBmiDialog: false,
     showSharePanel: false,
     showShareNudge: false,
     visibleJoinGroup: false,
+    pendingAddToDesktopGuide: false,
     htmlImage: 'cloud://release-ba24f3.7265-release-ba24f3-1257780911/activity.png',
     bmiMarkerPosition: 0,
     sharePreviewText: '记录每天变化，一起打卡吧',
@@ -90,6 +104,18 @@ Page({
     newUserTarget: '',
     checkinWeight: '',
     checkinWeightKg: '',
+    checkinSuccess: {
+      weightText: '',
+      bmiText: '',
+      bmiClass: '',
+      monthDaysText: '',
+      monthDaysValue: '',
+      monthChangeText: '',
+      monthChangeValue: '',
+      targetText: '',
+      targetValue: '',
+      shareTitle: ''
+    },
     ec: {
       lazyLoad: true
     }
@@ -199,9 +225,14 @@ Page({
       todayChangeClass: changeInfo.className,
       monthChangeText: monthChangeInfo.text,
       monthChangeClass: monthChangeInfo.className,
+      monthTrendLabel: monthChangeInfo.className === 'month-up' ? '变化' : '已减',
+      monthLossValue: this.getMonthLossValue(records),
       monthCheckinDays: records.length,
       targetText: targetInfo.text,
+      targetDistanceValue: this.getTargetDistanceValue(latest, aimWeight),
+      aimWeightText: aimWeight ? formatWeight(aimWeight) : '--',
       targetProgress: targetInfo.progress,
+      targetProgressDisplay: targetInfo.progressDisplay,
       sharePreviewText: this.getShareTitle(records),
       hasSelectedRecord: !!selected,
       checkinWeight: selected ? selected.weight : '',
@@ -269,6 +300,64 @@ Page({
     };
   },
 
+  getMonthLossValue(records) {
+    if (records.length < 2) return '--';
+    const first = toNumber(records[0].weight);
+    const last = toNumber(records[records.length - 1].weight);
+    const diff = last - first;
+    if (!Number.isFinite(diff)) return '--';
+    if (diff < 0) return Math.abs(diff).toFixed(1);
+    if (diff > 0) return `+${diff.toFixed(1)}`;
+    return '0.0';
+  },
+
+  getTargetDistanceValue(latest, aimWeight) {
+    const current = latest ? toNumber(latest.weight) : null;
+    if (!current || !aimWeight) return '--';
+    return current > aimWeight ? (current - aimWeight).toFixed(1) : '0.0';
+  },
+
+  getSuccessMonthChangeText(records) {
+    if (records.length < 2) return '本月变化 --';
+    const first = toNumber(records[0].weight);
+    const last = toNumber(records[records.length - 1].weight);
+    const diff = last - first;
+    if (!Number.isFinite(diff) || diff === 0) return '本月持平';
+    if (diff < 0) return `本月已减 ${Math.abs(diff).toFixed(1)}斤`;
+    return `本月增加 ${diff.toFixed(1)}斤`;
+  },
+
+  buildCheckinSuccess(record) {
+    const nextRecord = {
+      ...record,
+      weight: formatWeight(record.weight)
+    };
+    const records = this.data.records
+      .filter((item) => item.date !== record.date)
+      .concat([nextRecord])
+      .filter((item) => item.weight)
+      .sort((a, b) => a.date.localeCompare(b.date));
+    const height = toNumber(App.globalData.userInfo && App.globalData.userInfo.height);
+    const aimWeight = toNumber(App.globalData.userInfo && App.globalData.userInfo.aimWeight);
+    const bmiInfo = this.getBmiInfo(nextRecord.weight, height);
+    const targetInfo = this.getTargetInfo(records, nextRecord, aimWeight);
+    const monthChangeText = this.getSuccessMonthChangeText(records);
+    const targetText = targetInfo.text || '目标待设置';
+
+    return {
+      weightText: nextRecord.weight,
+      bmiText: bmiInfo.value ? `BMI ${bmiInfo.value}｜${bmiInfo.label}` : 'BMI 待完善',
+      bmiClass: bmiInfo.className,
+      monthDaysText: `本月已打卡 ${records.length} 天`,
+      monthDaysValue: `${records.length} 天`,
+      monthChangeText,
+      monthChangeValue: records.length < 2 ? '--' : monthChangeText.indexOf('本月') === 0 ? monthChangeText.slice(2).trim() : monthChangeText,
+      targetText,
+      targetValue: targetText.indexOf('距目标') === 0 ? targetText.slice(3).trim() : targetText,
+      shareTitle: this.getCheckinShareTitle(records, nextRecord)
+    };
+  },
+
   getShareTitle(records) {
     const sourceRecords = records || this.data.records.filter((item) => item.weight);
     if (sourceRecords.length >= 2) {
@@ -285,23 +374,56 @@ Page({
     return '瘦身打卡助手';
   },
 
+  /**
+   * 生成「打卡成功」直接转发好友的文案：突出今日体重与较上一次打卡的当日变化
+   * @param {Array} records 已按日期升序、且包含今日的体重记录
+   * @param {Object} todayRecord 今日记录（weight 已格式化为斤）
+   * @returns {string} 分享标题
+   */
+  getCheckinShareTitle(records, todayRecord) {
+    const todayWeight = toNumber(todayRecord.weight);
+    if (!Number.isFinite(todayWeight)) {
+      return this.getShareTitle(records);
+    }
+    const weightText = formatWeight(todayWeight);
+    // 取今日之前最近的一条打卡作为对比基准
+    const previous = (records || [])
+      .filter((item) => item.weight && item.date < todayRecord.date)
+      .pop();
+    if (!previous) {
+      return `今日体重${weightText}斤，开启我的瘦身打卡！`;
+    }
+    const delta = toNumber(previous.weight) - todayWeight; // 正数=较上次瘦了
+    if (!Number.isFinite(delta) || Math.abs(delta) < 0.1) {
+      return `今日体重${weightText}斤，和上次持平，稳住！`;
+    }
+    if (delta > 0) {
+      return `今日体重${weightText}斤，今天瘦了${delta.toFixed(1)}斤！`;
+    }
+    return `今日体重${weightText}斤，今天胖了${Math.abs(delta).toFixed(1)}斤，明天扳回来！`;
+  },
+
   getTargetInfo(records, latest, aimWeight) {
     const current = latest ? toNumber(latest.weight) : null;
     if (!current || !aimWeight) {
-      return { text: '', progress: 0 };
+      return { text: '', progress: 0, progressDisplay: 0 };
     }
     const distance = current - aimWeight;
     const text = distance > 0 ? `距目标 ${distance.toFixed(1)}斤` : '已达目标';
-    let progress = 100;
+    let rawProgress = 100;
     if (records.length > 1) {
       const first = toNumber(records[0].weight);
       const total = first - aimWeight;
       const done = first - current;
-      progress = total > 0 ? Math.max(0, Math.min(100, Math.round((done / total) * 100))) : 100;
+      rawProgress = total > 0 ? Math.round((done / total) * 100) : 100;
     } else if (distance > 0) {
-      progress = 0;
+      rawProgress = 0;
     }
-    return { text, progress };
+    // 进度条宽度不能为负，限制在 0~100
+    const progress = Math.max(0, Math.min(100, rawProgress));
+    // 文案展示真实进度：增重/偏离目标时可为负数，上下限 -100 ~ 100
+    const progressDisplay = Math.max(-100, Math.min(100, rawProgress));
+    return { text, progress, progressDisplay };
   },
 
   initTrendChart() {
@@ -313,21 +435,35 @@ Page({
     const aimWeight = toNumber(App.globalData.userInfo && App.globalData.userInfo.aimWeight);
     const axisValues = aimWeight ? weightData.concat([aimWeight]) : weightData;
     const series = [
-      { name: '体重', type: 'line', smooth: true, symbolSize: 6, lineStyle: { width: 3 }, areaStyle: { opacity: 0.12 }, data: weightData }
+      {
+        name: '体重(斤)',
+        type: 'line',
+        smooth: true,
+        symbol: 'circle',
+        symbolSize: 7,
+        label: { show: false },
+        lineStyle: { width: 3, color: '#167cff' },
+        itemStyle: {
+          color: '#ffffff',
+          borderColor: '#167cff',
+          borderWidth: 2
+        },
+        areaStyle: {
+          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+            { offset: 0, color: 'rgba(22, 124, 255, 0.18)' },
+            { offset: 1, color: 'rgba(22, 124, 255, 0)' }
+          ])
+        },
+        data: weightData
+      }
     ];
     if (aimWeight) {
       series.push({
-        name: '目标体重',
+        name: '目标(斤)',
         type: 'line',
         symbol: 'none',
-        label: {
-          show: true,
-          position: 'right',
-          formatter: '目标',
-          color: '#1fb9a5',
-          fontSize: 10
-        },
-        lineStyle: { width: 2, type: 'dashed', color: '#1fb9a5' },
+        label: { show: false },
+        lineStyle: { width: 2, type: 'dashed', color: '#21c875' },
         data: weightData.map(() => aimWeight)
       });
     }
@@ -344,12 +480,25 @@ Page({
           devicePixelRatio: dpr || 1
         });
         chart.setOption({
-          color: ['#188be4'],
-          grid: { left: 36, right: 42, top: 36, bottom: 28 },
-          legend: aimWeight ? { data: ['体重', '目标体重'], top: 4, itemWidth: 14, itemHeight: 8, textStyle: { fontSize: 11 } } : undefined,
+          color: ['#167cff', '#21c875'],
+          grid: { left: 8, right: 12, top: 16, bottom: 24, containLabel: true },
           tooltip: { trigger: 'axis' },
-          xAxis: { type: 'category', data: xData, boundaryGap: false, axisLabel: { fontSize: 10, hideOverlap: true } },
-          yAxis: { type: 'value', scale: true, min: getAxisMin(axisValues), max: getAxisMax(axisValues), axisLabel: { fontSize: 10 } },
+          xAxis: {
+            type: 'category',
+            data: xData.map((item) => `${this.data.currentMonth.slice(5)}/${item}`),
+            boundaryGap: false,
+            axisTick: { show: false },
+            axisLine: { lineStyle: { color: '#e5ebf2' } },
+            axisLabel: { color: '#627494', fontSize: 10, hideOverlap: true }
+          },
+          yAxis: {
+            type: 'value',
+            scale: true,
+            min: getAxisMin(axisValues),
+            max: getAxisMax(axisValues),
+            splitLine: { lineStyle: { color: '#edf2f7', type: 'dashed' } },
+            axisLabel: { color: '#627494', fontSize: 10 }
+          },
           series
         });
         this.chart = chart;
@@ -399,6 +548,12 @@ Page({
     });
   },
 
+  goUserInfoTarget() {
+    wx.navigateTo({
+      url: '/pages/userinfo/userinfo'
+    });
+  },
+
   openCheckin() {
     const weight = toNumber(this.data.checkinWeight);
     this.setData({
@@ -411,6 +566,8 @@ Page({
     this.setData({
       showCheckinDialog: false,
       visibleReminderTimePicker: false
+    }, () => {
+      this.initTrendChart();
     });
   },
 
@@ -484,7 +641,9 @@ Page({
   },
 
   closeBmiInfo() {
-    this.setData({ showBmiDialog: false });
+    this.setData({ showBmiDialog: false }, () => {
+      this.initTrendChart();
+    });
   },
 
   openSharePanel() {
@@ -503,6 +662,25 @@ Page({
 
   dismissShareNudge() {
     this.setData({ showShareNudge: false });
+  },
+
+  closeCheckinSuccess() {
+    const shouldShowDesktopGuide = this.data.pendingAddToDesktopGuide;
+    this.setData({
+      showCheckinSuccessDialog: false,
+      pendingAddToDesktopGuide: false
+    }, () => {
+      this.initTrendChart();
+      if (shouldShowDesktopGuide) {
+        this.showAddToDesktopGuide();
+      }
+    });
+  },
+
+  goSuccessAnalysis() {
+    this.setData({ showCheckinSuccessDialog: false }, () => {
+      this.goAnalysis();
+    });
   },
 
   noop() {},
@@ -624,10 +802,17 @@ Page({
       .then(() => {
         App.globalData.userInfo.height = height;
         App.globalData.userInfo.aimWeight = target;
-        this.setData({ showOnboarding: false });
+        this.setData({
+          showOnboarding: false,
+          pendingAddToDesktopGuide: true,
+          showCheckinSuccessDialog: true,
+          checkinSuccess: this.buildCheckinSuccess({
+            date: formatDate(new Date()),
+            weight,
+            weightKg: Number((weight / 2).toFixed(2))
+          })
+        });
         this.refreshAll();
-        wx.showToast({ title: '已开始记录', icon: 'success' });
-        this.showAddToDesktopGuide();
       });
   },
 
@@ -643,25 +828,36 @@ Page({
       weightKg: Number((weight / 2).toFixed(2))
     };
     this.requestCheckinSubscribe();
-    const isNewCheckin = !this.data.hasSelectedRecord;
     const isTodayCheckin = this.data.selectedDate === formatDate(new Date());
-    const request = isNewCheckin
+    const request = !this.data.hasSelectedRecord
       ? CF.insert('records', data)
       : CF.update('records', { openId: true, date: this.data.selectedDate }, data);
 
     request.then(() => {
       this.setData({
         showCheckinDialog: false,
-        showShareNudge: isNewCheckin && isTodayCheckin
+        showShareNudge: false,
+        showCheckinSuccessDialog: isTodayCheckin,
+        checkinSuccess: isTodayCheckin ? this.buildCheckinSuccess(data) : this.data.checkinSuccess
       });
       this.loadMonthRecords();
-      wx.showToast({ title: '已保存', icon: 'success' });
+      if (!isTodayCheckin) {
+        wx.showToast({ title: '已保存', icon: 'success' });
+      }
     });
   },
 
-  onShareAppMessage() {
+  onShareAppMessage(e) {
+    // 来自打卡成功弹框的「分享给好友」按钮：使用突出今日体重与当日变化的文案
+    const dataset = e && e.from === 'button' && e.target ? e.target.dataset : null;
+    if (dataset && dataset.shareType === 'checkin') {
+      return {
+        title: this.data.checkinSuccess.shareTitle || this.getShareTitle(),
+        path: '/pages/indexV2/index'
+      };
+    }
     return {
-      title: this.getShareTitle(),
+      title: this.data.showSharePanel ? this.data.sharePreviewText : this.getShareTitle(),
       path: '/pages/indexV2/index'
     };
   },
