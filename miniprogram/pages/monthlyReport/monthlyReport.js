@@ -71,12 +71,12 @@ function getReportContext(options = {}) {
 
 function getReportStyle(options = {}) {
   if (options.style === 'encourage' || options.reportStyle === 'encourage') {
-    return { value: 'encourage', label: '鼓励' };
+    return { value: 'encourage', label: '鼓励', encouragementTitle: '给自己的鼓励' };
   }
   if (options.style === 'roast' || options.reportStyle === 'roast') {
-    return { value: 'roast', label: '毒嘴' };
+    return { value: 'roast', label: '毒舌', encouragementTitle: '损友寄语' };
   }
-  return { value: 'professional', label: '专业' };
+  return { value: 'professional', label: '专业', encouragementTitle: '行动寄语' };
 }
 
 function getDefaultReport(context) {
@@ -181,6 +181,7 @@ Page({
     nextActionTitle: '下月行动',
     reportStyle: 'professional',
     reportStyleLabel: '专业',
+    encouragementTitle: '行动寄语',
     reportId: '',
     sharedReportId: '',
     isSharedReport: false,
@@ -202,6 +203,7 @@ Page({
       nextActionTitle: context.nextActionTitle,
       reportStyle: reportStyle.value,
       reportStyleLabel: reportStyle.label,
+      encouragementTitle: reportStyle.encouragementTitle,
       sharedReportId,
       isSharedReport: !!sharedReportId,
       report: getDefaultReport(context)
@@ -253,6 +255,7 @@ Page({
         nextActionTitle: context.nextActionTitle,
         reportStyle: reportStyle.value,
         reportStyleLabel: reportStyle.label,
+        encouragementTitle: reportStyle.encouragementTitle,
         reportId: result.reportId || this.data.reportId,
         isSharedReport: !!result.shared,
         report,

@@ -94,21 +94,21 @@
       <view class="style-option" data-style="professional" bindtap="selectReportStyle">
         <view>
           <view class="style-option-title">专业</view>
-          <view class="style-option-desc">克制清晰，偏数据分析</view>
+          <view class="style-option-desc">数据拆解、因果分析、精准建议</view>
         </view>
         <view class="style-option-mark" wx:if="{{reportStyle === 'professional'}}">已选</view>
       </view>
       <view class="style-option" data-style="encourage" bindtap="selectReportStyle">
         <view>
           <view class="style-option-title">鼓励</view>
-          <view class="style-option-desc">温暖积极，适合需要一点动力的时候</view>
+          <view class="style-option-desc">温暖教练风，看见你的努力与进步</view>
         </view>
         <view class="style-option-mark" wx:if="{{reportStyle === 'encourage'}}">已选</view>
       </view>
       <view class="style-option" data-style="roast" bindtap="selectReportStyle">
         <view>
-          <view class="style-option-title">毒嘴</view>
-          <view class="style-option-desc">善意吐槽，嘴上不饶人但不制造焦虑</view>
+          <view class="style-option-title">毒舌</view>
+          <view class="style-option-desc">极度犀利损友风，扎心吐槽毫不留情</view>
         </view>
         <view class="style-option-mark" wx:if="{{reportStyle === 'roast'}}">已选</view>
       </view>

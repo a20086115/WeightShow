@@ -61,7 +61,7 @@
   </view>
 
   <view class="section-card">
-    <view class="section-title">给自己的鼓励</view>
+    <view class="section-title">{{encouragementTitle}}</view>
     <view class="quote">{{report.encouragement}}</view>
   </view>
 
