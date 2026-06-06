@@ -20,12 +20,6 @@
             ]
         },
         {
-            "root": "pages/index",
-            "pages": [
-                "index"
-            ]
-        },
-        {
             "root": "pages/analysis",
             "pages": [
                 "analysis"

@@ -41,6 +41,15 @@ export default class WxCanvas {
     // noop
   }
 
+  addEventListener() {
+    // noop — ECharts 5 ZRender 会调用此方法绑定事件，
+    // 实际触摸事件已通过 WXML bindtouch* 在 ec-canvas 组件中手动分发
+  }
+
+  removeEventListener() {
+    // noop
+  }
+
   _initCanvas(zrender, ctx) {
     zrender.util.getContext = function () {
       return ctx;

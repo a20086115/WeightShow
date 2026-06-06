@@ -4,12 +4,14 @@
   "description": "",
   "main": "app.js",
   "dependencies": {
-    "@vant/weapp": "1.10.0",
-    "json2canvas": "^1.0.11"
+    "@vant/weapp": "1.10.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "echarts": "^5.6.0",
+    "esbuild": "^0.28.0"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build:echarts": "esbuild ec-canvas/echarts-custom-src.js --bundle --minify --format=esm --outfile=ec-canvas/echarts.js --legal-comments=none --tree-shaking=true --target=es2020"
   },
   "author": "",
   "license": "ISC"
