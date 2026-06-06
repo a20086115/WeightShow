@@ -231,6 +231,13 @@ Page({
     });
   },
 
+  /**
+   * 统计去重后的打卡天数
+   */
+  getUniqueCheckinDays(records) {
+    return new Set((records || []).map((item) => item.date)).size;
+  },
+
   buildSummary(records) {
     if (!records.length) {
       return {
@@ -251,7 +258,7 @@ Page({
     const bmi = latest && height ? latest / 2 / (height * height / 10000) : null;
 
     return {
-      days: records.length,
+      days: this.getUniqueCheckinDays(records),
       changeText: records.length > 1 ? `${diff > 0 ? '+' : ''}${diff.toFixed(1)}斤` : '首条记录',
       changeClass: diff > 0 ? 'up' : diff < 0 ? 'down' : '',
       avgWeight: `${formatWeight(avg)}斤`,
@@ -262,17 +269,31 @@ Page({
   buildHabitScore(records) {
     if (!records.length) return 0;
     const periodDays = this.getScorePeriodDays(records);
-    const checkinScore = Math.min(70, Math.round((records.length / periodDays) * 70));
-    const stabilityScore = this.getStableDays(records) >= 7 ? 30 : Math.min(30, this.getStableDays(records) * 4);
+    const checkinDays = this.getUniqueCheckinDays(records);
+    const checkinRate = periodDays > 0 ? Math.min(1, checkinDays / periodDays) : 0;
+    const checkinScore = Math.min(70, Math.round(checkinRate * 70));
+    const stableDays = this.getStableDays(records);
+    const stabilityScore = stableDays >= 7 ? 30 : Math.min(30, stableDays * 4);
     return Math.min(100, checkinScore + stabilityScore);
   },
 
+  /**
+   * 获取评分周期天数：进行中的本月/今年按已过天数，已结束周期按完整天数
+   */
   getScorePeriodDays(records) {
+    const today = dayjs();
     if (this.data.scope === 'month') {
-      return dayjs(`${this.data.currentMonth}-01`).daysInMonth();
+      const monthStart = dayjs(`${this.data.currentMonth}-01`);
+      if (this.data.currentMonth === today.format('YYYY-MM')) {
+        return Math.max(today.date(), 1);
+      }
+      return monthStart.daysInMonth();
     }
     if (this.data.scope === 'year') {
       const year = Number(this.data.currentYear);
+      if (String(year) === today.format('YYYY')) {
+        return Math.max(today.diff(dayjs(`${year}-01-01`), 'day') + 1, 1);
+      }
       return new Date(year, 1, 29).getMonth() === 1 ? 366 : 365;
     }
     if (records.length < 2) return 1;
@@ -342,7 +363,14 @@ Page({
       insights.push('建议先把连续记录做到 7 天，数据连续后更容易发现问题。');
     }
 
-    if (records.length < 10) {
+    const periodDays = this.getScorePeriodDays(records);
+    const checkinDays = this.getUniqueCheckinDays(records);
+    const checkinRate = periodDays > 0 ? checkinDays / periodDays : 0;
+    const lowRecordThreshold = this.data.scope === 'month'
+      ? Math.min(10, Math.max(3, Math.ceil(periodDays * 0.5)))
+      : Math.min(30, Math.max(10, Math.ceil(periodDays * 0.3)));
+
+    if (checkinDays < lowRecordThreshold && checkinRate < 0.6) {
       insights.push('记录次数偏少，不必急着追求大变化，先让数据完整起来。');
     }
 
