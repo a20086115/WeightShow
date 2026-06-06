@@ -9,7 +9,7 @@ const _ = db.command
 const REPORT_COLLECTION = 'monthlyReports'
 const RECORD_PAGE_SIZE = 1000
 // 报告生成逻辑版本号：升级 prompt/分析框架时递增，使旧缓存自然失效、自动重新生成
-const REPORT_VERSION = 'v2'
+const REPORT_VERSION = 'v3'
 
 let aiInstance = null
 try {
@@ -105,7 +105,8 @@ function normalizeReportStyle(event = {}) {
 - 可以讽刺拖延、偷懒、借口、意志力表演，但禁止羞辱外貌/身材/性别，禁止人身攻击和制造身材焦虑
 - insights 至少 2 条 type=warning，标题要扎心（如「打卡率感人」「体重在玩你」）
 - encouragement 也要毒舌收尾（如「下次别光看不练，数据可不会陪你演戏」），禁止突然煽情
-- 毒舌程度参考：「这个月打卡才 X 天，这出勤率公司早把你开了」级别的犀利，但必须基于真实数据`
+- 毒舌程度参考：「这个月打卡才 X 天，这出勤率公司早把你开了」级别的犀利，但必须基于真实数据
+- 打卡率=打卡天数/本月已过天数（非整月30天）；月初连续打卡应视为高出勤，禁止误判为低打卡率`
     }
   }
   return {
@@ -117,7 +118,7 @@ function normalizeReportStyle(event = {}) {
 - 全文用数据说话：引用具体数值、百分比、对比（首末体重、波动幅度、打卡完整度、最长/当前连续天数）
 - 分析要有因果链：「因为打卡集中在周X → 导致周Y数据缺失 → 影响趋势判断准确性」
 - trend.description 要拆解体重走势阶段（前期/中期/后期），指出波动是否与打卡密度相关
-- habit 要量化：打卡率=打卡天数/周期天数，指出数据置信度限制
+- habit 要量化：打卡率=打卡天数/周期已过天数（当月/当年按今日为止，非整月整年总天数），指出数据置信度限制
 - insights 侧重模式识别：周期性波动、平台期、反弹风险、目标达成路径
 - 语气克制、客观、无情绪煽动；建议具体可执行，带优先级
 - 禁止鸡汤和调侃，用「数据显示」「从记录来看」「建议关注」等专业表述`
@@ -257,17 +258,51 @@ function getMaxGapDays(records) {
 }
 
 /**
- * 获取周期内总天数（用于计算打卡完整度）
+ * 获取月份总天数
+ */
+function getDaysInMonth(year, month) {
+  return new Date(year, month, 0).getDate()
+}
+
+/**
+ * 获取当月/当年已过天数（东八区），用于计算进行中的周期打卡率
+ */
+function getElapsedDaysInMonth(month, todayCST = getTodayInCST()) {
+  const [year, monthNum] = month.split('-').map(Number)
+  const totalDays = getDaysInMonth(year, monthNum)
+  const currentMonth = todayCST.slice(0, 7)
+  if (month === currentMonth) {
+    return Math.max(1, parseInt(todayCST.slice(8, 10), 10))
+  }
+  if (month < currentMonth) {
+    return totalDays
+  }
+  return 1
+}
+
+function getElapsedDaysInYear(year, todayCST = getTodayInCST()) {
+  const yearText = String(year)
+  const currentYear = todayCST.slice(0, 4)
+  if (yearText !== currentYear) {
+    const y = Number(year)
+    const isLeap = (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0
+    return isLeap ? 366 : 365
+  }
+  const start = new Date(`${yearText}-01-01T00:00:00+08:00`)
+  const end = new Date(`${todayCST}T00:00:00+08:00`)
+  return Math.max(1, Math.round((end - start) / 86400000) + 1)
+}
+
+/**
+ * 获取周期内有效天数（用于计算打卡完整度）
+ * 进行中的月/年按「今日为止已过天数」，已结束周期按完整天数
  */
 function getPeriodDays(context, records) {
   if (context.scope === 'month') {
-    const [year, month] = context.month.split('-').map(Number)
-    return new Date(year, month, 0).getDate()
+    return getElapsedDaysInMonth(context.month)
   }
   if (context.scope === 'year') {
-    const year = Number(context.year)
-    const isLeap = (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0
-    return isLeap ? 366 : 365
+    return getElapsedDaysInYear(context.year)
   }
   if (!records.length) return 0
   const dates = records.map((item) => item.date).sort()
@@ -379,7 +414,9 @@ function buildMetrics(context, userInfo, records) {
   const latestBmi = latest !== null && height ? round(latest / 2 / (height * height / 10000), 2) : null
 
   const periodDays = getPeriodDays(context, weightRecords)
-  const checkinRate = periodDays > 0 ? round((weightRecords.length / periodDays) * 100, 1) : null
+  const checkinRate = periodDays > 0
+    ? Math.min(100, round((weightRecords.length / periodDays) * 100, 1))
+    : null
   const volatility = getVolatilityAnalysis(weights)
   const recentTrend = getRecentTrendAnalysis(weightRecords)
   const goalProgress = first !== null && aimWeight !== null && first !== aimWeight
@@ -439,12 +476,15 @@ function getStyleFallbackCopy(metrics) {
   const changeText = change === null ? '暂无变化' : `${change > 0 ? '+' : ''}${formatNumber(change)}斤`
   const rateText = metrics.checkinRate !== null ? `打卡率 ${formatNumber(metrics.checkinRate)}%` : ''
   const hasRecords = metrics.checkinDays > 0
+  const goodAttendance = metrics.checkinRate !== null && metrics.checkinRate >= 80
 
   if (metrics.reportStyle === 'roast') {
     return {
-      tag: change !== null && change > 0 ? '体重在报复你' : hasRecords ? '打卡率感人' : '空空如也',
+      tag: change !== null && change > 0 ? '体重在报复你' : hasRecords && !goodAttendance ? '打卡率感人' : hasRecords ? '体重曲线作怪' : '空空如也',
       summary: hasRecords
-        ? `${metrics.periodLabel}就打卡 ${metrics.checkinDays} 天？${rateText ? rateText + '，' : ''}体重${changeText}。这出勤率，连体重都懒得配合你演戏。`
+        ? goodAttendance
+          ? `${metrics.periodLabel}打卡 ${metrics.checkinDays} 天，${rateText}，出勤还行。但体重${changeText}，别光顾着打卡，秤可不会陪你演戏。`
+          : `${metrics.periodLabel}就打卡 ${metrics.checkinDays} 天？${rateText ? rateText + '，' : ''}体重${changeText}。这出勤率，连体重都懒得配合你演戏。`
         : `${metrics.periodLabel}一条记录都没有，是打算靠意念减重吗？`,
       trendDesc: change !== null && change > 0
         ? `体重往上飙了 ${formatNumber(change)} 斤，曲线比你的心意还飘忽。`
