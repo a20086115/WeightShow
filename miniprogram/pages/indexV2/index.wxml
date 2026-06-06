@@ -19,7 +19,7 @@
       <view class="card-sparkle star-b">✦</view>
       <view class="today-card-head">
         <view class="today-title-wrap">
-          <image class="today-title-icon" src="../../瘦身打卡助手_透明小图标PNG/11_累计打卡_日历图标.png" mode="aspectFit"></image>
+          <image class="today-title-icon" src="../../images/home/total-checkin.png" mode="aspectFit"></image>
           <view class="today-title">今日体重</view>
         </view>
         <button class="checkin-btn" bindtap="openCheckin">
@@ -80,7 +80,7 @@
     <view class="quick-actions">
       <view class="quick-action ai" bindtap="goAnalysis">
         <view class="quick-icon-bubble">
-          <image class="quick-icon" src="../../瘦身打卡助手_透明小图标PNG/08_AI分析_机器人图标.png" mode="aspectFit"></image>
+          <image class="quick-icon" src="../../images/home/ai-analysis.png" mode="aspectFit"></image>
         </view>
         <view class="quick-copy">
           <view class="quick-title">AI分析</view>
@@ -90,7 +90,7 @@
       </view>
       <view class="quick-action group" bindtap="openJoinGroupDialog">
         <view class="quick-icon-bubble">
-          <image class="quick-icon" src="../../瘦身打卡助手_透明小图标PNG/09_加群交流_群聊图标.png" mode="aspectFit"></image>
+          <image class="quick-icon" src="../../images/home/join-group.png" mode="aspectFit"></image>
         </view>
         <view class="quick-copy">
           <view class="quick-title">加群交流</view>
@@ -100,7 +100,7 @@
       </view>
       <view class="quick-action share" bindtap="openSharePanel">
         <view class="quick-icon-bubble">
-          <image class="quick-icon" src="../../瘦身打卡助手_透明小图标PNG/10_分享成果_分享图标.png" mode="aspectFit"></image>
+          <image class="quick-icon" src="../../images/home/share.png" mode="aspectFit"></image>
         </view>
         <view class="quick-copy">
           <view class="quick-title">分享成果</view>
@@ -125,7 +125,7 @@
   <view class="trend-card">
     <view class="section-head">
       <view class="trend-title-wrap">
-        <image class="trend-title-icon" src="../../瘦身打卡助手_透明小图标PNG/13_本月变化_趋势图标.png" mode="aspectFit"></image>
+        <image class="trend-title-icon" src="../../images/home/month-trend.png" mode="aspectFit"></image>
         <view class="card-title">本月趋势</view>
       </view>
       <view class="trend-legend">
