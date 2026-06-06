@@ -7,6 +7,56 @@
   box-sizing: border-box;
 }
 
+.custom-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  width: 100vw;
+  margin: 0;
+  background: #188be4;
+  box-sizing: border-box;
+}
+
+.custom-nav-spacer {
+  width: 100%;
+}
+
+.custom-nav-title {
+  position: absolute;
+  left: 44rpx;
+  color: #ffffff;
+  font-size: 38rpx;
+  font-weight: 900;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.favorite-entry {
+  position: absolute;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 999rpx;
+  background: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+  font-size: 25rpx;
+  font-weight: 800;
+  box-shadow: 0 8rpx 22rpx rgba(16, 74, 120, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5rpx;
+}
+
+.favorite-star {
+  color: #ffffff;
+  font-size: 30rpx;
+  line-height: 1;
+}
+
 .calendar-section {
   margin-top: 8rpx;
 }
@@ -119,6 +169,108 @@
   justify-content: center;
 }
 
+.favorite-guide-mask {
+  position: fixed;
+  z-index: 100004;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding: 250rpx 34rpx 44rpx;
+  background: rgba(0, 0, 0, 0.52);
+  box-sizing: border-box;
+}
+
+.favorite-guide-arrow {
+  position: fixed;
+  z-index: 2;
+  width: 92rpx;
+  height: 92rpx;
+  color: #ffffff;
+  font-size: 86rpx;
+  font-weight: 900;
+  line-height: 92rpx;
+  text-align: center;
+  transform: rotate(-18deg);
+  text-shadow: 0 6rpx 18rpx rgba(0, 0, 0, 0.24);
+}
+
+.favorite-guide-card {
+  position: relative;
+  padding: 34rpx 28rpx 30rpx;
+  border: 4rpx solid rgba(255, 255, 255, 0.92);
+  border-radius: 26rpx;
+  background: rgba(255, 255, 255, 0.12);
+  box-sizing: border-box;
+  backdrop-filter: blur(4px);
+}
+
+.favorite-guide-title {
+  color: #ffffff;
+  font-size: 36rpx;
+  font-weight: 900;
+  line-height: 1.35;
+  text-align: center;
+}
+
+.favorite-guide-tip {
+  margin-top: 18rpx;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 26rpx;
+  font-weight: 700;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.favorite-guide-steps {
+  margin-top: 30rpx;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18rpx;
+}
+
+.favorite-guide-step {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.favorite-step-icon {
+  width: 74rpx;
+  height: 74rpx;
+  border: 4rpx solid #ffffff;
+  border-radius: 50%;
+  color: #ffffff;
+  font-size: 40rpx;
+  font-weight: 900;
+  line-height: 66rpx;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.favorite-step-text {
+  margin-top: 14rpx;
+  color: #ffffff;
+  font-size: 24rpx;
+  font-weight: 800;
+  line-height: 1.25;
+  text-align: center;
+}
+
+.favorite-guide-action {
+  height: 82rpx;
+  margin: 42rpx auto 0;
+  padding: 0 42rpx;
+  border: 4rpx dashed rgba(255, 255, 255, 0.9);
+  border-radius: 999rpx;
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  font-size: 31rpx;
+  font-weight: 900;
+  line-height: 74rpx;
+}
+
 .share-nudge {
   min-height: 112rpx;
   margin-top: 18rpx;
@@ -206,6 +358,8 @@
 .share-option::after,
 .nudge-primary::after,
 .nudge-secondary::after,
+.favorite-entry::after,
+.favorite-guide-action::after,
 .primary-action::after,
 .primary-checkin-action::after,
 .secondary-checkin-action::after,

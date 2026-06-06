@@ -1,4 +1,13 @@
 <view class="page">
+  <view class="custom-nav" style="{{navBarStyle}}">
+    <view class="custom-nav-title" style="{{navTitleStyle}}">瘦身打卡助手</view>
+    <button class="favorite-entry" style="{{favoriteButtonStyle}}" bindtap="openFavoriteGuide">
+      <text class="favorite-star">☆</text>
+      <text>收藏</text>
+    </button>
+  </view>
+  <view class="custom-nav-spacer" style="{{navBarStyle}}"></view>
+
   <view class="calendar-section">
     <weight-calendar
       year-month="{{currentMonth}}"
@@ -23,6 +32,7 @@
           <view class="today-title">今日体重</view>
         </view>
         <button class="checkin-btn" bindtap="openCheckin">
+          <text class="checkin-btn-icon">✓</text>
           <text>今日打卡</text>
         </button>
       </view>
@@ -37,7 +47,7 @@
         </view>
 
         <view class="today-progress">
-          <view class="today-label">{{monthTrendLabel}}</view>
+          <view class="today-label">本月变化</view>
           <view class="loss-value {{monthChangeClass}}">
             <text>{{monthLossValue}}</text>
             <text class="loss-unit">斤</text>
@@ -71,7 +81,7 @@
           </view>
           <view class="progress-meta">
             <text>目标进度 <text class="progress-percent {{targetProgressDisplay < 0 ? 'negative' : ''}}">{{targetProgressDisplay}}%</text></text>
-            <text>还需 {{targetDistanceValue}}斤</text>
+            <text class="progress-remain">还差 {{targetDistanceValue}}斤</text>
           </view>
         </view>
       </view>
@@ -86,7 +96,6 @@
           <view class="quick-title">AI分析</view>
           <view class="quick-subtitle">智能解读数据</view>
         </view>
-        <van-icon name="arrow" class="quick-arrow" />
       </view>
       <view class="quick-action group" bindtap="openJoinGroupDialog">
         <view class="quick-icon-bubble">
@@ -96,7 +105,6 @@
           <view class="quick-title">加群交流</view>
           <view class="quick-subtitle">一起打卡</view>
         </view>
-        <van-icon name="arrow" class="quick-arrow" />
       </view>
       <view class="quick-action share" bindtap="openSharePanel">
         <view class="quick-icon-bubble">
@@ -106,7 +114,6 @@
           <view class="quick-title">分享成果</view>
           <view class="quick-subtitle">记录变化</view>
         </view>
-        <van-icon name="arrow" class="quick-arrow" />
       </view>
     </view>
   </view>
@@ -143,8 +150,31 @@
       记录两次体重后，将生成趋势图
     </view>
     <view class="chart-box" wx:else>
-      <ec-canvas wx:if="{{!showCheckinDialog && !showSharePanel && !visibleJoinGroup && !showCheckinSuccessDialog && !showBmiDialog && !showOnboarding}}" id="trend-chart" canvas-id="trend-chart" ec="{{ec}}"></ec-canvas>
+      <ec-canvas wx:if="{{!showCheckinDialog && !showSharePanel && !visibleJoinGroup && !showCheckinSuccessDialog && !showBmiDialog && !showOnboarding && !showFavoriteGuide}}" id="trend-chart" canvas-id="trend-chart" ec="{{ec}}"></ec-canvas>
       <view wx:else class="chart-hidden-placeholder"></view>
+    </view>
+  </view>
+
+  <view class="favorite-guide-mask" wx:if="{{showFavoriteGuide}}" bindtap="closeFavoriteGuide">
+    <view class="favorite-guide-arrow" style="{{favoriteGuideArrowStyle}}">↗</view>
+    <view class="favorite-guide-card" catchtap="noop">
+      <view class="favorite-guide-title">添加小程序，更容易找到体重记录神器</view>
+      <view class="favorite-guide-tip">点击右上角「···」，选择「添加到我的小程序」或「添加到桌面」。</view>
+      <view class="favorite-guide-steps">
+        <view class="favorite-guide-step">
+          <view class="favorite-step-icon">1</view>
+          <view class="favorite-step-text">点右上角菜单</view>
+        </view>
+        <view class="favorite-guide-step">
+          <view class="favorite-step-icon">2</view>
+          <view class="favorite-step-text">选择添加</view>
+        </view>
+        <view class="favorite-guide-step">
+          <view class="favorite-step-icon">3</view>
+          <view class="favorite-step-text">下次快速打开</view>
+        </view>
+      </view>
+      <button class="favorite-guide-action" bindtap="closeFavoriteGuide">记住了，我去试试</button>
     </view>
   </view>
 

@@ -1,4 +1,4 @@
-/* 首页中段：今日体重卡 + 快捷入口（合并多轮迭代后的最终样式） */
+/* indexV2 showcase - design ref, 1px ~= 1rpx */
 
 .middle-showcase {
   margin: 8rpx 0 0;
@@ -20,13 +20,14 @@
 .middle-showcase .overview-card {
   position: relative;
   z-index: 1;
-  margin-top: 0;
-  padding: 26rpx 24rpx 24rpx;
-  border: 1rpx solid #eef3f8;
-  border-radius: 18rpx;
-  background: #ffffff;
-  box-shadow: 0 12rpx 26rpx rgba(32, 58, 84, 0.08);
+  margin-top: 20rpx;
+  padding: 24rpx;
+  border: 0;
+  border-radius: 24rpx;
+  background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+  box-shadow: 0 28rpx 72rpx rgba(32, 80, 150, 0.1);
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 .middle-showcase .today-card-head,
@@ -40,62 +41,76 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 18rpx;
+  gap: 16rpx;
+  margin-bottom: 34rpx;
 }
 
 .today-title-wrap {
   min-width: 0;
+  flex: 1;
   display: flex;
   align-items: center;
+  gap: 14rpx;
 }
 
 .middle-showcase .today-title-icon {
   flex-shrink: 0;
-  width: 58rpx;
-  height: 58rpx;
-  margin-right: 10rpx;
-  border-radius: 0;
-  background: transparent;
-  box-shadow: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.middle-showcase .today-title-icon image {
-  width: 36rpx;
-  height: 36rpx;
+  width: 40rpx;
+  height: 40rpx;
+  padding: 6rpx;
+  border: 4rpx solid #2878ff;
+  border-radius: 10rpx;
+  background: #ffffff;
+  box-sizing: border-box;
 }
 
 .middle-showcase .today-title {
-  color: #071436;
+  color: #071538;
   font-size: 34rpx;
   font-weight: 800;
+  letter-spacing: 0.5rpx;
   white-space: nowrap;
 }
 
 .checkin-btn {
   flex-shrink: 0;
-  height: 56rpx;
-  min-width: 126rpx;
+  height: 48rpx;
   margin: 0;
-  padding: 0 18rpx;
+  padding: 0 26rpx;
   border: 0;
   border-radius: 999rpx;
-  background: #167cff;
+  background: linear-gradient(135deg, #4388ff 0%, #0066f7 100%);
   color: #ffffff;
-  box-shadow: 0 8rpx 16rpx rgba(22, 124, 255, 0.18);
+  box-shadow: 0 10rpx 20rpx rgba(18, 102, 255, 0.28);
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 8rpx;
   font-size: 24rpx;
-  font-weight: 800;
-  line-height: 56rpx;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.checkin-btn-icon {
+  width: 28rpx;
+  height: 28rpx;
+  border-radius: 50%;
+  background: #ffffff;
+  color: #1672ff;
+  font-size: 20rpx;
+  font-weight: 900;
+  line-height: 28rpx;
+  text-align: center;
+  flex-shrink: 0;
 }
 
 .checkin-btn.checked {
-  background: linear-gradient(180deg, #2fd383 0%, #19b86b 100%);
-  box-shadow: 0 10rpx 22rpx rgba(32, 183, 118, 0.22);
+  background: linear-gradient(135deg, #2fd383 0%, #19b86b 100%);
+  box-shadow: 0 20rpx 40rpx rgba(32, 183, 118, 0.22);
+}
+
+.checkin-btn.checked .checkin-btn-icon {
+  color: #19b86b;
 }
 
 .checkin-plus {
@@ -103,7 +118,8 @@
 }
 
 .middle-showcase .today-metrics {
-  margin-top: 26rpx;
+  margin-top: 0;
+  margin-bottom: 14rpx;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   align-items: stretch;
@@ -112,11 +128,14 @@
 .middle-showcase .today-weight,
 .middle-showcase .today-progress,
 .middle-showcase .today-target {
+  min-width: 0;
   min-height: 116rpx;
-  padding: 0 14rpx;
+  padding: 0 18rpx;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
 }
 
 .middle-showcase .today-weight {
@@ -125,9 +144,8 @@
 }
 
 .middle-showcase .today-progress {
-  padding: 0 18rpx;
-  border-left: 1rpx solid #e6ecf4;
-  border-right: 1rpx solid #e6ecf4;
+  border-left: 2rpx solid #e6edf6;
+  border-right: 2rpx solid #e6edf6;
 }
 
 .middle-showcase .today-target {
@@ -138,115 +156,99 @@
 .middle-showcase .today-label {
   display: flex;
   align-items: center;
-  min-height: 30rpx;
-  margin-bottom: 0;
-  color: #66789a;
+  margin-bottom: 16rpx;
+  color: #7b879d;
   font-size: 22rpx;
-  font-weight: 700;
-  line-height: 30rpx;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
 }
 
 .target-label {
-  display: flex;
-  align-items: center;
-  gap: 8rpx;
+  gap: 6rpx;
 }
 
 .target-edit-icon {
-  color: #6d7d98;
-  font-size: 20rpx;
+  color: #a7b0c2;
+  font-size: 18rpx;
 }
 
 .middle-showcase .weight-value,
 .middle-showcase .loss-value,
 .middle-showcase .target-value {
-  margin-top: auto;
-  padding-top: 10rpx;
+  padding-top: 8rpx;
   white-space: nowrap;
 }
 
-.weight-value text:first-child {
-  color: #061335;
-  font-size: 52rpx;
+.weight-value text:first-child,
+.loss-value text:first-child,
+.target-value text:first-child {
+  color: #071538;
+  font-size: 48rpx;
   line-height: 1;
-  font-weight: 800;
+  font-weight: 900;
 }
 
 .weight-unit,
 .loss-unit,
 .target-unit {
   margin-left: 6rpx;
-  color: #52617e;
-  font-size: 22rpx;
+  color: #5e6a7f;
+  font-size: 24rpx;
   font-weight: 700;
+  flex-shrink: 0;
 }
 
 .loss-value {
-  color: #18bf68;
-  font-weight: 800;
+  color: #18bd61;
 }
 
-.loss-value text:first-child {
-  font-size: 52rpx;
-  line-height: 1;
-}
-
-.loss-value.month-up {
-  color: #ff4f68;
-}
-
-.target-value text:first-child {
-  color: #071436;
-  font-size: 52rpx;
-  line-height: 1;
-  font-weight: 800;
+.loss-value.month-up,
+.loss-value.month-up text:first-child {
+  color: #ff3f66;
 }
 
 .today-progress-footer {
-  margin-top: 32rpx;
+  margin-top: 0;
   padding-top: 0;
   border-top: 0;
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
-  column-gap: 18rpx;
+  column-gap: 20rpx;
   align-items: center;
 }
 
 .today-chip-row {
   margin-top: 0;
-  display: flex;
-  align-items: center;
-  gap: 8rpx;
-  flex-wrap: nowrap;
   min-width: 0;
 }
 
 .middle-showcase .bmi-pill {
   width: 100%;
-  height: 44rpx;
+  height: 72rpx;
   margin-top: 0;
   padding: 0 12rpx;
-  border: 1rpx solid #6ba4ff;
+  border: 2rpx solid #d9e8ff;
   border-radius: 999rpx;
   background: #ffffff;
-  color: #2478ff;
-  font-size: 22rpx;
-  font-weight: 700;
+  color: #2878ff;
+  font-size: 20rpx;
+  font-weight: 800;
+  box-shadow: 0 16rpx 36rpx rgba(41, 112, 255, 0.08);
   box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: center;
   white-space: nowrap;
-  flex-shrink: 0;
 }
 
 .bmi-divider {
   margin: 0 6rpx;
-  color: #9aabc2;
+  color: #2878ff;
 }
 
 .bmi-status-inline {
-  color: #ff6a2a;
+  color: #ff6a22;
   font-weight: 800;
 }
 
@@ -255,8 +257,10 @@
 }
 
 .bmi-arrow {
-  margin-left: 4rpx;
-  font-size: 20rpx;
+  margin-left: 6rpx;
+  font-size: 26rpx;
+  color: #2878ff;
+  flex-shrink: 0;
 }
 
 .progress-inline {
@@ -264,140 +268,145 @@
 }
 
 .progress-track {
-  height: 14rpx;
+  height: 20rpx;
   margin-top: 0;
-  margin-left: 0;
+  margin-bottom: 18rpx;
   border-radius: 999rpx;
-  background: #e9edf4;
+  background: #e9eef6;
   overflow: hidden;
-  box-shadow: inset 0 1rpx 2rpx rgba(20, 42, 80, 0.04);
 }
 
 .progress-fill {
   height: 100%;
+  min-width: 28rpx;
   border-radius: 999rpx;
-  background: linear-gradient(90deg, #19c96d 0%, #17b95f 100%);
-  box-shadow: 0 4rpx 12rpx rgba(25, 201, 109, 0.28);
+  background: linear-gradient(90deg, #18bd61 0%, #32d276 100%);
 }
 
 .progress-meta {
-  margin-top: 10rpx;
-  padding-left: 0;
-  color: #627494;
+  margin-top: 0;
+  color: #6d7890;
   font-size: 22rpx;
   font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 8rpx;
 }
 
 .progress-percent {
   margin-left: 8rpx;
-  color: #16bd64;
-  font-size: 28rpx;
-  font-weight: 800;
+  color: #18a94d;
+  font-size: 30rpx;
+  font-weight: 900;
+}
+
+.progress-percent.negative {
+  color: #ff3f66;
+}
+
+.progress-remain {
+  color: #69758c;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .middle-showcase .quick-actions {
   margin-top: 18rpx;
-  padding: 14rpx;
-  border: 1rpx solid #eef3f8;
-  border-radius: 18rpx;
-  background: #ffffff;
-  box-shadow: 0 12rpx 26rpx rgba(32, 58, 84, 0.08);
-  box-sizing: border-box;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12rpx;
+  gap: 14rpx;
 }
 
 .middle-showcase .quick-action {
-  min-height: 116rpx;
+  min-height: 118rpx;
   margin: 0;
-  padding: 14rpx 10rpx 12rpx;
+  padding: 20rpx 16rpx;
   border: 0;
   border-radius: 22rpx;
-  box-shadow: none;
   box-sizing: border-box;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  justify-content: center;
-  text-align: center;
-  position: relative;
+  gap: 14rpx;
+  text-align: left;
+  overflow: hidden;
+  box-shadow:
+    0 10rpx 26rpx rgba(35, 73, 130, 0.08),
+    inset 0 0 0 1rpx rgba(255, 255, 255, 0.9);
 }
 
 .quick-action.ai {
-  background: linear-gradient(135deg, #eef7ff 0%, #f7fbff 100%);
+  background: linear-gradient(135deg, #f2f8ff 0%, #ffffff 100%);
 }
 
 .quick-action.group {
-  background: linear-gradient(135deg, #effbf2 0%, #f7fff8 100%);
+  background: linear-gradient(135deg, #f0fff4 0%, #ffffff 100%);
 }
 
 .quick-action.share {
-  background: linear-gradient(135deg, #fff4e9 0%, #fffaf4 100%);
+  background: linear-gradient(135deg, #fff5ea 0%, #ffffff 100%);
 }
 
 .middle-showcase .quick-icon-bubble {
   flex-shrink: 0;
-  width: 58rpx;
-  height: 58rpx;
-  margin: 0 0 8rpx;
+  width: 54rpx;
+  height: 54rpx;
+  margin: 0;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.88);
+  background: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: inset 0 0 0 1rpx rgba(255, 255, 255, 0.78), 0 8rpx 18rpx rgba(40, 91, 140, 0.1);
+  box-shadow: 0 8rpx 18rpx rgba(45, 91, 160, 0.08);
 }
 
 .ai .quick-icon-bubble {
-  box-shadow: inset 0 0 0 1rpx rgba(255, 255, 255, 0.78), 0 8rpx 18rpx rgba(22, 124, 255, 0.16);
+  box-shadow: 0 8rpx 18rpx rgba(22, 124, 255, 0.12);
 }
 
 .group .quick-icon-bubble {
-  box-shadow: inset 0 0 0 1rpx rgba(255, 255, 255, 0.78), 0 8rpx 18rpx rgba(32, 183, 118, 0.16);
+  box-shadow: 0 8rpx 18rpx rgba(32, 183, 118, 0.12);
 }
 
 .share .quick-icon-bubble {
-  box-shadow: inset 0 0 0 1rpx rgba(255, 255, 255, 0.78), 0 8rpx 18rpx rgba(255, 138, 42, 0.16);
+  box-shadow: 0 8rpx 18rpx rgba(255, 138, 42, 0.12);
 }
 
 .middle-showcase .quick-icon {
-  width: 44rpx;
-  height: 44rpx;
+  width: 30rpx;
+  height: 30rpx;
   margin: 0;
 }
 
 .middle-showcase .quick-copy {
+  flex: 1;
   min-width: 0;
-  width: 100%;
 }
 
 .middle-showcase .quick-title {
-  color: #111d38;
-  font-size: 25rpx;
+  margin-bottom: 6rpx;
+  color: #071538;
+  font-size: 24rpx;
   font-weight: 800;
-  line-height: 1.15;
+  line-height: 1.2;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .middle-showcase .quick-subtitle {
-  margin-top: 5rpx;
-  color: #5d6d8a;
-  font-size: 20rpx;
-  line-height: 1.15;
-  white-space: nowrap;
-}
-
-.middle-showcase .quick-arrow {
-  position: absolute;
-  right: 10rpx;
-  bottom: 12rpx;
-  flex-shrink: 0;
-  color: #5f6f8c;
+  margin-top: 0;
+  color: #404856;
   font-size: 22rpx;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .middle-showcase + .share-nudge,

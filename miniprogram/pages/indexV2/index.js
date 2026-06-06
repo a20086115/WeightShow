@@ -17,6 +17,15 @@ function formatDate(date) {
   return `${formatMonth(date)}-${pad(date.getDate())}`;
 }
 
+/**
+ * 判断日期是否晚于今天（明日及之后）
+ * @param {string} dateStr YYYY-MM-DD
+ * @returns {boolean}
+ */
+function isAfterToday(dateStr) {
+  return dateStr > formatDate(new Date());
+}
+
 function toNumber(value) {
   const num = parseFloat(value);
   return Number.isFinite(num) ? num : null;
@@ -74,7 +83,6 @@ Page({
     todayChangeClass: '',
     monthChangeText: '--',
     monthChangeClass: '',
-    monthTrendLabel: '已减',
     monthLossValue: '--',
     totalCheckinDays: '--',
     monthCheckinDays: 0,
@@ -91,8 +99,13 @@ Page({
     showBmiDialog: false,
     showSharePanel: false,
     showShareNudge: false,
+    showFavoriteGuide: false,
     visibleJoinGroup: false,
     pendingAddToDesktopGuide: false,
+    navBarStyle: '',
+    navTitleStyle: '',
+    favoriteButtonStyle: '',
+    favoriteGuideArrowStyle: '',
     htmlImage: 'cloud://release-ba24f3.7265-release-ba24f3-1257780911/activity.png',
     bmiMarkerPosition: 0,
     sharePreviewText: '记录每天变化，一起打卡吧',
@@ -122,6 +135,7 @@ Page({
   },
 
   onLoad() {
+    this.initCustomNav();
     if (wx.showShareMenu) {
       wx.showShareMenu({
         menus: ['shareAppMessage', 'shareTimeline']
@@ -134,6 +148,35 @@ Page({
 
   onReady() {
     this.ecComponent = this.selectComponent('#trend-chart');
+  },
+
+  initCustomNav() {
+    let systemInfo = {};
+    let menuButton = null;
+    try {
+      systemInfo = wx.getSystemInfoSync ? wx.getSystemInfoSync() : {};
+      menuButton = wx.getMenuButtonBoundingClientRect ? wx.getMenuButtonBoundingClientRect() : null;
+    } catch (err) {
+      systemInfo = {};
+      menuButton = null;
+    }
+
+    const windowWidth = systemInfo.windowWidth || 375;
+    const statusBarHeight = systemInfo.statusBarHeight || 20;
+    const menuTop = menuButton && menuButton.top ? menuButton.top : statusBarHeight + 4;
+    const menuHeight = menuButton && menuButton.height ? menuButton.height : 32;
+    const menuBottom = menuButton && menuButton.bottom ? menuButton.bottom : menuTop + menuHeight;
+    const capsuleLeft = menuButton && menuButton.left ? menuButton.left : windowWidth - 96;
+    const capsuleSpace = Math.max(96, windowWidth - capsuleLeft);
+    const favoriteWidth = 82;
+    const favoriteRight = capsuleSpace + 8;
+
+    this.setData({
+      navBarStyle: `height:${menuBottom + 8}px;`,
+      navTitleStyle: `top:${menuTop}px;height:${menuHeight}px;line-height:${menuHeight}px;right:${favoriteRight + favoriteWidth + 12}px;`,
+      favoriteButtonStyle: `top:${menuTop}px;right:${favoriteRight}px;width:${favoriteWidth}px;height:${menuHeight}px;line-height:${menuHeight}px;`,
+      favoriteGuideArrowStyle: `top:${menuBottom + 2}px;right:${capsuleSpace + 32}px;`
+    });
   },
 
   refreshAll() {
@@ -225,7 +268,6 @@ Page({
       todayChangeClass: changeInfo.className,
       monthChangeText: monthChangeInfo.text,
       monthChangeClass: monthChangeInfo.className,
-      monthTrendLabel: monthChangeInfo.className === 'month-up' ? '变化' : '已减',
       monthLossValue: this.getMonthLossValue(records),
       monthCheckinDays: records.length,
       targetText: targetInfo.text,
@@ -526,12 +568,20 @@ Page({
   onCalendarSelect(e) {
     const selectedDate = e.detail.date;
     const selected = this.data.recordsMap[selectedDate];
+    const isFuture = isAfterToday(selectedDate);
     this.setData({
       selectedDate,
       hasSelectedRecord: !!selected,
       checkinWeight: selected ? selected.weight : '',
       checkinWeightKg: selected && selected.weight ? formatWeight(toNumber(selected.weight) / 2) : ''
     }, () => {
+      this.updateOverview();
+      if (isFuture) {
+        if (!selected) {
+          wx.showToast({ title: '不能为未来日期打卡', icon: 'none' });
+        }
+        return;
+      }
       this.openCheckin();
     });
   },
@@ -555,6 +605,10 @@ Page({
   },
 
   openCheckin() {
+    if (isAfterToday(this.data.selectedDate)) {
+      wx.showToast({ title: '不能为未来日期打卡', icon: 'none' });
+      return;
+    }
     const weight = toNumber(this.data.checkinWeight);
     this.setData({
       showCheckinDialog: true,
@@ -656,6 +710,16 @@ Page({
 
   closeSharePanel() {
     this.setData({ showSharePanel: false }, () => {
+      this.initTrendChart();
+    });
+  },
+
+  openFavoriteGuide() {
+    this.setData({ showFavoriteGuide: true });
+  },
+
+  closeFavoriteGuide() {
+    this.setData({ showFavoriteGuide: false }, () => {
       this.initTrendChart();
     });
   },
@@ -817,6 +881,10 @@ Page({
   },
 
   submitCheckin() {
+    if (isAfterToday(this.data.selectedDate)) {
+      wx.showToast({ title: '不能为未来日期打卡', icon: 'none' });
+      return;
+    }
     const weight = toNumber(this.data.checkinWeight);
     if (!weight || weight <= 0) {
       wx.showToast({ title: '请输入有效体重', icon: 'none' });

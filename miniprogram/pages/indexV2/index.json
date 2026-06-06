@@ -2,6 +2,7 @@
   "navigationBarTitleText": "瘦身打卡助手",
   "navigationBarBackgroundColor": "#188be4",
   "navigationBarTextStyle": "white",
+  "navigationStyle": "custom",
   "usingComponents": {
     "weight-calendar": "/components/weightCalendar/weightCalendar",
     "ec-canvas": "../../ec-canvas/ec-canvas",
