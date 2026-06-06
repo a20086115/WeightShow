@@ -1,0 +1,216 @@
+/* 页面骨架：日历、趋势图、分享引导 */
+
+.page {
+  min-height: 100vh;
+  padding: 18rpx 22rpx 40rpx;
+  background: #f6f8fb;
+  box-sizing: border-box;
+}
+
+.calendar-section {
+  margin-top: 8rpx;
+}
+
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.card-title {
+  color: #21304a;
+  font-size: 30rpx;
+  font-weight: 700;
+}
+
+.trend-card {
+  margin-top: 18rpx;
+  padding: 24rpx 24rpx 20rpx;
+  background: #ffffff;
+  border: 1rpx solid #eef3f8;
+  border-radius: 24rpx;
+  box-shadow: 0 12rpx 26rpx rgba(32, 58, 84, 0.08);
+  box-sizing: border-box;
+}
+
+.trend-title-wrap {
+  display: flex;
+  align-items: center;
+}
+
+.trend-title-icon {
+  width: 48rpx;
+  height: 48rpx;
+  margin-right: 12rpx;
+}
+
+.trend-card .card-title {
+  color: #071436;
+  font-size: 34rpx;
+  font-weight: 800;
+}
+
+.trend-legend {
+  display: flex;
+  align-items: center;
+  gap: 22rpx;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+}
+
+.legend-line {
+  position: relative;
+  width: 32rpx;
+  height: 0;
+  margin-right: 8rpx;
+}
+
+.legend-line.weight {
+  border-top: 4rpx solid #167cff;
+}
+
+.legend-line.weight::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 14rpx;
+  height: 14rpx;
+  border: 3rpx solid #167cff;
+  border-radius: 50%;
+  background: #ffffff;
+  box-sizing: border-box;
+  transform: translate(-50%, -50%);
+}
+
+.legend-line.target {
+  border-top: 4rpx dashed #21c875;
+}
+
+.legend-text {
+  color: #63718a;
+  font-size: 22rpx;
+}
+
+.chart-box {
+  height: 360rpx;
+  margin-top: 8rpx;
+}
+
+.chart-box ec-canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.chart-hidden-placeholder {
+  width: 100%;
+  height: 100%;
+}
+
+.chart-empty {
+  height: 260rpx;
+  color: #9aa6b2;
+  font-size: 26rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.share-nudge {
+  min-height: 112rpx;
+  margin-top: 18rpx;
+  padding: 20rpx 22rpx;
+  border-radius: 22rpx;
+  background: #f3faf8;
+  border: 1rpx solid #dff2ed;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18rpx;
+}
+
+.share-nudge-copy {
+  min-width: 0;
+}
+
+.share-nudge-title {
+  color: #1f2d3d;
+  font-size: 27rpx;
+  font-weight: 800;
+}
+
+.share-nudge-desc {
+  margin-top: 6rpx;
+  color: #6d8a85;
+  font-size: 23rpx;
+}
+
+.share-nudge-actions {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+}
+
+.nudge-primary,
+.nudge-secondary {
+  height: 58rpx;
+  margin: 0;
+  padding: 0 18rpx;
+  border: 0;
+  border-radius: 29rpx;
+  font-size: 23rpx;
+  font-weight: 800;
+  line-height: 58rpx;
+}
+
+.nudge-primary {
+  background: #167cff;
+  color: #ffffff;
+  box-shadow: 0 8rpx 16rpx rgba(22, 124, 255, 0.18);
+}
+
+.nudge-secondary {
+  background: #ffffff;
+  color: #7d8790;
+}
+
+.join-group-dialog {
+  max-height: 850rpx;
+  overflow: scroll;
+}
+
+.join-group-image {
+  width: 100%;
+  display: block;
+}
+
+.month-up {
+  color: #ff4f68;
+}
+
+.month-down {
+  color: #18ad73;
+}
+
+.progress-percent.negative {
+  color: #ff4f68;
+}
+
+/* 去除小程序 button 默认边框 */
+.checkin-btn::after,
+.share-option::after,
+.nudge-primary::after,
+.nudge-secondary::after,
+.primary-action::after,
+.primary-checkin-action::after,
+.secondary-checkin-action::after,
+.success-primary::after,
+.success-secondary::after,
+.quick-action::after {
+  border: 0;
+}
