@@ -45,7 +45,7 @@
   </view>
 
   <view class="section-card">
-    <view class="section-title">AI 洞察</view>
+    <view class="section-title">数据解读</view>
     <view class="insight-item {{item.type}}" wx:for="{{report.insights}}" wx:key="title">
       <view class="insight-title">{{item.title}}</view>
       <view class="insight-content">{{item.content}}</view>
@@ -66,14 +66,14 @@
   </view>
 
   <button class="share-button" open-type="share">分享给朋友</button>
-  <button class="refresh-button" wx:if="{{!isSharedReport}}" bindtap="regenerateReport">重新生成</button>
+  <button class="refresh-button" wx:if="{{!isSharedReport}}" bindtap="regenerateReport">刷新分析</button>
   <view class="timeline-tip">右上角菜单可分享到朋友圈</view>
 
   <view class="loading-mask" wx:if="{{loading}}">
     <view class="loading-card">
       <view class="loading-spinner"></view>
-      <view class="loading-title">AI 报告生成中</view>
-      <view class="loading-text">正在整理记录并生成{{reportStyleLabel}}风格内容...</view>
+      <view class="loading-title">正在整理报告</view>
+      <view class="loading-text">正在整理打卡记录，并转为{{reportStyleLabel}}风格内容...</view>
     </view>
   </view>
 </view>

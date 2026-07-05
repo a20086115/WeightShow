@@ -93,8 +93,8 @@
           <image class="quick-icon" src="../../images/home/ai-analysis.png" mode="aspectFit"></image>
         </view>
         <view class="quick-copy">
-          <view class="quick-title">AI分析</view>
-          <view class="quick-subtitle">智能解读数据</view>
+          <view class="quick-title">数据分析</view>
+          <view class="quick-subtitle">解读体重趋势</view>
         </view>
       </view>
       <view class="quick-action group" bindtap="openJoinGroupDialog">
@@ -339,7 +339,7 @@
         <text>继续保持，明天再来打卡</text>
       </view>
       <view class="success-actions">
-        <button class="success-primary" bindtap="goSuccessAnalysis">查看AI分析</button>
+        <button class="success-primary" bindtap="goSuccessAnalysis">查看数据分析</button>
         <button class="success-secondary" open-type="share" data-share-type="checkin">
           <image class="success-share-icon" src="../../images/checkin-dialog/share.png" mode="aspectFit"></image>
           <text>分享给好友</text>

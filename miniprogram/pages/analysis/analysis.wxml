@@ -90,7 +90,7 @@
     <view class="style-sheet" catchtap="noop">
       <view class="style-sheet-handle"></view>
       <view class="style-sheet-title">选择报告风格</view>
-      <view class="style-sheet-subtitle">选好风格后观看广告，生成对应 AI 报告</view>
+      <view class="style-sheet-subtitle">选好风格后观看广告，查看对应分析报告</view>
       <view class="style-option" data-style="professional" bindtap="selectReportStyle">
         <view>
           <view class="style-option-title">专业</view>

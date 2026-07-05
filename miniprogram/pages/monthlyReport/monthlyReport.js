@@ -83,9 +83,9 @@ function getDefaultReport(context) {
   return {
     source: 'loading',
     overview: {
-      title: `AI ${context.reportName}`,
-      summary: '正在生成报告...',
-      tag: '生成中',
+      title: `${context.reportName}分析`,
+      summary: '正在整理报告...',
+      tag: '整理中',
       score: '--'
     },
     metrics: {
@@ -109,7 +109,7 @@ function getDefaultReport(context) {
     nextActions: [],
     encouragement: '',
     share: {
-      title: `${context.periodLabel} AI ${context.reportName}`,
+      title: `${context.periodLabel}${context.reportName}分析`,
       summary: ''
     },
     display: {
@@ -186,7 +186,7 @@ Page({
     sharedReportId: '',
     isSharedReport: false,
     loading: true,
-    reportSourceText: 'AI 生成中',
+    reportSourceText: '生成中',
     report: getDefaultReport(getReportContext())
   },
 
@@ -218,7 +218,7 @@ Page({
   loadAiReport(force = false) {
     this.setData({
       loading: true,
-      reportSourceText: force ? 'AI 重新生成中' : 'AI 生成中'
+      reportSourceText: force ? '重新生成中' : '生成中'
     });
 
     const data = this.data.sharedReportId && !force
@@ -262,11 +262,11 @@ Page({
         reportSourceText: result.source === 'saved'
           ? '已保存报告'
           : result.source === 'ai' || report.source === 'ai'
-            ? 'AI 生成'
-            : '智能兜底'
+            ? '分析报告'
+            : '基础分析'
       });
       if (!result.ok && result.errMsg) {
-        wx.showToast({ title: 'AI 暂不可用，已展示兜底报告', icon: 'none' });
+        wx.showToast({ title: '报告暂不可用，已展示基础分析', icon: 'none' });
       }
     }).catch(() => {
       const context = getReportContext({
@@ -277,7 +277,7 @@ Page({
       this.setData({
         loading: false,
         report: normalizeReport(null, context),
-        reportSourceText: '智能兜底'
+        reportSourceText: '基础分析'
       });
       wx.showToast({ title: '报告生成失败', icon: 'none' });
     });
@@ -286,8 +286,8 @@ Page({
   regenerateReport() {
     if (this.data.loading) return;
     wx.showModal({
-      title: '重新生成报告',
-      content: `会基于当前数据重新调用 AI 生成，并覆盖当前${this.data.reportName}。`,
+      title: '刷新分析报告',
+      content: `会基于当前数据重新生成，并覆盖当前${this.data.reportName}。`,
       confirmColor: '#188be4',
       success: (res) => {
         if (res.confirm) {
@@ -303,7 +303,7 @@ Page({
   onShareAppMessage() {
     const reportId = this.data.reportId || this.data.sharedReportId;
     return {
-      title: this.data.report.share.title || `${this.data.periodLabel} AI ${this.data.reportName}`,
+      title: this.data.report.share.title || `${this.data.periodLabel}${this.data.reportName}分析`,
       path: reportId
         ? `/pages/monthlyReport/monthlyReport?reportId=${reportId}`
         : `/pages/monthlyReport/monthlyReport?scope=${this.data.scope}&month=${this.data.currentMonth}&year=${this.data.currentYear}&style=${this.data.reportStyle}`
@@ -313,7 +313,7 @@ Page({
   onShareTimeline() {
     const reportId = this.data.reportId || this.data.sharedReportId;
     return {
-      title: this.data.report.share.summary || this.data.report.share.title || `${this.data.periodLabel} AI ${this.data.reportName}`,
+      title: this.data.report.share.summary || this.data.report.share.title || `${this.data.periodLabel}${this.data.reportName}分析`,
       query: reportId ? `reportId=${reportId}` : `scope=${this.data.scope}&month=${this.data.currentMonth}&year=${this.data.currentYear}&style=${this.data.reportStyle}`
     };
   }

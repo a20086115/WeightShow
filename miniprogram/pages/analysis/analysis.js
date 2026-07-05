@@ -4,6 +4,7 @@ import { cloud as CF } from '../../utils/cloudFunctionPromise.js';
 
 const App = getApp();
 const REWARDED_AD_UNIT_ID = 'adunit-5b1f040ecca8e89c';
+const SKIP_REWARDED_AD_IN_DEV = true;
 const weekNames = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
 
 function pad(num) {
@@ -57,6 +58,17 @@ function getYearLabel(year) {
   return `${year}年`;
 }
 
+function shouldSkipRewardedAd() {
+  if (!SKIP_REWARDED_AD_IN_DEV || !wx.getAccountInfoSync) return false;
+  try {
+    const accountInfo = wx.getAccountInfoSync();
+    const envVersion = accountInfo && accountInfo.miniProgram && accountInfo.miniProgram.envVersion;
+    return envVersion === 'develop' || envVersion === 'trial';
+  } catch (error) {
+    return false;
+  }
+}
+
 Page({
   data: {
     scope: 'month',
@@ -64,9 +76,9 @@ Page({
     currentYear: getCurrentYear(),
     periodTitle: getMonthLabel(formatMonth(new Date())),
     periodSubtitle: '体重、BMI、打卡习惯分析',
-    reportTitle: 'AI 月度报告',
-    reportSubtitle: '看完激励广告后生成，可分享朋友圈',
-    reportButtonText: '生成',
+    reportTitle: '月度分析报告',
+    reportSubtitle: '查看整理好的分析报告，可分享朋友圈',
+    reportButtonText: '查看报告',
     reportStyle: 'professional',
     showStyleSheet: false,
     chartGranularity: 'day',
@@ -115,6 +127,7 @@ Page({
   },
 
   initRewardedAd() {
+    if (shouldSkipRewardedAd()) return;
     if (!REWARDED_AD_UNIT_ID || !wx.createRewardedVideoAd) return;
     this.rewardedAd = wx.createRewardedVideoAd({
       adUnitId: REWARDED_AD_UNIT_ID
@@ -124,7 +137,7 @@ Page({
       if (res && res.isEnded) {
         this.goAiReport();
       } else {
-        wx.showToast({ title: '完整观看后才能生成报告', icon: 'none' });
+        wx.showToast({ title: '完整观看后才能查看报告', icon: 'none' });
       }
     });
     this.rewardedAd.onError(() => {
@@ -139,28 +152,28 @@ Page({
       month: {
         periodTitle: getMonthLabel(this.data.currentMonth),
         periodSubtitle: '本月体重、BMI、打卡习惯分析',
-        reportTitle: 'AI 月度报告',
-        reportSubtitle: '基于本月记录生成，可分享朋友圈',
+        reportTitle: '月度分析报告',
+        reportSubtitle: '基于本月记录整理，可分享朋友圈',
         trendSubtitle: '按每日记录展示体重变化'
       },
       year: {
         periodTitle: getYearLabel(this.data.currentYear),
         periodSubtitle: '今年趋势、节奏和关键变化分析',
-        reportTitle: 'AI 年度报告',
-        reportSubtitle: '基于今年记录生成年度总结',
+        reportTitle: '年度分析报告',
+        reportSubtitle: '基于今年记录整理年度总结',
         trendSubtitle: this.getTrendSubtitle()
       },
       all: {
         periodTitle: '全部记录',
         periodSubtitle: '长期体重变化和打卡习惯分析',
-        reportTitle: 'AI 全部报告',
-        reportSubtitle: '基于全部历史记录生成长期分析',
+        reportTitle: '长期分析报告',
+        reportSubtitle: '基于全部历史记录整理长期分析',
         trendSubtitle: this.getTrendSubtitle()
       }
     };
     this.setData({
       ...map[scope],
-      reportButtonText: '生成'
+      reportButtonText: '查看报告'
     });
   },
 
@@ -383,7 +396,7 @@ Page({
     let scoreDesc = '记录越完整，分析越准确。';
     if (score >= 80) {
       scoreTitle = '执行稳定';
-      scoreDesc = '记录习惯不错，AI 报告会更有参考价值。';
+      scoreDesc = '记录习惯不错，分析报告会更有参考价值。';
     } else if (score >= 50) {
       scoreTitle = '正在变稳';
       scoreDesc = '已经有趋势了，再补一点连续性会更好。';
@@ -573,10 +586,14 @@ Page({
   },
 
   startReportFlow() {
+    if (shouldSkipRewardedAd()) {
+      this.goAiReport();
+      return;
+    }
     if (!REWARDED_AD_UNIT_ID) {
       wx.showModal({
         title: '开发预览',
-        content: '激励广告位 ID 尚未配置，当前直接进入 AI 报告。上线前填入广告位后会要求完整观看。',
+        content: '激励广告位 ID 尚未配置，当前直接进入分析报告。上线前填入广告位后会要求完整观看。',
         showCancel: false,
         success: () => this.goAiReport()
       });

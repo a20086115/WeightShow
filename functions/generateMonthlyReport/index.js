@@ -19,7 +19,7 @@ try {
   })
   aiInstance = app.ai()
 } catch (error) {
-  console.warn('AI 初始化失败，将使用兜底报告:', error.message)
+  console.warn('模型初始化失败，将使用兜底报告:', error.message)
 }
 
 function pad(num) {
@@ -74,7 +74,7 @@ function normalizeScope(event = {}) {
 }
 
 /**
- * 获取报告风格配置（含 AI 温度与详细写作指令）
+ * 获取报告风格配置（含生成温度与详细写作指令）
  */
 function normalizeReportStyle(event = {}) {
   if (event.style === 'encourage' || event.reportStyle === 'encourage') {
@@ -600,7 +600,7 @@ function buildFallbackReport(metrics, source = 'fallback') {
     ],
     encouragement: styleCopy.encouragement,
     share: {
-      title: `${metrics.periodLabel} AI${metrics.periodName}报告`,
+      title: `${metrics.periodLabel}${metrics.periodName}分析报告`,
       summary: styleCopy.summary
     }
   }
@@ -616,7 +616,7 @@ function getWeekdayInsight(weekdayStats) {
 }
 
 function buildPrompt(metrics) {
-  return `你是体重管理小程序的 AI 深度解读专家。请基于用户真实打卡数据，生成一份有深度、有鲜明风格的中文${metrics.periodName}报告（非医疗诊断）。
+  return `你是体重管理小程序的数据分析师。请基于用户真实打卡数据，生成一份有深度、有鲜明风格的中文${metrics.periodName}分析报告（非医疗诊断）。
 
 ## 报告风格（最高优先级，全文贯穿）
 当前风格：${metrics.reportStyleLabel}（reportStyle=${metrics.reportStyle}）
@@ -845,7 +845,7 @@ async function generateAiReport(metrics) {
     const parsed = extractJson(result && result.text)
     return normalizeAiReport(parsed, metrics)
   } catch (error) {
-    console.error('AI 报告生成失败，使用真实数据兜底:', error)
+    console.error('分析报告生成失败，使用真实数据兜底:', error)
     return buildFallbackReport(metrics, 'fallback')
   }
 }
