@@ -186,7 +186,7 @@ Page({
     sharedReportId: '',
     isSharedReport: false,
     loading: true,
-    reportSourceText: '生成中',
+    reportSourceText: '整理中',
     report: getDefaultReport(getReportContext())
   },
 
@@ -218,7 +218,7 @@ Page({
   loadAiReport(force = false) {
     this.setData({
       loading: true,
-      reportSourceText: force ? '重新生成中' : '生成中'
+      reportSourceText: force ? '重新整理中' : '整理中'
     });
 
     const data = this.data.sharedReportId && !force
@@ -279,7 +279,7 @@ Page({
         report: normalizeReport(null, context),
         reportSourceText: '基础分析'
       });
-      wx.showToast({ title: '报告生成失败', icon: 'none' });
+      wx.showToast({ title: '报告整理失败', icon: 'none' });
     });
   },
 
@@ -287,7 +287,7 @@ Page({
     if (this.data.loading) return;
     wx.showModal({
       title: '刷新分析报告',
-      content: `会基于当前数据重新生成，并覆盖当前${this.data.reportName}。`,
+      content: `会基于当前数据重新整理，并覆盖当前${this.data.reportName}。`,
       confirmColor: '#188be4',
       success: (res) => {
         if (res.confirm) {

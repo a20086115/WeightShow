@@ -8,7 +8,7 @@ const db = cloud.database()
 const _ = db.command
 const REPORT_COLLECTION = 'monthlyReports'
 const RECORD_PAGE_SIZE = 1000
-// 报告生成逻辑版本号：升级 prompt/分析框架时递增，使旧缓存自然失效、自动重新生成
+// 报告整理逻辑版本号：升级 prompt/分析框架时递增，使旧缓存自然失效、自动重新整理
 const REPORT_VERSION = 'v3'
 
 let aiInstance = null
@@ -74,7 +74,7 @@ function normalizeScope(event = {}) {
 }
 
 /**
- * 获取报告风格配置（含生成温度与详细写作指令）
+ * 获取报告风格配置（含输出温度与详细写作指令）
  */
 function normalizeReportStyle(event = {}) {
   if (event.style === 'encourage' || event.reportStyle === 'encourage') {
@@ -469,7 +469,7 @@ function getDirection(change) {
 }
 
 /**
- * 按报告风格生成兜底文案变体
+ * 按报告风格构建兜底文案变体
  */
 function getStyleFallbackCopy(metrics) {
   const change = metrics.weightChange
@@ -616,7 +616,7 @@ function getWeekdayInsight(weekdayStats) {
 }
 
 function buildPrompt(metrics) {
-  return `你是体重管理小程序的数据分析师。请基于用户真实打卡数据，生成一份有深度、有鲜明风格的中文${metrics.periodName}分析报告（非医疗诊断）。
+  return `你是体重管理小程序的数据分析师。请基于用户真实打卡数据，整理一份有深度、有鲜明风格的中文${metrics.periodName}分析报告（非医疗诊断）。
 
 ## 报告风格（最高优先级，全文贯穿）
 当前风格：${metrics.reportStyleLabel}（reportStyle=${metrics.reportStyle}）
@@ -748,7 +748,7 @@ async function getSharedReport(reportId) {
 }
 
 async function getCachedReport(openId, context) {
-  // 仅按带版本号的 reportKey 精确匹配，旧版本（无 v2 后缀）报告不再命中，会自动重新生成
+  // 仅按带版本号的 reportKey 精确匹配，旧版本（无 v2 后缀）报告不再命中，会自动重新整理
   const res = await db.collection(REPORT_COLLECTION)
     .where({ openId, reportKey: context.reportKey })
     .orderBy('updatedAt', 'desc')
@@ -845,7 +845,7 @@ async function generateAiReport(metrics) {
     const parsed = extractJson(result && result.text)
     return normalizeAiReport(parsed, metrics)
   } catch (error) {
-    console.error('分析报告生成失败，使用真实数据兜底:', error)
+    console.error('分析报告整理失败，使用真实数据兜底:', error)
     return buildFallbackReport(metrics, 'fallback')
   }
 }
@@ -924,7 +924,7 @@ exports.main = async (event) => {
     return {
       ok: false,
       source: 'fallback',
-      errMsg: error.message || '报告生成失败',
+      errMsg: error.message || '报告整理失败',
       report: fallback
     }
   }

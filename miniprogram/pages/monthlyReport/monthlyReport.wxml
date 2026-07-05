@@ -73,7 +73,7 @@
     <view class="loading-card">
       <view class="loading-spinner"></view>
       <view class="loading-title">正在整理报告</view>
-      <view class="loading-text">正在整理打卡记录，并转为{{reportStyleLabel}}风格内容...</view>
+      <view class="loading-text">正在整理打卡记录，稍后呈现{{reportStyleLabel}}风格报告...</view>
     </view>
   </view>
 </view>
