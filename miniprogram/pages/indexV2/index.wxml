@@ -88,7 +88,7 @@
     </view>
 
     <view class="quick-actions">
-      <view class="quick-action ai" bindtap="goAnalysis">
+      <view wx:if="{{moduleAnalysisReportEnabled}}" class="quick-action ai" bindtap="goAnalysis">
         <view class="quick-icon-bubble">
           <image class="quick-icon" src="../../images/home/ai-analysis.png" mode="aspectFit"></image>
         </view>
@@ -243,8 +243,8 @@
     </view>
   </view>
 
-  <view class="checkin-mask" wx:if="{{showCheckinDialog}}">
-    <view class="checkin-dialog-card">
+  <view class="checkin-mask" wx:if="{{showCheckinDialog}}" bindtap="closeCheckin">
+    <view class="checkin-dialog-card" catchtap="noop">
       <view class="onboarding-accent"></view>
       <view class="checkin-dialog-head">
         <view>
@@ -271,20 +271,84 @@
         </view>
       </view>
 
-      <view class="checkin-reminder">
-        <view class="reminder-card checkin-reminder-card">
-          <view class="reminder-main">
-            <view class="reminder-title-row">
-              <text class="reminder-dot"></text>
-              <text>明天提醒我打卡</text>
-            </view>
-            <view class="reminder-desc">开启后会按你选的时间提醒</view>
-          </view>
-          <van-checkbox custom-class="reminder-checkbox" value="{{ subscribeChecked }}" bind:change="onSubscribeCheckboxChange" />
+      <view class="checkin-extra">
+        <view class="checkin-extra-title-row">
+          <view class="checkin-extra-title">今日标签</view>
+          <button class="checkin-tag-manage-button" bindtap="toggleCheckinTagManager">
+            <van-icon wx:if="{{!showCheckinTagManager}}" name="setting-o" class="tag-manage-icon" />
+            <van-icon wx:else name="arrow-up" class="tag-manage-icon" />
+            <text>{{showCheckinTagManager ? '收起' : '管理'}}</text>
+          </button>
         </view>
-        <view wx:if="{{ subscribeChecked }}" class="reminder-time-field onboarding-time checkin-time" bindtap="showReminderTimePicker">
+        <view class="checkin-tag-grid">
+          <view
+            class="checkin-tag {{item.selected ? 'active' : ''}}"
+            wx:for="{{checkinTagOptions}}"
+            wx:key="name"
+            data-tag="{{item.name}}"
+            bindtap="onToggleCheckinTag"
+          >{{item.name}}</view>
+        </view>
+        <view wx:if="{{showCheckinTagManager}}" class="checkin-tag-manager">
+          <view class="tag-manager-list">
+            <view class="tag-manager-item" wx:for="{{userCheckinTagNames}}" wx:key="*this">
+              <text>{{item}}</text>
+              <button class="tag-delete-button" data-tag="{{item}}" bindtap="removeCheckinTagOption" aria-label="删除标签">
+                <van-icon name="cross" />
+              </button>
+            </view>
+          </view>
+          <view class="tag-add-row">
+            <input
+              class="tag-add-input"
+              value="{{newCheckinTagName}}"
+              maxlength="8"
+              confirm-type="done"
+              placeholder="添加自己的标签"
+              bindinput="onNewCheckinTagInput"
+              bindconfirm="addCheckinTagOption"
+            />
+            <button class="tag-add-button" bindtap="addCheckinTagOption">
+              <van-icon name="plus" />
+            </button>
+          </view>
+        </view>
+        <view class="checkin-note-card">
+          <textarea
+            class="checkin-note-input"
+            value="{{checkinNote}}"
+            maxlength="120"
+            placeholder="记录今天饮食、运动或状态"
+            bindinput="onCheckinNoteInput"
+          />
+        </view>
+        <view class="checkin-image-card">
+          <view class="checkin-extra-title-row">
+            <view class="checkin-extra-title">身材记录</view>
+            <button class="checkin-image-add" loading="{{checkinImageUploading}}" bindtap="chooseCheckinImages">
+              <van-icon name="photo-o" class="checkin-image-add-icon" />
+              <text>添加照片</text>
+            </button>
+          </view>
+          <view class="checkin-image-grid" wx:if="{{checkinImages.length}}">
+            <view
+              class="checkin-image-item"
+              wx:for="{{checkinImages}}"
+              wx:key="url"
+              data-url="{{item.url}}"
+              bindtap="previewCheckinImage"
+            >
+              <image class="checkin-image-thumb" src="{{item.url}}" mode="aspectFill"></image>
+              <view class="checkin-image-remove" data-index="{{index}}" catchtap="removeCheckinImage">×</view>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <view class="checkin-reminder">
+        <view class="reminder-time-field onboarding-time checkin-time" bindtap="showReminderTimePicker">
           <view>
-            <text class="reminder-time-label">提醒时间</text>
+            <text class="reminder-time-label">明天提醒打卡时间</text>
             <text class="reminder-time-tip">明天 {{ reminderTime }}</text>
           </view>
           <view class="reminder-time-right">
@@ -339,7 +403,7 @@
         <text>继续保持，明天再来打卡</text>
       </view>
       <view class="success-actions">
-        <button class="success-primary" bindtap="goSuccessAnalysis">查看数据分析</button>
+        <button wx:if="{{moduleAnalysisReportEnabled}}" class="success-primary" bindtap="goSuccessAnalysis">查看数据分析</button>
         <button class="success-secondary" open-type="share" data-share-type="checkin">
           <image class="success-share-icon" src="../../images/checkin-dialog/share.png" mode="aspectFit"></image>
           <text>分享给好友</text>
@@ -438,6 +502,30 @@
       </view>
     </view>
   </view>
+
+  <van-dialog use-slot show="{{showMonthlyTargetDialog}}" showConfirmButton="{{false}}" closeOnClickOverlay="{{true}}" bind:close="closeMonthlyTargetDialog" zIndex="1000001">
+    <view class="monthly-target-dialog">
+      <view class="monthly-target-title">设置本月目标</view>
+      <view class="monthly-target-subtitle">{{currentMonth}} 的目标体重</view>
+      <view class="monthly-target-input-row">
+        <input
+          class="monthly-target-input"
+          value="{{monthlyTargetInput}}"
+          type="digit"
+          focus="{{showMonthlyTargetDialog}}"
+          placeholder="请输入目标体重"
+          bindinput="onMonthlyTargetInput"
+          confirm-type="done"
+          bindconfirm="saveMonthlyTarget"
+        />
+        <text class="monthly-target-unit">斤</text>
+      </view>
+      <view class="monthly-target-actions">
+        <button class="monthly-target-cancel" bindtap="closeMonthlyTargetDialog">取消</button>
+        <button class="monthly-target-save" loading="{{monthlyTargetSaving}}" bindtap="saveMonthlyTarget">保存</button>
+      </view>
+    </view>
+  </van-dialog>
 
   <van-dialog cancelButtonText="取消" confirmButtonText="保存" bind:close="closeJoinGroup" closeOnClickOverlay="{{true}}" use-slot show="{{visibleJoinGroup}}" showCancelButton="{{true}}" zIndex="1000001">
     <view class="join-group-dialog">

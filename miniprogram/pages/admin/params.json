@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "参数列表",
+  "usingComponents": {
+    "van-dialog": "../../miniprogram_npm/@vant/weapp/dialog/index"
+  }
+}

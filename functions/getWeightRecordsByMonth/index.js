@@ -9,6 +9,8 @@ const _ = db.command
 exports.main = async (event, context) => {
   let openId = event.userInfo.openId;
   let month = event.month; // 要查询的月份
+  const startDate = event.startDate || (month ? month + "-01" : "");
+  const endDate = event.endDate || (month ? month + "-31" : "");
   // 默认查询本人openId, 如果参数中有openId, 则取参数的openId
   if(event.openId){
     openId = event.openId;
@@ -16,7 +18,7 @@ exports.main = async (event, context) => {
   try {
     return await db.collection('records')
     .where({
-      date: _.and(_.gte(month + "-01"), _.lte(month + "-31")),
+      date: _.and(_.gte(startDate), _.lte(endDate)),
       openId: openId
     })
     .orderBy('date', 'asc')

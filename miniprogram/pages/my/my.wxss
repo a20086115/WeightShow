@@ -106,6 +106,22 @@ page {
   color: #1AA7EC;
 }
 
+.admin-item {
+  background: #f7fbff !important;
+}
+
+.admin-badge {
+  display: inline-flex;
+  align-items: center;
+  height: 34rpx;
+  padding: 0 12rpx;
+  border-radius: 17rpx;
+  background: rgba(24, 139, 228, 0.12);
+  color: #188be4;
+  font-size: 22rpx;
+  font-weight: 600;
+}
+
 /* 对话框优化 */
 .coverImage {
   border-radius: 16rpx;

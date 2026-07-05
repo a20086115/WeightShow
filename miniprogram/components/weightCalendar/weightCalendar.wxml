@@ -15,16 +15,18 @@
     <view class="week-cell" wx:for="{{weeks}}" wx:key="*this">{{item}}</view>
   </view>
 
-  <view class="day-grid">
-    <view
-      class="day-cell {{item.empty ? 'day-cell-empty' : ''}} {{item.isToday ? 'day-cell-today' : ''}} {{item.isSelected ? 'day-cell-selected' : ''}}"
-      wx:for="{{days}}"
-      wx:key="key"
-      data-date="{{item.date}}"
-      bindtap="onSelect"
-    >
-      <view wx:if="{{!item.empty}}" class="day-number">{{item.day}}</view>
-      <view wx:if="{{!item.empty && item.weight}}" class="day-weight">{{item.weight}}</view>
+  <view class="day-grid {{isMonthExpanded ? 'day-grid-month' : 'day-grid-week'}}">
+    <view class="day-grid-inner" style="{{dayGridStyle}}">
+      <view
+        class="day-cell {{item.empty ? 'day-cell-empty' : ''}} {{item.isOutsideMonth ? 'day-cell-outside' : ''}} {{item.isToday ? 'day-cell-today' : ''}} {{item.isSelected ? 'day-cell-selected' : ''}}"
+        wx:for="{{days}}"
+        wx:key="key"
+        data-date="{{item.date}}"
+        bindtap="onSelect"
+      >
+        <view wx:if="{{!item.empty}}" class="day-number">{{item.day}}</view>
+        <view wx:if="{{!item.empty && item.weight}}" class="day-weight">{{item.weight}}</view>
+      </view>
     </view>
   </view>
 </view>

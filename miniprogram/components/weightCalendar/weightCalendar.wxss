@@ -59,7 +59,7 @@
 }
 
 .week-row,
-.day-grid {
+.day-grid-inner {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
 }
@@ -75,11 +75,28 @@
 }
 
 .day-grid {
-  padding: 4rpx 18rpx 24rpx;
+  padding: 4rpx 18rpx 8rpx;
+  overflow: hidden;
+  transition: max-height 0.24s ease;
+}
+
+.day-grid-inner {
+  transition: transform 0.24s ease;
+  will-change: transform;
+}
+
+.day-grid-week {
+  max-height: 102rpx;
+}
+
+.day-grid-month {
+  max-height: 600rpx;
+  padding-bottom: 6rpx;
 }
 
 .day-cell {
-  min-height: 88rpx;
+  height: 98rpx;
+  box-sizing: border-box;
   padding-top: 10rpx;
   text-align: center;
   border-radius: 14rpx;
@@ -87,6 +104,14 @@
 
 .day-cell-empty {
   opacity: 0;
+}
+
+.day-cell-outside {
+  opacity: 0.36;
+}
+
+.day-cell-outside .day-number {
+  color: #9facb8;
 }
 
 .day-number {

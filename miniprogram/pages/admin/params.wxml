@@ -1,0 +1,44 @@
+<view class="admin-page">
+  <view class="page-head">
+    <view>
+      <view class="page-title">参数列表</view>
+      <view class="page-subtitle">来自 params 集合，按 code 排序</view>
+    </view>
+    <button class="refresh-button" loading="{{loading}}" bindtap="loadParams">刷新</button>
+  </view>
+
+  <view class="param-list">
+    <view class="param-card" wx:for="{{params}}" wx:key="code" data-index="{{index}}" bindtap="openEdit">
+      <view class="param-main">
+        <view class="param-code">{{item.code}}</view>
+        <view class="param-value">{{item.valueText || '空'}}</view>
+      </view>
+      <view class="param-side">
+        <view class="param-type">{{item.valueType}}</view>
+        <view class="param-arrow">›</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="empty-card" wx:if="{{!params.length && !loading}}">暂无参数</view>
+  <button wx:if="{{hasMore}}" class="load-more" loading="{{loading}}" bindtap="loadMore">加载更多</button>
+</view>
+
+<van-dialog
+  title="编辑参数"
+  show="{{visibleEdit}}"
+  show-confirm-button="{{false}}"
+  closeOnClickOverlay
+  use-slot
+  bind:close="closeEdit"
+>
+  <view class="edit-panel">
+    <view class="edit-code">{{editingParam.code}}</view>
+    <view class="edit-type">类型：{{editingParam.valueType}}</view>
+    <textarea class="edit-textarea" value="{{editValue}}" bindinput="onEditValueInput" maxlength="-1"></textarea>
+    <view class="edit-actions">
+      <button class="secondary-button" bindtap="closeEdit">取消</button>
+      <button class="primary-button" bindtap="saveParam">保存</button>
+    </view>
+  </view>
+</van-dialog>

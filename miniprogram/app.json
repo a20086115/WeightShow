@@ -69,6 +69,14 @@
                 "config",
                 "bind-guide"
             ]
+        },
+        {
+            "root": "pages/admin",
+            "pages": [
+                "index",
+                "params",
+                "images"
+            ]
         }
     ],
     "window": {

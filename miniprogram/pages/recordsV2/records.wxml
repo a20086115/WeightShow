@@ -63,33 +63,70 @@
     </view>
   </view>
 
+  <view class="record-filter-bar" wx:if="{{scope === 'month'}}">
+    <view class="photo-filter-tabs">
+      <view class="photo-filter-tab {{!photosOnly ? 'active' : ''}}" data-value="false" bindtap="setPhotosOnly">全部</view>
+      <view class="photo-filter-tab {{photosOnly ? 'active' : ''}}" data-value="true" bindtap="setPhotosOnly">有照片</view>
+    </view>
+    <view class="record-image-toggle subtle">
+      <text>显示照片</text>
+      <switch checked="{{showRecordImages}}" color="#188be4" bindchange="onShowRecordImagesChange" />
+    </view>
+  </view>
+
   <view class="empty-card" wx:if="{{scope === 'month' && !displayRecords.length}}">
     <view class="empty-title">这个月还没有记录</view>
     <view class="empty-text">回到首页选择日期，记录一次体重后这里会自动出现。</view>
   </view>
 
-  <view class="record-list" wx:if="{{scope === 'month' && displayRecords.length}}">
-    <view class="record-item" wx:for="{{displayRecords}}" wx:key="date">
-      <view class="date-block">
-        <view class="day">{{item.day}}</view>
-        <view class="weekday">{{item.weekday}}</view>
-      </view>
-      <view class="record-main">
-        <view class="record-top">
-          <view>
-            <text class="record-weight">{{item.weight}}</text>
-            <text class="unit">斤</text>
+  <view class="timeline-list" wx:if="{{scope === 'month' && displayRecords.length}}">
+    <view class="timeline-line"></view>
+    <view class="timeline-item" wx:for="{{displayRecords}}" wx:key="date">
+      <view class="timeline-dot"></view>
+      <view class="timeline-card" bindtap="openEdit" data-index="{{index}}">
+        <view class="timeline-card-head">
+          <view class="timeline-date">
+            <text class="timeline-date-main">{{item.dateText}}</text>
+            <text class="timeline-weekday {{item.isToday ? 'today' : ''}}">{{item.isToday ? '今天' : item.weekday}}</text>
           </view>
-          <view class="change-chip {{item.changeClass}}" wx:if="{{item.changeText}}">{{item.changeText}}</view>
+          <view class="timeline-card-tools">
+            <button class="record-delete-button" catchtap="confirmDelete" data-index="{{index}}">删除</button>
+            <view class="timeline-arrow">›</view>
+          </view>
         </view>
-        <view class="record-meta">
-          <text wx:if="{{item.bmiText}}">BMI {{item.bmiText}}</text>
-          <text wx:if="{{item.date}}">{{item.date}}</text>
+
+        <view class="timeline-card-body">
+          <view class="timeline-weight">
+            <view>
+              <text class="record-weight">{{item.weight}}</text>
+              <text class="unit">斤</text>
+            </view>
+            <view class="weight-kg">{{item.weightKg}} kg</view>
+            <view class="record-tags" wx:if="{{item.visibleTags.length}}">
+              <view class="record-tag {{tag.type}}" wx:for="{{item.visibleTags}}" wx:for-item="tag" wx:key="name">{{tag.name}}</view>
+              <view class="record-tag more" wx:if="{{item.hiddenTagCount}}">+{{item.hiddenTagCount}}</view>
+            </view>
+          </view>
+          <view class="body-divider"></view>
+          <view class="timeline-change">
+            <view class="change-label">较上次</view>
+            <view class="change-value {{item.changeClass}}">{{item.changeText || '--'}}</view>
+          </view>
         </view>
-      </view>
-      <view class="record-actions">
-        <button bindtap="openEdit" data-index="{{index}}">修改</button>
-        <button class="delete" bindtap="confirmDelete" data-index="{{index}}">删除</button>
+
+        <view class="record-note" wx:if="{{item.note}}">{{item.note}}</view>
+        <view class="record-image-grid" wx:if="{{showRecordImages && item.imageUrls.length}}">
+          <image
+            class="record-image-thumb"
+            wx:for="{{item.imageUrls}}"
+            wx:for-item="imageUrl"
+            wx:key="*this"
+            src="{{imageUrl}}"
+            data-url="{{imageUrl}}"
+            mode="aspectFill"
+            catchtap="previewRecordImage"
+          ></image>
+        </view>
       </view>
     </view>
   </view>
@@ -99,6 +136,17 @@
       <view>
         <view class="section-title">{{scope === 'year' ? '月份归档' : '历史归档'}}</view>
         <view class="section-subtitle">{{scope === 'year' ? '按月份汇总今年记录' : '按年份和月份汇总全部记录'}}</view>
+      </view>
+    </view>
+
+    <view class="record-filter-bar archive-filter-bar">
+      <view class="photo-filter-tabs">
+        <view class="photo-filter-tab {{!photosOnly ? 'active' : ''}}" data-value="false" bindtap="setPhotosOnly">全部</view>
+        <view class="photo-filter-tab {{photosOnly ? 'active' : ''}}" data-value="true" bindtap="setPhotosOnly">有照片</view>
+      </view>
+      <view class="record-image-toggle subtle">
+        <text>显示照片</text>
+        <switch checked="{{showRecordImages}}" color="#188be4" bindchange="onShowRecordImagesChange" />
       </view>
     </view>
 
@@ -115,7 +163,7 @@
         wx:for-item="monthItem"
         wx:key="month"
         data-month="{{monthItem.month}}"
-        bindtap="openMonth"
+        bindtap="toggleArchiveMonth"
       >
         <view class="month-name">{{monthItem.label}}</view>
         <view class="month-info">
@@ -123,6 +171,66 @@
           <view>最新 {{monthItem.latestWeight}}</view>
         </view>
         <view class="month-change {{monthItem.changeClass}}">{{monthItem.changeText}}</view>
+        <view class="archive-expanded-records" wx:if="{{monthItem.expanded}}">
+          <view
+            class="archive-timeline-item"
+            wx:for="{{monthItem.visibleRecords}}"
+            wx:for-item="record"
+            wx:key="date"
+          >
+            <view class="archive-timeline-dot"></view>
+            <view
+              class="timeline-card archive-record-card"
+              data-date="{{record.date}}"
+              catchtap="openEdit"
+            >
+              <view class="timeline-card-head">
+                <view class="timeline-date">
+                  <text class="timeline-date-main">{{record.dateText}}</text>
+                  <text class="timeline-weekday {{record.isToday ? 'today' : ''}}">{{record.isToday ? '今天' : record.weekday}}</text>
+                </view>
+                <view class="timeline-card-tools">
+                  <button class="record-delete-button" catchtap="confirmDelete" data-date="{{record.date}}">删除</button>
+                  <view class="timeline-arrow">›</view>
+                </view>
+              </view>
+
+              <view class="timeline-card-body">
+                <view class="timeline-weight">
+                  <view>
+                    <text class="record-weight">{{record.weight}}</text>
+                    <text class="unit">斤</text>
+                  </view>
+                  <view class="weight-kg">{{record.weightKg}} kg</view>
+                  <view class="record-tags" wx:if="{{record.visibleTags.length}}">
+                    <view class="record-tag {{tag.type}}" wx:for="{{record.visibleTags}}" wx:for-item="tag" wx:key="name">{{tag.name}}</view>
+                    <view class="record-tag more" wx:if="{{record.hiddenTagCount}}">+{{record.hiddenTagCount}}</view>
+                  </view>
+                </view>
+                <view class="body-divider"></view>
+                <view class="timeline-change">
+                  <view class="change-label">较上次</view>
+                  <view class="change-value {{record.changeClass}}">{{record.changeText || '--'}}</view>
+                </view>
+              </view>
+
+              <view class="record-note" wx:if="{{record.note}}">{{record.note}}</view>
+              <view class="record-image-grid" wx:if="{{showRecordImages && record.imageUrls.length}}">
+                <image
+                  class="record-image-thumb"
+                  wx:for="{{record.imageUrls}}"
+                  wx:for-item="imageUrl"
+                  wx:key="*this"
+                  src="{{imageUrl}}"
+                  data-url="{{imageUrl}}"
+                  mode="aspectFill"
+                  catchtap="previewRecordImage"
+                ></image>
+              </view>
+            </view>
+          </view>
+          <view class="archive-empty-records" wx:if="{{!monthItem.visibleRecords.length}}">这个月没有符合条件的记录</view>
+        </view>
       </view>
     </view>
   </view>

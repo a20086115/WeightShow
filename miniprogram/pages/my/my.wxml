@@ -18,6 +18,15 @@
              <view class="cuIcon-edit "></view>
             </view>
           </view>
+          <view class="cu-item" bindtap="navToUserInfoPage">
+            <view class="content">
+              <text class="text-grey">打卡提醒</text>
+              <text class="text-gray text-sm margin-left-sm">{{reminderSummary}}</text>
+            </view>
+           <view class="action text-xxl">
+             <view class="cuIcon-remind"></view>
+            </view>
+          </view>
           <view class="cu-item" bindtap="queryLastActivity">
             <view class="content">
               <text class="text-grey">最新活动</text>
@@ -32,6 +41,15 @@
             </view>
            <view class="action text-xxl">
              <view class="cuIcon-like"></view>
+            </view>
+          </view>
+          <view class="cu-item admin-item" wx:if="{{isAdmin}}" bindtap="navToAdminPage">
+            <view class="content">
+              <text class="text-grey">管理后台</text>
+              <text class="admin-badge margin-left-sm">管理员</text>
+            </view>
+           <view class="action text-xxl">
+             <view class="cuIcon-settings"></view>
             </view>
           </view>
           <view class="cu-item" wx:if="{{showYearlyReportEntry}}" bindtap="goToYearlyReport">
@@ -107,4 +125,5 @@
     <image class="coverImage" show-menu-by-longpress  src="{{noticeImage}}"  mode="widthFix"> </image>
   </view>
 </van-dialog>
+
 </view>

@@ -1,0 +1,26 @@
+<view class="admin-page">
+  <view class="admin-header">
+    <view class="admin-title">管理后台</view>
+    <view class="admin-subtitle">仅管理员可见</view>
+  </view>
+
+  <view class="module-list">
+    <view class="module-card" bindtap="navToParams">
+      <view class="module-icon">参</view>
+      <view class="module-main">
+        <view class="module-title">参数列表</view>
+        <view class="module-desc">查看和维护 params 表全部参数</view>
+      </view>
+      <view class="module-arrow">›</view>
+    </view>
+
+    <view class="module-card" bindtap="navToImages">
+      <view class="module-icon image">图</view>
+      <view class="module-main">
+        <view class="module-title">图片管理</view>
+        <view class="module-desc">按打卡记录分页查看用户上传图片</view>
+      </view>
+      <view class="module-arrow">›</view>
+    </view>
+  </view>
+</view>

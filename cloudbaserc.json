@@ -36,6 +36,46 @@
       "description": "Generate AI monthly weight report"
     },
     {
+      "name": "adminListUploadedImages",
+      "runtime": "Nodejs16.13",
+      "handler": "index.main",
+      "timeout": 20,
+      "memorySize": 256,
+      "description": "Admin-only uploaded image list"
+    },
+    {
+      "name": "adminListParams",
+      "runtime": "Nodejs16.13",
+      "handler": "index.main",
+      "timeout": 10,
+      "memorySize": 256,
+      "description": "Admin-only params list"
+    },
+    {
+      "name": "adminUpdateParam",
+      "runtime": "Nodejs16.13",
+      "handler": "index.main",
+      "timeout": 10,
+      "memorySize": 256,
+      "description": "Admin-only param updater"
+    },
+    {
+      "name": "initMonthlyTargets",
+      "runtime": "Nodejs16.13",
+      "handler": "index.main",
+      "timeout": 600,
+      "memorySize": 512,
+      "description": "One-off monthly target initialization"
+    },
+    {
+      "name": "getWeightRecordsByMonth",
+      "runtime": "Nodejs8.9",
+      "handler": "index.main",
+      "timeout": 3,
+      "memorySize": 256,
+      "description": ""
+    },
+    {
       "name": "subscribe",
       "runtime": "Nodejs10.15",
       "handler": "index.main",

@@ -1,0 +1,38 @@
+<view class="admin-page">
+  <view class="filter-panel">
+    <view class="filter-title">筛选</view>
+    <view class="filter-row">
+      <input class="filter-input" value="{{datePrefix}}" placeholder="日期：2026-07 或 2026-07-05" bindinput="onDateInput" />
+    </view>
+    <view class="filter-row">
+      <input class="filter-input" value="{{openId}}" placeholder="用户 openId 精确筛选" bindinput="onOpenIdInput" />
+    </view>
+    <view class="filter-actions">
+      <button class="secondary-button" bindtap="clearFilters">重置</button>
+      <button class="primary-button" loading="{{loading}}" bindtap="searchImages">查询</button>
+    </view>
+  </view>
+
+  <view class="list-head">
+    <view>
+      <view class="page-title">打卡图片</view>
+      <view class="page-subtitle">按 records 记录分页懒加载</view>
+    </view>
+    <view class="total-chip">{{total}} 条记录</view>
+  </view>
+
+  <view class="image-grid">
+    <view class="image-card" wx:for="{{images}}" wx:key="id" data-url="{{item.previewUrl}}" bindtap="previewImage">
+      <image class="image-thumb" src="{{item.previewUrl}}" mode="aspectFill"></image>
+      <view class="image-meta">
+        <view class="image-date">{{item.dateText || '未知日期'}}</view>
+        <view class="image-user">{{item.nickName || item.openId || '未知用户'}}</view>
+        <view class="image-field">{{item.field}} · {{item.weight || '--'}}斤</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="empty-card" wx:if="{{!images.length && !loading}}">暂无打卡图片</view>
+  <button wx:if="{{hasMore}}" class="load-more" loading="{{loading}}" bindtap="loadMore">加载更多</button>
+  <view class="end-text" wx:if="{{images.length && !hasMore}}">已到底</view>
+</view>

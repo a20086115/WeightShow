@@ -887,14 +887,26 @@ exports.main = async (event) => {
       }
     }
 
-    const [userRes, recordsRes] = await Promise.all([
+    const monthlyTargetQuery = context.scope === 'month'
+      ? db.collection('monthlyTargets').where({ openId, month: context.month }).limit(1).get().catch(() => ({ data: [] }))
+      : Promise.resolve({ data: [] })
+    const [userRes, recordsRes, monthlyTargetRes] = await Promise.all([
       db.collection('users').where({ openId }).limit(1).get(),
-      fetchRecords(openId, context)
+      fetchRecords(openId, context),
+      monthlyTargetQuery
     ])
 
     const userInfo = (userRes.data && userRes.data[0]) || {}
+    const monthlyTarget = (monthlyTargetRes.data && monthlyTargetRes.data[0]) || null
+    const reportUserInfo = monthlyTarget && monthlyTarget.aimWeight
+      ? {
+        ...userInfo,
+        aimWeight: monthlyTarget.aimWeight,
+        aimWeightKg: monthlyTarget.aimWeightKg || (monthlyTarget.aimWeight / 2)
+      }
+      : userInfo
     const records = (recordsRes || []).filter((item) => item && item.date && item.weight)
-    const metrics = buildMetrics(context, userInfo, records)
+    const metrics = buildMetrics(context, reportUserInfo, records)
     const report = await generateAiReport(metrics)
     const savedReportId = await saveReport(openId, context, report, metrics)
 

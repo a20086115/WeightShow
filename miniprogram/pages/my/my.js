@@ -1,5 +1,16 @@
 import { cloud as CF } from '../../utils/cloudFunctionPromise.js'
 import dayjs from '../../utils/dayjs.min.js';
+import { getCheckinReminderSummary } from '../../utils/checkinReminder.js';
+
+const ADMIN_OPEN_IDS = ['ohl0o47kLZ0eBSt7Osp1uGNJUfFM'];
+
+function isAdminUser(userInfo = {}) {
+  return !!(
+    userInfo.isAdmin === true
+    || userInfo.role === 'admin'
+    || ADMIN_OPEN_IDS.includes(userInfo.openId)
+  );
+}
 
 Page({
   /**
@@ -17,6 +28,8 @@ Page({
     visibleNoticeDialog:false,
     noticeImage:"",
     noticeContent:"",
+    reminderSummary: '09:00 提醒',
+    isAdmin: false,
     showYearlyReportEntry: false, // 是否显示年度报告入口
     lastCheckTime: 0 // 上次检查年度报告的时间戳，用于避免频繁调用
   },
@@ -27,31 +40,34 @@ Page({
   onLoad: function (options) {
     // 获取用户信息
     if(getApp().globalData && getApp().globalData.userInfo.avatarUrl){
-      this.setData({
-        avatarUrl: getApp().globalData.userInfo.avatarUrl,
-        userInfo: getApp().globalData.userInfo
-      })
+      this.syncUserInfoFromGlobal();
       // 获取用户信息更新
       // this.updateUserPhoto();
     }
     // 加载配置参数（二维码图片路径）
     this.loadParamsConfig();
+    this.refreshUserInfoForAdmin();
     // 检查是否显示年度报告入口
     this.checkYearlyReportEntry();
   },
   onShow(){
     // 获取用户信息
     if(getApp().globalData && getApp().globalData.userInfo.avatarUrl){
-      this.setData({
-        avatarUrl: getApp().globalData.userInfo.avatarUrl,
-        userInfo: getApp().globalData.userInfo
-      })
+      this.syncUserInfoFromGlobal();
     }
     // 避免频繁调用接口：如果距离上次检查超过5秒才重新检查
     const now = Date.now();
     if (now - this.data.lastCheckTime > 5000) {
       this.checkYearlyReportEntry();
     }
+  },
+
+  refreshUserInfoForAdmin() {
+    const app = getApp();
+    if (!app.ensureUserInfoWithId) return;
+    app.ensureUserInfoWithId().then(() => {
+      this.syncUserInfoFromGlobal();
+    });
   },
 
   /**
@@ -62,6 +78,24 @@ Page({
     wx.navigateTo({
       url: '/pages/userinfo/userinfo',
     })
+  },
+  syncUserInfoFromGlobal() {
+    const userInfo = getApp().globalData.userInfo || {};
+    this.setData({
+      avatarUrl: userInfo.avatarUrl || this.data.avatarUrl,
+      userInfo,
+      reminderSummary: getCheckinReminderSummary(userInfo),
+      isAdmin: isAdminUser(userInfo)
+    })
+  },
+  navToAdminPage() {
+    if (!this.data.isAdmin) {
+      wx.showToast({ title: '无权限', icon: 'none' });
+      return;
+    }
+    wx.navigateTo({
+      url: '/pages/admin/index'
+    });
   },
   /**
    *  跳转到关于我们页面

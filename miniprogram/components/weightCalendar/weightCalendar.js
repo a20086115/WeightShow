@@ -24,8 +24,11 @@ Component({
 
   data: {
     weeks: ['日', '一', '二', '三', '四', '五', '六'],
+    allDays: [],
     days: [],
-    yearMonthText: ''
+    yearMonthText: '',
+    isMonthExpanded: true,
+    dayGridStyle: ''
   },
 
   observers: {
@@ -41,39 +44,49 @@ Component({
   },
 
   methods: {
-    buildDays() {
+    getActiveYearMonth() {
       const yearMonth = this.data.yearMonth || formatDate(new Date()).slice(0, 7);
       const parts = yearMonth.split('-');
-      const year = Number(parts[0]);
-      const month = Number(parts[1]);
+      return {
+        year: Number(parts[0]),
+        month: Number(parts[1])
+      };
+    },
+
+    buildDays() {
+      const { year, month } = this.getActiveYearMonth();
       if (!year || !month) return;
 
       const first = new Date(year, month - 1, 1);
       const total = new Date(year, month, 0).getDate();
       const today = formatDate(new Date());
       const recordsMap = this.data.recordsMap || {};
+      const start = new Date(year, month - 1, 1 - first.getDay());
+      const gridCount = Math.ceil((first.getDay() + total) / 7) * 7;
       const days = [];
 
-      for (let i = 0; i < first.getDay(); i += 1) {
-        days.push({ key: `empty-${i}`, empty: true });
-      }
-
-      for (let day = 1; day <= total; day += 1) {
-        const date = `${year}-${pad(month)}-${pad(day)}`;
+      for (let i = 0; i < gridCount; i += 1) {
+        const current = new Date(start);
+        current.setDate(start.getDate() + i);
+        const date = formatDate(current);
+        const isOutsideMonth = current.getFullYear() !== year || current.getMonth() + 1 !== month;
         const record = recordsMap[date] || {};
         days.push({
           key: date,
           date,
-          day,
+          day: current.getDate(),
           weight: record.weight || '',
           empty: false,
-          isToday: date === today,
-          isSelected: date === this.data.selectedDate
+          isOutsideMonth,
+          isToday: !isOutsideMonth && date === today,
+          isSelected: !isOutsideMonth && date === this.data.selectedDate
         });
       }
 
       this.setData({
+        allDays: days,
         days,
+        dayGridStyle: '',
         yearMonthText: `${year}年${pad(month)}月`
       });
     },
@@ -92,7 +105,8 @@ Component({
 
     onSelect(e) {
       const date = e.currentTarget.dataset.date;
-      if (!date) return;
+      const { year, month } = this.getActiveYearMonth();
+      if (!date || date.indexOf(`${year}-${pad(month)}`) !== 0) return;
       this.triggerEvent('select', { date });
     }
   }

@@ -24,6 +24,53 @@ function formatWeight(value) {
   return Number.isInteger(num) ? String(num) : num.toFixed(1);
 }
 
+function getTagType(name) {
+  if (/跑|走|运动|训练/.test(name)) return 'sport';
+  if (/奶茶|聚餐|偏多|熬夜|久坐/.test(name)) return 'warn';
+  return 'good';
+}
+
+function normalizeTags(tags) {
+  if (!Array.isArray(tags)) return [];
+  return tags
+    .filter((tag) => typeof tag === 'string' && tag.trim())
+    .map((tag) => ({
+      name: tag.trim(),
+      type: getTagType(tag)
+    }));
+}
+
+function isImageRef(value) {
+  if (typeof value !== 'string' || !value) return false;
+  if (value.indexOf('data:image') === 0) return false;
+  if (value.length > 600) return false;
+  return value.indexOf('cloud://') === 0
+    || value.indexOf('http://') === 0
+    || value.indexOf('https://') === 0;
+}
+
+function normalizeRecordImages(record = {}) {
+  const values = []
+    .concat(Array.isArray(record.imageUrls) ? record.imageUrls : [])
+    .concat(Array.isArray(record.images) ? record.images : [])
+    .concat([record.fileid, record.imageId, record.imageID, record.imageUrl, record.image, record.fileID, record.fileId]);
+  const result = [];
+  values.forEach((value) => {
+    if (isImageRef(value) && result.indexOf(value) < 0) {
+      result.push(value);
+    }
+  });
+  return result;
+}
+
+function getDefaultShowRecordImages() {
+  try {
+    return wx.getStorageSync('showRecordImages') !== false;
+  } catch (err) {
+    return true;
+  }
+}
+
 function getMonthLabel(month) {
   return dayjs(`${month}-01`).format('YYYY年MM月');
 }
@@ -63,6 +110,9 @@ Page({
     allRecords: [],
     displayRecords: [],
     archiveGroups: [],
+    showRecordImages: getDefaultShowRecordImages(),
+    photosOnly: false,
+    expandedMonths: {},
     summary: {
       days: 0,
       latestWeight: '--',
@@ -141,24 +191,45 @@ Page({
       .sort((a, b) => a.date.localeCompare(b.date));
   },
 
-  applyRecords(records) {
+  decorateRecords(records) {
     const height = toNumber(App.globalData.userInfo && App.globalData.userInfo.height);
-    const displayRecords = records.map((record, index) => {
+    return records.map((record, index) => {
       const previous = index > 0 ? records[index - 1] : null;
       const change = getChangeText(record, previous);
       const weight = toNumber(record.weight);
       const bmi = weight && height ? weight / 2 / (height * height / 10000) : null;
 
+      const tags = normalizeTags(record.tags);
+      const imageUrls = normalizeRecordImages(record);
+
       return {
         ...record,
         day: dayjs(record.date).format('DD'),
+        dateText: dayjs(record.date).format('M月D日'),
         weekday: weekNames[new Date(record.date.replace(/-/g, '/')).getDay()],
+        isToday: record.date === dayjs().format('YYYY-MM-DD'),
         weight: formatWeight(record.weight),
+        weightKg: formatWeight(record.weightKg || (weight ? weight / 2 : null)),
         bmiText: bmi ? bmi.toFixed(2) : '',
         changeText: change.text,
-        changeClass: change.className
+        changeClass: change.className,
+        tags,
+        visibleTags: tags.slice(0, 3),
+        hiddenTagCount: Math.max(tags.length - 3, 0),
+        note: record.note || '',
+        imageUrls
       };
     }).reverse();
+  },
+
+  getVisibleRecords(records) {
+    const displayRecords = this.decorateRecords(records);
+    if (!this.data.photosOnly) return displayRecords;
+    return displayRecords.filter((record) => record.imageUrls && record.imageUrls.length);
+  },
+
+  applyRecords(records) {
+    const displayRecords = this.getVisibleRecords(records);
 
     this.setData({
       records,
@@ -325,6 +396,9 @@ Page({
 
     const months = Object.keys(monthMap).sort((a, b) => b.localeCompare(a)).map((month) => {
       const monthRecords = monthMap[month].sort((a, b) => a.date.localeCompare(b.date));
+      const displayRecords = this.decorateRecords(monthRecords);
+      const photoRecords = displayRecords.filter((record) => record.imageUrls && record.imageUrls.length);
+      const visibleRecords = this.data.photosOnly ? photoRecords : displayRecords;
       const weights = monthRecords.map((item) => toNumber(item.weight)).filter((item) => item !== null);
       const first = weights[0];
       const latest = weights[weights.length - 1];
@@ -334,14 +408,19 @@ Page({
         year: month.slice(0, 4),
         label: dayjs(`${month}-01`).format('MM月'),
         days: monthRecords.length,
+        photoDays: photoRecords.length,
+        photoCount: photoRecords.reduce((sum, record) => sum + record.imageUrls.length, 0),
+        previewImage: photoRecords[0] && photoRecords[0].imageUrls[0],
+        expanded: !!this.data.expandedMonths[month],
+        visibleRecords,
         latestWeight: `${formatWeight(latest)}斤`,
         changeText: monthRecords.length > 1 ? `${diff > 0 ? '+' : ''}${diff.toFixed(1)}斤` : '暂无变化',
         changeClass: diff > 0 ? 'up' : diff < 0 ? 'down' : ''
       };
-    });
+    }).filter((monthItem) => !this.data.photosOnly || monthItem.photoDays > 0);
 
     if (this.data.scope === 'year') {
-      return [{ year: this.data.currentYear, months }];
+      return months.length ? [{ year: this.data.currentYear, months }] : [];
     }
 
     const yearMap = {};
@@ -423,7 +502,8 @@ Page({
     if (scope === this.data.scope) return;
     this.setData({
       scope,
-      chartGranularity: 'day'
+      chartGranularity: 'day',
+      expandedMonths: {}
     }, () => this.loadRecords());
   },
 
@@ -440,23 +520,85 @@ Page({
     });
   },
 
-  openMonth(e) {
+  onShowRecordImagesChange(e) {
+    const showRecordImages = !!e.detail.value;
+    this.setData({ showRecordImages });
+    try {
+      wx.setStorageSync('showRecordImages', showRecordImages);
+    } catch (err) {
+      console.warn('保存图片显示偏好失败:', err);
+    }
+  },
+
+  onPhotosOnlyChange(e) {
+    const photosOnly = !!e.detail.value;
+    this.applyPhotosOnly(photosOnly);
+  },
+
+  setPhotosOnly(e) {
+    const photosOnly = e.currentTarget.dataset.value === 'true';
+    if (photosOnly === this.data.photosOnly) return;
+    this.applyPhotosOnly(photosOnly);
+  },
+
+  applyPhotosOnly(photosOnly) {
+    const nextData = { photosOnly };
+    if (photosOnly) {
+      nextData.showRecordImages = true;
+    }
+    this.setData(nextData, () => {
+      if (this.data.scope === 'month') {
+        this.applyRecords(this.data.records);
+      } else {
+        this.applyArchiveRecords();
+      }
+    });
+  },
+
+  previewRecordImage(e) {
+    const current = e.currentTarget.dataset.url;
+    if (!current) return;
+    const recordSource = this.data.scope === 'month'
+      ? this.data.displayRecords
+      : this.data.archiveGroups.reduce((list, group) => list.concat(
+        (group.months || []).reduce((records, month) => records.concat(month.visibleRecords || []), [])
+      ), []);
+    const urls = recordSource.reduce((result, record) => result.concat(record.imageUrls || []), []);
+    wx.previewImage({ current, urls });
+  },
+
+  toggleArchiveMonth(e) {
     const currentMonth = e.currentTarget.dataset.month;
-    this.setData({
-      scope: 'month',
-      currentMonth,
-      currentYear: currentMonth.slice(0, 4),
-      monthLabel: getMonthLabel(currentMonth)
-    }, () => this.loadMonthRecords());
+    if (!currentMonth) return;
+    const expandedMonths = {
+      ...this.data.expandedMonths,
+      [currentMonth]: !this.data.expandedMonths[currentMonth]
+    };
+    this.setData({ expandedMonths }, () => this.applyArchiveRecords());
   },
 
   openEdit(e) {
-    const record = this.data.displayRecords[e.currentTarget.dataset.index];
+    const record = this.findRecordFromEvent(e);
+    if (!record) return;
     this.setData({
       showEditDialog: true,
       editingRecord: record,
       editWeight: record.weight
     });
+  },
+
+  findRecordFromEvent(e) {
+    const index = Number(e.currentTarget.dataset.index);
+    const date = e.currentTarget.dataset.date;
+    if (!date) {
+      return this.data.displayRecords[index] || null;
+    }
+    const source = this.data.scope === 'month'
+      ? this.data.displayRecords
+      : this.data.archiveGroups.reduce((list, group) => list.concat(
+        (group.months || []).reduce((records, month) => records.concat(month.visibleRecords || []), [])
+      ), []);
+    return source.find((record) => record.date === date) || null;
   },
 
   closeEdit() {
@@ -491,7 +633,8 @@ Page({
   },
 
   confirmDelete(e) {
-    const record = this.data.displayRecords[e.currentTarget.dataset.index];
+    const record = this.findRecordFromEvent(e);
+    if (!record) return;
     wx.showModal({
       title: '删除记录',
       content: `确定删除 ${record.date} 的体重记录吗？`,

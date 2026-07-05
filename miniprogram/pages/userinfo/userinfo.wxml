@@ -62,6 +62,31 @@
   <view class="form-section">
     <view class="section-head">
       <view>
+        <view class="section-title">打卡提醒</view>
+        <view class="section-desc">固定你的日常提醒习惯</view>
+      </view>
+    </view>
+    <view class="reminder-setting-card">
+      <view class="reminder-setting-copy">
+        <view class="reminder-setting-title">明天提醒我打卡</view>
+        <view class="reminder-setting-desc">{{ reminderEnabled ? '打卡时会默认预约明天提醒' : '打卡时默认不预约提醒' }}</view>
+      </view>
+      <switch color="#188be4" checked="{{reminderEnabled}}" bindchange="onReminderEnabledChange" />
+    </view>
+    <picker wx:if="{{reminderEnabled}}" mode="time" value="{{reminderTime || defaultReminderTime}}" bindchange="onReminderTimeChange">
+      <view class="reminder-time-row">
+        <view>
+          <view class="reminder-time-label">默认提醒时间</view>
+          <view class="reminder-time-desc">打卡弹窗会自动带出这个时间</view>
+        </view>
+        <view class="reminder-time-value">{{ reminderTime || defaultReminderTime }}</view>
+      </view>
+    </picker>
+  </view>
+
+  <view class="form-section">
+    <view class="section-head">
+      <view>
         <view class="section-title">当前状态</view>
         <view class="section-desc">最近打卡</view>
       </view>

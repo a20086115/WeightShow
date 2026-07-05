@@ -210,6 +210,59 @@ page {
   --cell-background-color: #fbfcfe;
 }
 
+.reminder-setting-card,
+.reminder-time-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 28rpx 20rpx;
+  padding: 24rpx;
+  border-radius: 16rpx;
+  background: #fbfcfe;
+  box-sizing: border-box;
+}
+
+.reminder-setting-copy {
+  flex: 1;
+  min-width: 0;
+  padding-right: 20rpx;
+}
+
+.reminder-setting-title,
+.reminder-time-label {
+  color: #1f2d3d;
+  font-size: 28rpx;
+  font-weight: 700;
+  line-height: 38rpx;
+}
+
+.reminder-setting-desc,
+.reminder-time-desc {
+  margin-top: 8rpx;
+  color: #8a97a3;
+  font-size: 23rpx;
+  line-height: 32rpx;
+}
+
+.reminder-time-row {
+  margin-top: 0;
+  background: #eef7ff;
+}
+
+.reminder-time-value {
+  flex-shrink: 0;
+  min-width: 118rpx;
+  padding: 12rpx 18rpx;
+  border-radius: 999rpx;
+  background: #ffffff;
+  color: #188be4;
+  font-size: 30rpx;
+  font-weight: 800;
+  line-height: 36rpx;
+  text-align: center;
+  box-shadow: 0 6rpx 18rpx rgba(24, 139, 228, 0.1);
+}
+
 .save-bar {
   position: fixed;
   left: 0;

@@ -1,6 +1,12 @@
 // miniprogram/pages/peopleInfo/peopleInfo.js
 import { cloud as CF } from '../../utils/newCloudFunction.js'
 import Toast from "../../miniprogram_npm/@vant/weapp/toast/toast";
+import {
+  DEFAULT_CHECKIN_REMINDER_TIME,
+  getCheckinReminderPreference,
+  buildCheckinReminderUpdate,
+  normalizeCheckinReminderTime
+} from '../../utils/checkinReminder.js';
 
 Page({
 
@@ -15,7 +21,10 @@ Page({
       aimWeight: "",
       aimWeightKg: "",
       aimBmi: ""
-    }
+    },
+    defaultReminderTime: DEFAULT_CHECKIN_REMINDER_TIME,
+    reminderEnabled: true,
+    reminderTime: DEFAULT_CHECKIN_REMINDER_TIME
   },
   onChooseAvatar(e) {
     const { avatarUrl } = e.detail 
@@ -104,7 +113,14 @@ Page({
     if (userInfo.aimWeightKg && userInfo.height) {
       userInfo.aimBmi = this.calculateAimBmi(userInfo.aimWeightKg, userInfo.height)
     }
-    this.setData({ currentUser: userInfo })
+    const reminder = getCheckinReminderPreference(userInfo)
+    userInfo.checkinReminderEnabled = reminder.enabled
+    userInfo.checkinReminderTime = reminder.time
+    this.setData({
+      currentUser: userInfo,
+      reminderEnabled: reminder.enabled,
+      reminderTime: reminder.time
+    })
   },
   
   /**
@@ -140,16 +156,21 @@ Page({
     var currentUser = this.data.currentUser;
     if (currentUser.age && currentUser.nickName && currentUser.aimWeight) {
       // 更新的查询条件
+      const reminderData = buildCheckinReminderUpdate(this.data.reminderEnabled, this.data.reminderTime);
       CF.update("users", {openId: true}, {
         avatarUrl: this.data.currentUser.avatarUrl,
         nickName: this.data.currentUser.nickName,
         age: parseInt(this.data.currentUser.age),
         height: parseFloat(this.data.currentUser.height),
         aimWeight: parseFloat(this.data.currentUser.aimWeight),
-        aimWeightKg: parseFloat(this.data.currentUser.aimWeightKg)
+        aimWeightKg: parseFloat(this.data.currentUser.aimWeightKg),
+        ...reminderData
       }, (data) => {
         Toast.success('更新成功');
-        getApp().globalData.userInfo = this.data.currentUser
+        getApp().globalData.userInfo = {
+          ...this.data.currentUser,
+          ...reminderData
+        }
         wx.navigateBack({
           complete: (res) => {
             var page = getCurrentPages().pop();
@@ -162,6 +183,57 @@ Page({
       Toast.fail('请将信息填写完整');
     }
 
+  },
+  onReminderEnabledChange(e) {
+    const enabled = !!(e.detail && e.detail.value);
+    const reminderData = buildCheckinReminderUpdate(enabled, this.data.reminderTime);
+    this.setData({
+      reminderEnabled: reminderData.checkinReminderEnabled,
+      reminderTime: reminderData.checkinReminderTime,
+      'currentUser.checkinReminderEnabled': reminderData.checkinReminderEnabled,
+      'currentUser.checkinReminderTime': reminderData.checkinReminderTime
+    }, () => {
+      this.saveReminderPreference(true);
+    })
+  },
+  onReminderTimeChange(e) {
+    const reminderData = buildCheckinReminderUpdate(this.data.reminderEnabled, normalizeCheckinReminderTime(e.detail.value));
+    this.setData({
+      reminderEnabled: reminderData.checkinReminderEnabled,
+      reminderTime: reminderData.checkinReminderTime,
+      'currentUser.checkinReminderEnabled': reminderData.checkinReminderEnabled,
+      'currentUser.checkinReminderTime': reminderData.checkinReminderTime
+    }, () => {
+      this.saveReminderPreference(true);
+    })
+  },
+  saveReminderPreference(showToast) {
+    const reminderData = buildCheckinReminderUpdate(this.data.reminderEnabled, this.data.reminderTime);
+    wx.cloud.callFunction({
+      name: 'update',
+      data: {
+        tbName: 'users',
+        query: { openId: true },
+        data: reminderData
+      }
+    }).then(() => {
+      getApp().globalData.userInfo = {
+        ...(getApp().globalData.userInfo || {}),
+        ...reminderData
+      }
+      if (showToast) {
+        wx.showToast({
+          title: '提醒设置已保存',
+          icon: 'success'
+        })
+      }
+    }).catch((err) => {
+      console.error('打卡提醒设置保存失败:', err)
+      wx.showToast({
+        title: '提醒设置保存失败',
+        icon: 'none'
+      })
+    })
   },
   /**
    * 计算目标BMI

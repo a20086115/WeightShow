@@ -1,0 +1,186 @@
+page {
+  background: #f4f7fb;
+  color: #172033;
+}
+
+.admin-page {
+  min-height: 100vh;
+  padding: 24rpx 24rpx 48rpx;
+  box-sizing: border-box;
+}
+
+.page-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18rpx;
+}
+
+.page-title {
+  font-size: 36rpx;
+  font-weight: 800;
+}
+
+.page-subtitle {
+  margin-top: 6rpx;
+  color: #7a8799;
+  font-size: 24rpx;
+}
+
+.refresh-button,
+.load-more,
+.primary-button,
+.secondary-button {
+  margin: 0;
+  border: 0;
+  border-radius: 8rpx;
+  font-size: 26rpx;
+  font-weight: 700;
+}
+
+.refresh-button::after,
+.load-more::after,
+.primary-button::after,
+.secondary-button::after {
+  border: 0;
+}
+
+.refresh-button {
+  flex-shrink: 0;
+  width: 132rpx;
+  height: 58rpx;
+  background: #e8f4ff;
+  color: #188be4;
+  line-height: 58rpx;
+}
+
+.param-list {
+  margin-top: 18rpx;
+}
+
+.param-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+  margin-top: 14rpx;
+  padding: 22rpx;
+  border-radius: 8rpx;
+  background: #ffffff;
+  box-shadow: 0 10rpx 28rpx rgba(31, 54, 86, 0.07);
+}
+
+.param-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.param-code {
+  color: #172033;
+  font-size: 28rpx;
+  font-weight: 800;
+  word-break: break-all;
+}
+
+.param-value {
+  display: -webkit-box;
+  margin-top: 8rpx;
+  color: #7a8799;
+  font-size: 24rpx;
+  line-height: 1.45;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  word-break: break-all;
+}
+
+.param-side {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+}
+
+.param-type {
+  padding: 6rpx 12rpx;
+  border-radius: 8rpx;
+  background: #f1f5f9;
+  color: #657381;
+  font-size: 22rpx;
+}
+
+.param-arrow {
+  color: #9aa6b2;
+  font-size: 42rpx;
+}
+
+.empty-card {
+  margin-top: 28rpx;
+  padding: 56rpx 0;
+  border-radius: 8rpx;
+  background: #ffffff;
+  color: #94a3b8;
+  font-size: 26rpx;
+  text-align: center;
+}
+
+.load-more {
+  width: 220rpx;
+  height: 60rpx;
+  margin: 24rpx auto 0;
+  background: #e8f4ff;
+  color: #188be4;
+  line-height: 60rpx;
+}
+
+.edit-panel {
+  padding: 24rpx 28rpx 30rpx;
+}
+
+.edit-code {
+  color: #172033;
+  font-size: 28rpx;
+  font-weight: 800;
+  word-break: break-all;
+}
+
+.edit-type {
+  margin-top: 8rpx;
+  color: #7a8799;
+  font-size: 24rpx;
+}
+
+.edit-textarea {
+  width: 100%;
+  height: 260rpx;
+  margin-top: 18rpx;
+  padding: 18rpx;
+  border-radius: 8rpx;
+  background: #f7fafc;
+  color: #172033;
+  font-size: 25rpx;
+  line-height: 1.45;
+  box-sizing: border-box;
+}
+
+.edit-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16rpx;
+  margin-top: 22rpx;
+}
+
+.primary-button,
+.secondary-button {
+  height: 72rpx;
+  line-height: 72rpx;
+}
+
+.primary-button {
+  background: #188be4;
+  color: #ffffff;
+}
+
+.secondary-button {
+  background: #f1f5f9;
+  color: #657381;
+}
